@@ -1,26 +1,228 @@
 @import "tailwindcss";
 
+/*
+  AUDAPTION — ENTERPRISE GROWTH SYSTEM
+  Visual direction: the architect's drawing set.
+
+  The site is printed, not lit. Paper is the ground; graphite is the ink;
+  forest green is the one accent, taken from the Audaption mark. Two sheets
+  invert to the dark ground — the requisition reveal and the close — so the
+  building can be shown occupied at night rather than drawn flat.
+
+  Timber comes from the reference building and marks the same thing
+  everywhere: something inherited, unowned, or weak.
+*/
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* paper — the primary ground. Warm bone, matched to audaption.com. */
+  --color-sheet: #f0ebe3;
+  --color-card: #f8f5ef;
+  --color-graphite: #262626;
+  --color-slate: #56605a;
+  --color-mute: #8a8b84;
+
+  /* dark ground — used on two sheets only */
+  --color-basalt: #0b0f0d;
+  --color-stone: #141a17;
+  --color-stone-2: #1d2723;
+  --color-stone-3: #2a3733;
+  --color-chalk: #e8eae7;
+  --color-glass: #7d8f89;
+  --color-glass-dim: #4d5b56;
+
+  /* brand — jade is the live site's accent and the mark's own green */
+  --color-jade: #29a587;
+  --color-jade-deep: #1d7a63;
+  --color-forest: #215845;
+  --color-forest-soft: #3d7d67;
+  --color-emerald: #35d6a9;
+  --color-emerald-dim: #1b6b56;
+
+  /* warmth — inherited, unowned, or weak. kept scarce on purpose */
+  --color-timber: #b4885a;
+  --color-timber-dim: #6b4f33;
+  --color-timber-ink: #8a6234;
+
+  --line: rgba(232, 234, 231, 0.14);
+  --line-strong: rgba(232, 234, 231, 0.3);
+  --line-ink: rgba(38, 38, 38, 0.14);
+  --line-ink-strong: rgba(38, 38, 38, 0.3);
+
+  --ease-arch: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-struct: cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* retained for the archived homepage at /legacy */
+  --color-ink: #282828;
+  --color-ink-soft: #56605c;
+  --color-paper: #f4f1e8;
+  --color-paper-alt: #ebe6d8;
+  --color-forest-dark: #123327;
+  --color-emerald-soft: #16332b;
+  --color-line: #dcd6c4;
+  --color-obsidian: #0f1512;
+  --color-obsidian-line: rgba(244, 241, 232, 0.1);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-basalt: var(--color-basalt);
+  --color-stone: var(--color-stone);
+  --color-stone-2: var(--color-stone-2);
+  --color-stone-3: var(--color-stone-3);
+  --color-chalk: var(--color-chalk);
+  --color-glass: var(--color-glass);
+  --color-glass-dim: var(--color-glass-dim);
+  --color-forest: var(--color-forest);
+  --color-emerald: var(--color-emerald);
+  --color-emerald-dim: var(--color-emerald-dim);
+  --color-timber: var(--color-timber);
+  --color-timber-dim: var(--color-timber-dim);
+  --color-timber-ink: var(--color-timber-ink);
+  --color-forest-soft: var(--color-forest-soft);
+  --color-sheet: var(--color-sheet);
+  --color-card: var(--color-card);
+  --color-graphite: var(--color-graphite);
+  --color-slate: var(--color-slate);
+  --color-mute: var(--color-mute);
+  --color-jade: var(--color-jade);
+  --color-jade-deep: var(--color-jade-deep);
+
+  --color-ink: var(--color-ink);
+  --color-ink-soft: var(--color-ink-soft);
+  --color-paper: var(--color-paper);
+  --color-paper-alt: var(--color-paper-alt);
+  --color-forest-dark: var(--color-forest-dark);
+  --color-emerald-soft: var(--color-emerald-soft);
+  --color-line: var(--color-line);
+  --color-obsidian: var(--color-obsidian);
+  --color-obsidian-line: var(--color-obsidian-line);
+
+  --font-display: var(--font-anton);
+  --font-sans: var(--font-jost);
+  --font-mono: var(--font-plex-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: auto;
+  background: var(--color-sheet);
+  -webkit-text-size-adjust: 100%;
+}
+
+/*
+  The page keeps its own scrollbar — it is how a visitor knows the site
+  continues past the fold. What gets hidden is the horizontal bar inside a
+  drawing's scroll container, where a grey rail cutting across an isometric
+  diagram reads as part of the artwork. Scrolling those containers by wheel,
+  touch, trackpad and keyboard is untouched.
+*/
+.no-bar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.no-bar::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 18px;
+  line-height: 1.7;
+  text-rendering: optimizeLegibility;
+}
+
+@media (min-width: 640px) {
+  body {
+    font-size: 19px;
+  }
+}
+
+/*
+  Anton has one weight and a very tight vertical rhythm. At display sizes it
+  needs negative tracking and generous space around it, or it reads as a
+  poster rather than as signage cast on a building.
+*/
+.font-display {
+  font-family: var(--font-display), "Arial Narrow", sans-serif;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  line-height: 0.9;
+  text-transform: uppercase;
+}
+
+.font-display-mixed {
+  font-family: var(--font-display), "Arial Narrow", sans-serif;
+  font-weight: 400;
+  letter-spacing: -0.005em;
+  line-height: 0.98;
+}
+
+.font-mono {
+  font-family: var(--font-mono), "SFMono-Regular", Menlo, monospace;
+}
+
+/* the annotation face — every level, dimension and drawing reference */
+.annot {
+  font-family: var(--font-mono), "SFMono-Regular", Menlo, monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--annot-c, var(--color-mute));
+}
+
+/*
+  Sheet grounds. Two sheets invert so the building can be shown occupied at
+  night; everything else is printed. Setting the local variables here means
+  annotations and rules follow the ground without every element knowing which
+  sheet it is on.
+*/
+.sheet-dark {
+  background: var(--color-basalt);
+  color: var(--color-chalk);
+  --annot-c: var(--color-glass);
+  --rule: var(--line);
+  --rule-strong: var(--line-strong);
+}
+
+.sheet-light {
+  background: var(--color-sheet);
+  color: var(--color-graphite);
+  --annot-c: var(--color-mute);
+  --rule: var(--line-ink);
+  --rule-strong: var(--line-ink-strong);
+}
+
+.sheet-card {
+  background: var(--color-card);
+  color: var(--color-graphite);
+  --annot-c: var(--color-mute);
+  --rule: var(--line-ink);
+  --rule-strong: var(--line-ink-strong);
+}
+
+::selection {
+  background: var(--color-emerald);
+  color: var(--color-basalt);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-emerald);
+  outline-offset: 3px;
+  border-radius: 1px;
+}
+
+.scrim-b {
+  background: linear-gradient(to bottom, transparent, var(--color-basalt));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
