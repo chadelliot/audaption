@@ -1,36 +1,72 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Audaption
 
-## Getting Started
+Marketing site for Audaption — Enterprise Growth Systems.
 
-First, run the development server:
+Live at **[audaption.com](https://audaption.com)**.
+
+## Stack
+
+Next.js 16 (App Router) · React 19 · Tailwind 4 · framer-motion · Lenis.
+
+## Local development
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## The drawing set
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Every diagram on the homepage is authored SVG built on one true-isometric
+projection in `src/lib/iso.ts`. Nothing is a rendered image, so every label is
+real text: sharp at any zoom, selectable, translatable and editable in code.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `src/lib/iso.ts` — projection, cube geometry, face skins
+- `src/components/iso/` — the cube primitive, sheared face type, the shared
+  capability blueprint, tooltips
+- `src/components/scenes/` — one file per homepage section
+- `src/lib/systems.ts` — all section copy, as data
 
-## Learn More
+Two conventions worth knowing before editing a drawing:
 
-To learn more about Next.js, take a look at the following resources:
+1. **Type is sheared into the face of a solid, not laid over it.** `FaceLabel`
+   maps the baseline onto the plane. A label that floats beside an object stops
+   it reading as dimensional.
+2. **A vertical stack is painted bottom-up.** The box above occludes the top
+   face of the box below, so drawing in reading order buries every label but
+   the last.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Content
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Section copy lives in `src/lib/systems.ts` rather than in the components, so
+wording can be changed without touching layout or animation.
 
-## Deploy on Vercel
+## The enquiry form
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+`src/app/api/assessment/route.ts` emails the submission and creates a HubSpot
+contact. Both are best-effort: with no keys configured the route logs the
+submission and still returns success, because a lead lost to a missing
+environment variable is worse than one recorded in a log.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Variable | Purpose |
+| --- | --- |
+| `RESEND_API_KEY` | Required for the email to actually send |
+| `ENQUIRY_TO` | Recipient (defaults to cparker@audaption.com) |
+| `ENQUIRY_FROM` | Verified sender, e.g. `Audaption <site@audaption.com>` |
+| `HUBSPOT_TOKEN` | Optional; creates a CRM contact |
+
+**This route needs a server.** It does not run on a static host — see the
+deployment note below.
+
+## Deployment
+
+The custom domain is configured via `CNAME` at the repository root.
+
+Note that this app is not purely static: the enquiry form posts to a Next.js
+route handler. A static export (`output: "export"`) would build and deploy
+fine, but the form would 404 on submit unless it is repointed at a hosted form
+endpoint first.
+
+## Previous site
+
+The prior homepage is preserved at `/legacy`.
