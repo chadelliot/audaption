@@ -15,6 +15,7 @@ import {
   leftVertex,
   monoWidth,
   project,
+  FACE_MATRIX,
   SKINS,
   type Box,
   type SkinName,
@@ -234,10 +235,10 @@ export function FaceLabel({
   */
   const matrix =
     side === "left"
-      ? `matrix(0.866 0.5 0 1 ${anchor.x} ${anchor.y})`
+      ? `matrix(${FACE_MATRIX.left} ${anchor.x} ${anchor.y})`
       : side === "up"
-        ? `matrix(0 -1 0.866 0.5 ${anchor.x} ${anchor.y})`
-        : `matrix(0.866 0.5 -0.866 0.5 ${anchor.x} ${anchor.y})`;
+        ? `matrix(${FACE_MATRIX.up} ${anchor.x} ${anchor.y})`
+        : `matrix(${FACE_MATRIX.top} ${anchor.x} ${anchor.y})`;
 
   /* The usable run of the face, in the same units the matrix works in. */
   const run = (side === "up" ? b.h : b.w) * s - pad * 2;

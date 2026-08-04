@@ -33,10 +33,10 @@ import {
 import { usePrefersReducedMotion } from "@/lib/reducedMotion";
 import { FOUNDATION_LABEL, type Capability } from "@/lib/systems";
 
-const S = 44;
+const S = 50;
 const INK = "#262626";
 const EASE = [0.22, 1, 0.36, 1] as const;
-const BEAT = 300;
+const BEAT = 200;
 
 /* The three building blocks always take the same three accents, so a reader
    tracking "the green one" is tracking the same position every time. */
@@ -159,7 +159,7 @@ export default function Blueprint({
 
   return (
     <svg
-      viewBox="-720 -580 1460 860"
+      viewBox="-700 -556 1400 796"
       className="h-auto w-full min-w-[720px]"
       role="img"
       aria-label={`${capability.name}: ${capability.inputs.join(", ")} feed ${capability.blocks

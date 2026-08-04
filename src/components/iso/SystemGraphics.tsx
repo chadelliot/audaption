@@ -168,7 +168,7 @@ export function DataGraphic({ play }: GraphicProps) {
   const ordered = [...sats].sort((a, b) => a.depth - b.depth);
 
   return (
-    <svg viewBox="-500 -370 1020 660" className="h-auto max-h-full w-full" aria-hidden>
+    <svg viewBox="-480 -270 960 540" className="h-auto max-h-full w-full" aria-hidden>
       <defs>
         <Hatch />
       </defs>
@@ -269,7 +269,7 @@ export function JourneyGraphic({ play }: GraphicProps) {
   );
 
   return (
-    <svg viewBox="-470 -340 1010 660" className="h-auto max-h-full w-full" aria-hidden>
+    <svg viewBox="-470 -250 920 430" className="h-auto max-h-full w-full" aria-hidden>
       <defs>
         <Hatch id="jHatch" />
       </defs>
@@ -388,7 +388,7 @@ export function StrategyGraphic({ play }: GraphicProps) {
   const a0 = project(-4.6, -1.8, 0, S);
 
   return (
-    <svg viewBox="-330 -330 760 570" className="h-auto max-h-full w-full" aria-hidden>
+    <svg viewBox="-340 -200 760 400" className="h-auto max-h-full w-full" aria-hidden>
       <g stroke={HAIR} strokeWidth={1} fill="none">
         <line
           x1={a0.x}
@@ -479,7 +479,7 @@ export function AiGraphic({ play }: GraphicProps) {
   const zTop = AI_LAYERS.length * SLAB;
 
   return (
-    <svg viewBox="-560 -390 1240 660" className="h-auto max-h-full w-full" aria-hidden>
+    <svg viewBox="-360 -420 720 620" className="h-auto max-h-full w-full" aria-hidden>
       <defs>
         <Hatch id="aiHatch" />
       </defs>

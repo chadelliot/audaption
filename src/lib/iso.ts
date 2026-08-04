@@ -1,22 +1,40 @@
 /*
-  Isometric projection, for the drawing set.
+  Axonometric projection, for the drawing set.
 
-  True isometric — 30° off the horizontal, equal foreshortening on both
-  ground axes — rather than the flatter 2:1 game projection. It is the
-  projection an architect's axonometric already uses, so the cube sheets and
-  the section drawing read as the same document.
+  Not true isometric. The camera sits lower than 30°, which compresses the
+  ground plane and turns every solid slightly toward the viewer — the vertical
+  faces get taller on screen and the lids get shallower. That matters here
+  because the vertical faces are where the type lives, and a name you can't
+  read is a box that communicates nothing.
 
   World axes:
     +x  runs to screen-right and down
     +y  runs to screen-left and down
     +z  is up, and is never foreshortened
 
-  Everything is expressed in world units where 1 unit = 1 cube edge. Scale is
-  applied once at projection time so a scene can be laid out in whole numbers.
+  KY is the one number that sets the camera height. Everything else in the
+  drawing set derives from it, including the matrices that shear type into a
+  face — so it can be changed here and nothing goes out of register.
 */
 
-const KX = Math.cos(Math.PI / 6); // 0.8660…
-const KY = Math.sin(Math.PI / 6); // 0.5
+export const KX = Math.cos(Math.PI / 6); // 0.8660… — horizontal spread
+export const KY = 0.42; // camera height. 0.5 would be true isometric.
+
+const f = (n: number) => Math.round(n * 10000) / 10000;
+
+/*
+  The three planes type can be set into. Each maps the glyph baseline and
+  descent onto two in-plane directions; all three have a positive determinant,
+  so nothing is ever mirrored.
+*/
+export const FACE_MATRIX = {
+  /** The screen-left face — where a crate carries its stencil. */
+  left: `${f(KX)} ${f(KY)} 0 1`,
+  /** The lid. */
+  top: `${f(KX)} ${f(KY)} ${f(-KX)} ${f(KY)}`,
+  /** The screen-left face again, but running vertically up it. */
+  up: `0 -1 ${f(KX)} ${f(KY)}`,
+} as const;
 
 export interface P {
   x: number;

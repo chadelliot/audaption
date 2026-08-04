@@ -147,7 +147,7 @@ export default function Opening() {
             style={{ y: stageY, scale: stageScale }}
             className="order-1 flex min-w-0 items-center justify-center lg:order-2"
           >
-            <svg viewBox="-330 -430 760 780" className="h-full max-h-[58vh] w-full" aria-hidden>
+            <svg viewBox="-340 -440 1000 800" className="h-full max-h-[58vh] w-full" aria-hidden>
               <motion.g style={{ opacity: axisOpacity }}>
                 <line
                   x1={0}
