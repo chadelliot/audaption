@@ -24,6 +24,8 @@ import {
 } from "@/components/iso/Tooltip";
 import {
   box,
+  KX,
+  KY,
   faces,
   poly,
   project,
@@ -447,38 +449,49 @@ function Outline({ b, label }: { b: Box; label: string }) {
 /* ------------------------------------------------------------------ */
 
 /*
-  Two rails running along the base of the platform and out past both edges of
-  the frame, in the drawing's own perspective.
+  Two rails running out past both edges of the frame along the ground axis
+  that reads as right-and-up on screen, so the road climbs to the upper right
+  and falls away to the lower left. The platform's long side sits across it,
+  which is what makes the platform look like it is standing *on* the road
+  rather than lying along it.
 
   They belong to the carousel rather than to the blueprint, and that is the
-  whole point: the rails hold still while a platform slides off to the left
-  and the next one arrives from the right, so the movement reads as one
-  foundation travelling rather than as two pictures being swapped. A rail that
-  slid with its platform would say nothing at all.
+  whole point: the rails hold still while one platform slides down the road to
+  the lower left and the next arrives from the upper right, so the movement
+  reads as one foundation travelling rather than as two pictures being
+  swapped. A rail that slid with its platform would say nothing at all.
 */
-const RAIL_RUN = 30;
+const RAIL_RUN = 34;
 const RAIL_Z = BASE.z;
 
-export function BlueprintRails({ ink = "rgba(38,38,38,0.28)" }: { ink?: string }) {
-  const rail = (y: number) => {
-    const a = project(-RAIL_RUN, y, RAIL_Z, S);
-    const b = project(RAIL_RUN, y, RAIL_Z, S);
-    return { a, b };
-  };
+/*
+  The screen direction of one world unit along +y — down and to the left. The
+  carousel moves each platform along this vector so the slide and the road
+  agree; if they disagreed the drawing would look like it was sliding across
+  its own perspective.
+*/
+const yLen = Math.hypot(KX, KY);
+export const ROAD_STEP = { x: -KX / yLen, y: KY / yLen };
 
-  const near = rail(BASE.y + BASE.d);
-  const far = rail(BASE.y);
+export function BlueprintRails({ ink = "rgba(38,38,38,0.3)" }: { ink?: string }) {
+  const rail = (x: number) => ({
+    a: project(x, -RAIL_RUN, RAIL_Z, S),
+    b: project(x, RAIL_RUN, RAIL_Z, S),
+  });
 
-  /* Sleepers, thinning out as they leave the platform, so the road has a
-     direction of travel without turning into a ladder. */
-  const ties = Array.from({ length: 27 }, (_, i) => {
-    const x = -26 + i * 2;
-    const inside = Math.abs(x) < 7;
+  const left = rail(BASE.x);
+  const right = rail(BASE.x + BASE.w);
+
+  /* Sleepers across the road, cleared from under the platform so the surface
+     stays quiet where the drawing is doing its work. */
+  const ties = Array.from({ length: 31 }, (_, i) => {
+    const y = -30 + i * 2;
+    const clear = Math.abs(y) > 3.6;
     return {
-      x,
-      a: project(x, BASE.y, RAIL_Z, S),
-      b: project(x, BASE.y + BASE.d, RAIL_Z, S),
-      o: inside ? 0 : Math.max(0, 0.5 - Math.abs(x) / 90),
+      y,
+      a: project(BASE.x, y, RAIL_Z, S),
+      b: project(BASE.x + BASE.w, y, RAIL_Z, S),
+      o: clear ? Math.max(0, 0.46 - Math.abs(y) / 105) : 0,
     };
   });
 
@@ -488,19 +501,12 @@ export function BlueprintRails({ ink = "rgba(38,38,38,0.28)" }: { ink?: string }
         {ties
           .filter((t) => t.o > 0)
           .map((t) => (
-            <line
-              key={t.x}
-              x1={t.a.x}
-              y1={t.a.y}
-              x2={t.b.x}
-              y2={t.b.y}
-              opacity={t.o}
-            />
+            <line key={t.y} x1={t.a.x} y1={t.a.y} x2={t.b.x} y2={t.b.y} opacity={t.o} />
           ))}
       </g>
       <g stroke={ink} strokeWidth={1.25} strokeDasharray="14 9">
-        <line x1={far.a.x} y1={far.a.y} x2={far.b.x} y2={far.b.y} />
-        <line x1={near.a.x} y1={near.a.y} x2={near.b.x} y2={near.b.y} />
+        <line x1={left.a.x} y1={left.a.y} x2={left.b.x} y2={left.b.y} />
+        <line x1={right.a.x} y1={right.a.y} x2={right.b.x} y2={right.b.y} />
       </g>
     </g>
   );

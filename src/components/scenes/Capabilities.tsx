@@ -8,9 +8,10 @@
   diagram the reader has stopped decoding the picture and started reading the
   labels, and by the fourth they can see that the base has never changed.
 
-  Tabs sit above the drawing and the drawing advances on its own, sliding left
-  along a road that stays put underneath it — one foundation travelling, rather
-  than two pictures being swapped. That replaced a scroll-locked version: a section
+  Tabs sit above the drawing and the drawing advances on its own, travelling
+  down a road that stays put underneath it: the outgoing platform runs off to
+  the lower left and the next arrives from the upper right, along the rails'
+  own axis. One foundation moving, rather than two pictures being swapped. That replaced a scroll-locked version: a section
   that both advances on a timer *and* derives its index from scroll position
   has two authorities for one piece of state, and they fight. A carousel is
   honest about which one is in charge.
@@ -27,12 +28,22 @@
 
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import Blueprint, { BP_VIEWBOX, BlueprintRails } from "@/components/iso/Blueprint";
+import Blueprint, {
+  BP_VIEWBOX,
+  BlueprintRails,
+  ROAD_STEP,
+} from "@/components/iso/Blueprint";
 import { usePrefersReducedMotion } from "@/lib/reducedMotion";
 import { CAPABILITIES } from "@/lib/systems";
 
 /** Long enough to assemble and still be read before it leaves. */
 const DWELL = 4500;
+
+/* How far a platform travels along the road as it leaves. Applied on the
+   road's own screen vector, so the slide runs down the rails rather than
+   across them. */
+const TRAVEL = 190;
+const OUT = { x: ROAD_STEP.x * TRAVEL, y: ROAD_STEP.y * TRAVEL };
 
 export default function Capabilities() {
   const ref = useRef<HTMLElement>(null);
@@ -166,10 +177,18 @@ export default function Capabilities() {
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={c.id}
-                    initial={{ opacity: 0, x: still ? 0 : 150 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: still ? 0 : -150 }}
-                    transition={{ duration: still ? 0 : 0.5, ease: [0.32, 0, 0.2, 1] }}
+                    initial={{
+                      opacity: 0,
+                      x: still ? 0 : -OUT.x,
+                      y: still ? 0 : -OUT.y,
+                    }}
+                    animate={{ opacity: 1, x: 0, y: 0 }}
+                    exit={{
+                      opacity: 0,
+                      x: still ? 0 : OUT.x,
+                      y: still ? 0 : OUT.y,
+                    }}
+                    transition={{ duration: still ? 0 : 0.55, ease: [0.32, 0, 0.2, 1] }}
                     className="relative"
                   >
                     <Blueprint capability={c} play />
