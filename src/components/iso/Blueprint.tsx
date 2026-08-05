@@ -34,6 +34,9 @@ import { usePrefersReducedMotion } from "@/lib/reducedMotion";
 import { FOUNDATION_LABEL, type Capability } from "@/lib/systems";
 
 const S = 50;
+
+/** Shared with the carousel, so the rails it draws sit in this same space. */
+export const BP_VIEWBOX = "-700 -556 1400 796";
 const INK = "#262626";
 const EASE = [0.22, 1, 0.36, 1] as const;
 const BEAT = 200;
@@ -159,7 +162,7 @@ export default function Blueprint({
 
   return (
     <svg
-      viewBox="-700 -556 1400 796"
+      viewBox={BP_VIEWBOX}
       className="h-auto w-full min-w-[720px]"
       role="img"
       aria-label={`${capability.name}: ${capability.inputs.join(", ")} feed ${capability.blocks
@@ -435,6 +438,70 @@ function Outline({ b, label }: { b: Box; label: string }) {
         strokeWidth={1}
       />
       <FaceLabel b={b} s={S} text={label.toUpperCase()} size={12} color={INK} />
+    </g>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* The road                                                            */
+/* ------------------------------------------------------------------ */
+
+/*
+  Two rails running along the base of the platform and out past both edges of
+  the frame, in the drawing's own perspective.
+
+  They belong to the carousel rather than to the blueprint, and that is the
+  whole point: the rails hold still while a platform slides off to the left
+  and the next one arrives from the right, so the movement reads as one
+  foundation travelling rather than as two pictures being swapped. A rail that
+  slid with its platform would say nothing at all.
+*/
+const RAIL_RUN = 30;
+const RAIL_Z = BASE.z;
+
+export function BlueprintRails({ ink = "rgba(38,38,38,0.28)" }: { ink?: string }) {
+  const rail = (y: number) => {
+    const a = project(-RAIL_RUN, y, RAIL_Z, S);
+    const b = project(RAIL_RUN, y, RAIL_Z, S);
+    return { a, b };
+  };
+
+  const near = rail(BASE.y + BASE.d);
+  const far = rail(BASE.y);
+
+  /* Sleepers, thinning out as they leave the platform, so the road has a
+     direction of travel without turning into a ladder. */
+  const ties = Array.from({ length: 27 }, (_, i) => {
+    const x = -26 + i * 2;
+    const inside = Math.abs(x) < 7;
+    return {
+      x,
+      a: project(x, BASE.y, RAIL_Z, S),
+      b: project(x, BASE.y + BASE.d, RAIL_Z, S),
+      o: inside ? 0 : Math.max(0, 0.5 - Math.abs(x) / 90),
+    };
+  });
+
+  return (
+    <g aria-hidden>
+      <g stroke={ink} strokeWidth={1}>
+        {ties
+          .filter((t) => t.o > 0)
+          .map((t) => (
+            <line
+              key={t.x}
+              x1={t.a.x}
+              y1={t.a.y}
+              x2={t.b.x}
+              y2={t.b.y}
+              opacity={t.o}
+            />
+          ))}
+      </g>
+      <g stroke={ink} strokeWidth={1.25} strokeDasharray="14 9">
+        <line x1={far.a.x} y1={far.a.y} x2={far.b.x} y2={far.b.y} />
+        <line x1={near.a.x} y1={near.a.y} x2={near.b.x} y2={near.b.y} />
+      </g>
     </g>
   );
 }

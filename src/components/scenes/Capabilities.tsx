@@ -9,7 +9,8 @@
   labels, and by the fourth they can see that the base has never changed.
 
   Tabs sit above the drawing and the drawing advances on its own, sliding left
-  as the next one arrives. That replaced a scroll-locked version: a section
+  along a road that stays put underneath it — one foundation travelling, rather
+  than two pictures being swapped. That replaced a scroll-locked version: a section
   that both advances on a timer *and* derives its index from scroll position
   has two authorities for one piece of state, and they fight. A carousel is
   honest about which one is in charge.
@@ -26,7 +27,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import Blueprint from "@/components/iso/Blueprint";
+import Blueprint, { BP_VIEWBOX, BlueprintRails } from "@/components/iso/Blueprint";
 import { usePrefersReducedMotion } from "@/lib/reducedMotion";
 import { CAPABILITIES } from "@/lib/systems";
 
@@ -144,18 +145,37 @@ export default function Capabilities() {
             <p className="annot leading-relaxed">{c.feeds}</p>
 
             <div className="no-bar mt-4 overflow-x-auto">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={c.id}
-                  initial={{ opacity: 0, x: still ? 0 : 56 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: still ? 0 : -56 }}
-                  transition={{ duration: still ? 0 : 0.45, ease: [0.22, 1, 0.36, 1] }}
-                  className="min-w-[720px]"
+              <div className="relative min-w-[720px]">
+                {/* The road, in the blueprint's own coordinate space and
+                    outside the sliding group so it never travels with it. */}
+                <svg
+                  viewBox={BP_VIEWBOX}
+                  className="pointer-events-none absolute inset-0 h-full w-full"
+                  aria-hidden
                 >
-                  <Blueprint capability={c} play />
-                </motion.div>
-              </AnimatePresence>
+                  <motion.g
+                    key={`rail-${c.id}`}
+                    initial={{ strokeDashoffset: 0 }}
+                    animate={{ strokeDashoffset: still ? 0 : -92 }}
+                    transition={{ duration: still ? 0 : 0.6, ease: [0.32, 0, 0.2, 1] }}
+                  >
+                    <BlueprintRails />
+                  </motion.g>
+                </svg>
+
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={c.id}
+                    initial={{ opacity: 0, x: still ? 0 : 150 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: still ? 0 : -150 }}
+                    transition={{ duration: still ? 0 : 0.5, ease: [0.32, 0, 0.2, 1] }}
+                    className="relative"
+                  >
+                    <Blueprint capability={c} play />
+                  </motion.div>
+                </AnimatePresence>
+              </div>
             </div>
           </div>
 
