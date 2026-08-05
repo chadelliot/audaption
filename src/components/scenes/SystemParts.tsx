@@ -140,7 +140,7 @@ export default function SystemParts() {
           </nav>
 
           {pinned ? (
-            <div className="grid min-h-0 min-w-0 grid-rows-[auto_minmax(0,1fr)] gap-4">
+            <div className="hidden min-h-0 min-w-0 grid-rows-[auto_minmax(0,1fr)] gap-4 lg:grid">
               {/* One cell, one visible scene. */}
               <div className="grid min-h-[9rem] min-w-0">
                 {SYSTEMS.map((part, n) => (
@@ -154,7 +154,7 @@ export default function SystemParts() {
               </div>
             </div>
           ) : (
-            <div className="min-w-0 space-y-8">
+            <div className="min-w-0 space-y-8 lg:hidden">
               {SYSTEMS.map((part) => (
                 <PartCard key={part.id} part={part} />
               ))}

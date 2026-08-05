@@ -124,11 +124,9 @@ export default function Opening() {
           </div>
         </div>
 
-        {!wide && (
-          <div className="mt-10">
-            <LayerCards tiers={TIERS} />
-          </div>
-        )}
+        <div className="mt-10 lg:hidden">
+          {!wide && <LayerCards tiers={TIERS} />}
+        </div>
 
         <div className="mx-auto grid w-full max-w-[1500px] grid-cols-[minmax(0,1fr)] items-center gap-6 lg:flex-1 lg:grid-cols-[minmax(0,31rem)_minmax(0,1fr)] lg:gap-14">
           {/* The readable copy of the animation. Present from the first frame:

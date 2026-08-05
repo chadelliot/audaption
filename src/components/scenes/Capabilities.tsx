@@ -163,7 +163,7 @@ export default function Capabilities() {
              something to separate from and the frame reads as a viewport. */
           <div
             ref={plateRef}
-            className="relative mt-8 overflow-hidden border border-[var(--line-ink)]"
+            className="relative mt-8 hidden overflow-hidden border border-[var(--line-ink)] lg:block"
             style={{ background: "#fbf9f5" }}
           >
             <div className="px-4 pb-4 pt-8 sm:px-8 sm:pb-6 sm:pt-10">
@@ -231,7 +231,7 @@ export default function Capabilities() {
           </div>
         ) : (
           /* One column, all four, nothing moving. */
-          <div className="mt-10 space-y-8">
+          <div className="mt-10 space-y-8 lg:hidden">
             {CAPABILITIES.map((cap) => (
               <CapabilityCard key={cap.id} capability={cap} />
             ))}
