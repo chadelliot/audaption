@@ -64,6 +64,18 @@ export interface SystemPart {
   claim: string;
   body: string;
   caption: string;
+  /*
+    What the drawing actually shows, in words.
+
+    On a phone the isometric drawings are replaced by cards — at 390px their
+    labels render around 6.7px and need sideways scrolling, which is not a
+    drawing anybody can read. These are the same objects the drawing names, so
+    the small screen loses the picture but none of the content.
+  */
+  pointsLabel: string;
+  points: string[];
+  /** The one the drawing emphasises, if any. */
+  pointsResult?: string;
 }
 
 /*
@@ -80,6 +92,9 @@ export const SYSTEMS: SystemPart[] = [
     claim: "One definition of the customer, in one place.",
     body: "Your systems keep disagreeing about who the customer is. We settle that once — one identity, one set of definitions, agreed across teams. Every tool you already pay for keeps doing its job.",
     caption: "Every source feeds one shared model — not another warehouse.",
+    pointsLabel: "Sources we resolve",
+    points: ["CRM", "Website", "Ads", "Support", "Billing", "Product"],
+    pointsResult: "One customer, defined once",
   },
   {
     id: "journey",
@@ -88,6 +103,9 @@ export const SYSTEMS: SystemPart[] = [
     claim: "See where customers actually go — and where they stop.",
     body: "We map real customer progression, phase by phase, and identify the points where attention, conversion, handoffs or revenue are being lost. Most companies have a journey map. Very few have one built from what customers did rather than what the team assumed — and fewer still know which phase is costing them the most.",
     caption: "Every stop is a point we can design an intervention around.",
+    pointsLabel: "Phases we map",
+    points: ["Discover", "Consider", "Engage", "Convert", "Retain"],
+    pointsResult: "Every stop is a point to design around",
   },
   {
     id: "strategy",
@@ -96,6 +114,9 @@ export const SYSTEMS: SystemPart[] = [
     claim: "Know which markets are worth going after.",
     body: "Every segment, channel and customer type sized on what it is actually worth — not on who argues hardest for it. One number that finance, marketing and the board will all still stand behind next week.",
     caption: "Every market gets measured. One or two are worth the money.",
+    pointsLabel: "Markets we size",
+    points: ["Enterprise", "Mid-market", "EMEA", "APAC", "Partner", "SMB"],
+    pointsResult: "One or two are worth the money",
   },
   {
     id: "ai",
@@ -104,6 +125,14 @@ export const SYSTEMS: SystemPart[] = [
     claim: "AI only works on top of the other three.",
     body: "Trusted content and knowledge for AI to work from, and the customer experience it powers. This is why pilots stall: the company skipped the layers underneath and asked AI to stand on nothing.",
     caption: "Take a layer away and the one above it stops working.",
+    pointsLabel: "What AI stands on",
+    points: [
+      "Customer Data",
+      "Customer Journey",
+      "Go-to-Market Strategy",
+      "Customer Experience",
+    ],
+    pointsResult: "Take a layer away and the one above stops working",
   },
 ];
 

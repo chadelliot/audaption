@@ -34,6 +34,7 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Blueprint, { BP_VIEWBOX, BlueprintRails } from "@/components/iso/Blueprint";
+import { CapabilityCard } from "@/components/mobile/Cards";
 import { usePrefersReducedMotion } from "@/lib/reducedMotion";
 import { CAPABILITIES } from "@/lib/systems";
 
@@ -47,6 +48,7 @@ export default function Capabilities() {
   const [tab, setTab] = useState(0);
   const [seen, setSeen] = useState(false);
   const [stopped, setStopped] = useState(false);
+  const [wide, setWide] = useState(true);
   const plateRef = useRef<HTMLDivElement>(null);
   /* When the current slide last became eligible to advance. Pushed forward
      for as long as somebody is reading, so leaving the frame never causes an
@@ -65,6 +67,17 @@ export default function Capabilities() {
     return () => io.disconnect();
   }, []);
 
+  /* The blueprint only exists above lg. Below it the section is a stack of
+     cards, and nothing rotates — a diagram that slides away on its own while
+     somebody is reading it on a phone is just an interruption. */
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const sync = () => setWide(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+
   useEffect(() => {
     settled.current = Date.now();
   }, [tab]);
@@ -72,7 +85,7 @@ export default function Capabilities() {
   /* Rotation runs only while the section is on screen and the visitor hasn't
      taken over. The poll is short; the dwell is enforced by the clock. */
   useEffect(() => {
-    if (!seen || stopped || still) return;
+    if (!seen || stopped || still || !wide) return;
     const id = setInterval(() => {
       const el = plateRef.current;
       const busy =
@@ -85,7 +98,7 @@ export default function Capabilities() {
       setTab((n) => (n + 1) % CAPABILITIES.length);
     }, 250);
     return () => clearInterval(id);
-  }, [seen, stopped, still]);
+  }, [seen, stopped, still, wide]);
 
   const choose = (n: number) => {
     setTab(n);
@@ -113,8 +126,11 @@ export default function Capabilities() {
         {/* tabs, above the drawing */}
         <div
           role="tablist"
+          hidden={!wide}
           aria-label="Capabilities"
-          className="mt-14 flex gap-7 overflow-x-auto border-b border-[var(--line-ink)] sm:gap-12"
+          className={`mt-14 gap-7 overflow-x-auto border-b border-[var(--line-ink)] sm:gap-12 ${
+            wide ? "flex" : "hidden"
+          }`}
         >
           {CAPABILITIES.map((s, n) => {
             const on = n === tab;
@@ -142,76 +158,85 @@ export default function Capabilities() {
           })}
         </div>
 
-        {/* The drawing sits on its own lighter plate, so the solids have
-            something to separate from and the frame reads as a viewport. */}
-        <div
-          ref={plateRef}
-          className="relative mt-8 overflow-hidden border border-[var(--line-ink)]"
-          style={{ background: "#fbf9f5" }}
-        >
-          <div className="px-4 pb-4 pt-8 sm:px-8 sm:pb-6 sm:pt-10">
-            <p className="annot leading-relaxed">{c.feeds}</p>
+        {wide ? (
+          /* The drawing sits on its own lighter plate, so the solids have
+             something to separate from and the frame reads as a viewport. */
+          <div
+            ref={plateRef}
+            className="relative mt-8 overflow-hidden border border-[var(--line-ink)]"
+            style={{ background: "#fbf9f5" }}
+          >
+            <div className="px-4 pb-4 pt-8 sm:px-8 sm:pb-6 sm:pt-10">
+              <p className="annot leading-relaxed">{c.feeds}</p>
 
-            <div className="no-bar mt-4 overflow-x-auto">
-              <div className="relative min-w-[720px]">
-                {/* The road, in the blueprint's own coordinate space and
-                    outside the travelling group so it never moves with it. */}
-                <svg
-                  viewBox={BP_VIEWBOX}
-                  className="pointer-events-none absolute inset-0 h-full w-full"
-                  aria-hidden
-                >
-                  <motion.g
-                    key={`rail-${c.id}`}
-                    initial={{ strokeDashoffset: 0 }}
-                    animate={{ strokeDashoffset: still ? 0 : -92 }}
-                    transition={{ duration: still ? 0 : 0.7, ease: [0.32, 0, 0.2, 1] }}
+              <div className="no-bar mt-4 overflow-x-auto">
+                <div className="relative min-w-[720px]">
+                  {/* The road, in the blueprint's own coordinate space and
+                      outside the travelling group so it never moves with it. */}
+                  <svg
+                    viewBox={BP_VIEWBOX}
+                    className="pointer-events-none absolute inset-0 h-full w-full"
+                    aria-hidden
                   >
-                    <BlueprintRails />
-                  </motion.g>
-                </svg>
-
-                {/* One cell, both blueprints — the outgoing one in front so
-                    the arriving platform reads as coming up behind it. */}
-                <div className="grid">
-                  <AnimatePresence initial={false}>
-                    <motion.div
-                      key={c.id}
-                      initial={still ? "show" : "enter"}
-                      animate="show"
-                      exit={still ? "show" : "leave"}
-                      transition={{
-                        duration: still ? 0 : 0.62,
-                        ease: [0.32, 0, 0.2, 1],
-                      }}
-                      className="col-start-1 row-start-1"
+                    <motion.g
+                      key={`rail-${c.id}`}
+                      initial={{ strokeDashoffset: 0 }}
+                      animate={{ strokeDashoffset: still ? 0 : -92 }}
+                      transition={{ duration: still ? 0 : 0.7, ease: [0.32, 0, 0.2, 1] }}
                     >
-                      <Blueprint capability={c} play />
-                    </motion.div>
-                  </AnimatePresence>
+                      <BlueprintRails />
+                    </motion.g>
+                  </svg>
+
+                  {/* One cell, both blueprints — the outgoing one in front so
+                      the arriving platform reads as coming up behind it. */}
+                  <div className="grid">
+                    <AnimatePresence initial={false}>
+                      <motion.div
+                        key={c.id}
+                        initial={still ? "show" : "enter"}
+                        animate="show"
+                        exit={still ? "show" : "leave"}
+                        transition={{
+                          duration: still ? 0 : 0.62,
+                          ease: [0.32, 0, 0.2, 1],
+                        }}
+                        className="col-start-1 row-start-1"
+                      >
+                        <Blueprint capability={c} play />
+                      </motion.div>
+                    </AnimatePresence>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--line-ink)] px-4 py-3 sm:px-8">
-            <p className="annot">
-              Hover, tap or tab to a building block for what it means
-            </p>
-            <div className="flex items-center gap-2" aria-hidden>
-              {CAPABILITIES.map((s, n) => (
-                <span
-                  key={s.id}
-                  className="h-[3px] w-7 transition-colors duration-300"
-                  style={{
-                    background:
-                      n === tab ? "var(--color-jade)" : "var(--line-ink-strong)",
-                  }}
-                />
-              ))}
+            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--line-ink)] px-4 py-3 sm:px-8">
+              <p className="annot">
+                Hover, tap or tab to a building block for what it means
+              </p>
+              <div className="flex items-center gap-2" aria-hidden>
+                {CAPABILITIES.map((s, n) => (
+                  <span
+                    key={s.id}
+                    className="h-[3px] w-7 transition-colors duration-300"
+                    style={{
+                      background:
+                        n === tab ? "var(--color-jade)" : "var(--line-ink-strong)",
+                    }}
+                  />
+                ))}
+              </div>
             </div>
           </div>
-        </div>
+        ) : (
+          /* One column, all four, nothing moving. */
+          <div className="mt-10 space-y-8">
+            {CAPABILITIES.map((cap) => (
+              <CapabilityCard key={cap.id} capability={cap} />
+            ))}
+          </div>
+        )}
 
         <p className="mt-10 max-w-[19rem] border-l-2 border-jade/50 px-4 py-1 text-[0.95rem] leading-relaxed text-slate">
           Built separately when necessary. Designed to work together from the

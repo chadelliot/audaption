@@ -18,14 +18,17 @@
   neighbours any more, effectively the whole band is stable active time: the
   drawing assembles on arrival, then holds until the reader scrolls out of it.
 
-  Below `lg` the pin is dropped entirely. A pinned sequence on a phone makes
-  the diagrams unreadably small and traps the scroll, so the four scenes become
-  four ordinary blocks, each starting its own timeline when it comes into view.
+  Below `lg` the drawings are dropped entirely, not merely unpinned. At phone
+  width an isometric face label renders around 6.7px and the drawing still
+  needs sideways scrolling — it needs roughly twice the width it can ever get
+  there. The four scenes become cards carrying the same content instead. See
+  components/mobile/Cards.tsx.
 */
 
 import { useEffect, useRef, useState } from "react";
 import { motion, useMotionValueEvent, useScroll } from "framer-motion";
 import { GRAPHICS } from "@/components/iso/SystemGraphics";
+import { PartCard } from "@/components/mobile/Cards";
 import { lenisRef } from "@/lib/lenisInstance";
 import { usePrefersReducedMotion } from "@/lib/reducedMotion";
 import { SYSTEMS, type SystemPart } from "@/lib/systems";
@@ -98,7 +101,10 @@ export default function SystemParts() {
         <div className="h-[clamp(2rem,4.5vw,3.75rem)] shrink-0" aria-hidden />
 
         <div className="mx-auto grid w-full max-w-[1500px] grid-cols-[minmax(0,1fr)] gap-6 lg:min-h-0 lg:flex-1 lg:grid-cols-[17rem_minmax(0,1fr)] lg:gap-12">
-          <nav aria-label="What we build" className="lg:self-start">
+          {/* The chooser is for the pinned run only. With the cards stacked
+              in order and each one titled, it would be a scrolling row of
+              links to things already on screen. */}
+          <nav aria-label="What we build" className="hidden lg:block lg:self-start">
             <ul className="flex gap-2 overflow-x-auto lg:block lg:gap-0 lg:overflow-visible">
               {SYSTEMS.map((s, n) => {
                 const on = pinned && n === active;
@@ -148,9 +154,9 @@ export default function SystemParts() {
               </div>
             </div>
           ) : (
-            <div className="min-w-0 space-y-20">
+            <div className="min-w-0 space-y-8">
               {SYSTEMS.map((part) => (
-                <FlowScene key={part.id} part={part} />
+                <PartCard key={part.id} part={part} />
               ))}
             </div>
           )}
@@ -226,40 +232,5 @@ function SceneStage({ part, on }: { part: SystemPart; on: boolean }) {
         </div>
       </div>
     </motion.div>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/* Unpinned scenes — narrow screens                                    */
-/* ------------------------------------------------------------------ */
-
-function FlowScene({ part }: { part: SystemPart }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [seen, setSeen] = useState(false);
-  const Graphic = GRAPHICS[part.id];
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const io = new IntersectionObserver(([e]) => e.isIntersecting && setSeen(true), {
-      threshold: 0.3,
-    });
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
-
-  return (
-    <div ref={ref}>
-      <h2 className="font-display-mixed text-[clamp(1.5rem,5vw,2rem)] text-graphite">
-        {part.claim}
-      </h2>
-      <p className="mt-3 leading-relaxed text-slate">{part.body}</p>
-      <div className="-mx-5 mt-6 overflow-x-auto no-bar px-5">
-        <div className="min-w-[560px]">
-          <Graphic play={seen} />
-        </div>
-      </div>
-      <p className="annot mt-2 border-t border-[var(--line-ink)] pt-3">{part.caption}</p>
-    </div>
   );
 }

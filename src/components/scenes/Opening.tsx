@@ -13,7 +13,7 @@
   geometry and the caption can never disagree about how far through we are.
 */
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   motion,
   useMotionValueEvent,
@@ -22,6 +22,7 @@ import {
   type MotionValue,
 } from "framer-motion";
 import { Cube, GhostCube, Tag } from "@/components/iso/Cube";
+import { LayerCards } from "@/components/mobile/Cards";
 import { box, rightVertex, type Box } from "@/lib/iso";
 import { TIERS } from "@/lib/systems";
 
@@ -57,6 +58,19 @@ const window_ = (i: number) => {
 export default function Opening() {
   const ref = useRef<HTMLDivElement>(null);
   const [landed, setLanded] = useState(-1);
+  const [wide, setWide] = useState(true);
+
+  /* Below lg the stack drawing is dropped and the four layers are read as
+     cards. The drawing was the only thing a phone got here — its labels
+     render around 6px at that width — while the list that explains it was
+     hidden. That is exactly backwards. */
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const sync = () => setWide(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
 
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -84,8 +98,12 @@ export default function Opening() {
   const complete = landed === TIERS.length - 1;
 
   return (
-    <section id="opening" ref={ref} className="sheet-dark relative h-[460vh]">
-      <div className="sticky top-0 flex h-[100svh] flex-col overflow-hidden px-5 pb-8 pt-24 sm:px-8">
+    <section
+      id="opening"
+      ref={ref}
+      className="sheet-dark relative lg:h-[460vh]"
+    >
+      <div className="px-5 pb-16 pt-24 sm:px-8 lg:sticky lg:top-0 lg:flex lg:h-[100svh] lg:flex-col lg:overflow-hidden lg:pb-8">
         <div className="relative mx-auto w-full max-w-[1500px]">
           {/* One headline, and it stays put. The reader should be able to
               look away and back without the page having changed its mind. */}
@@ -106,7 +124,13 @@ export default function Opening() {
           </div>
         </div>
 
-        <div className="mx-auto grid w-full max-w-[1500px] flex-1 grid-cols-[minmax(0,1fr)] items-center gap-6 lg:grid-cols-[minmax(0,31rem)_minmax(0,1fr)] lg:gap-14">
+        {!wide && (
+          <div className="mt-10">
+            <LayerCards tiers={TIERS} />
+          </div>
+        )}
+
+        <div className="mx-auto grid w-full max-w-[1500px] grid-cols-[minmax(0,1fr)] items-center gap-6 lg:flex-1 lg:grid-cols-[minmax(0,31rem)_minmax(0,1fr)] lg:gap-14">
           {/* The readable copy of the animation. Present from the first frame:
               it is the argument, not a reward for scrolling. */}
           <ol className="order-2 hidden lg:order-1 lg:block">
@@ -145,7 +169,7 @@ export default function Opening() {
 
           <motion.div
             style={{ y: stageY, scale: stageScale }}
-            className="order-1 flex min-w-0 items-center justify-center lg:order-2"
+            className="order-1 hidden min-w-0 items-center justify-center lg:order-2 lg:flex"
           >
             <svg viewBox="-340 -440 1000 800" className="h-full max-h-[58vh] w-full" aria-hidden>
               <motion.g style={{ opacity: axisOpacity }}>
@@ -193,7 +217,7 @@ export default function Opening() {
           </motion.div>
         </div>
 
-        <div className="mx-auto w-full max-w-[1500px]">
+        <div className="mx-auto hidden w-full max-w-[1500px] lg:block">
           <div className="flex flex-wrap items-center justify-between gap-x-8 gap-y-3 border-t border-[var(--line)] pt-4">
             <p
               className="annot transition-colors duration-500"
