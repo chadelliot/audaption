@@ -139,23 +139,51 @@ body {
 }
 
 /*
-  Anton has one weight and a very tight vertical rhythm. At display sizes it
-  needs negative tracking and generous space around it, or it reads as a
-  poster rather than as signage cast on a building.
+  Anton has one weight and a very tight vertical rhythm, and it needs negative
+  tracking at display sizes or it reads as a poster rather than as signage.
+
+  Leading is set from the font's measured ink rather than by eye. Anton's caps
+  occupy 0.867em; its mixed-case ascender-to-descender ink is 0.986em. The
+  previous values — 0.9 and 0.98 — left a 0.033em gap between lines of caps and
+  a *negative* gap in mixed case, where one line's descenders overlapped the
+  next line's ascenders outright.
+
+  Both are now set to leave roughly 0.17em of air at the sizes these run at on
+  a phone, tightening at `lg` where the same headline is half again as large.
+  Leading and size move in opposite directions: big type needs proportionally
+  less air, small type more, and a single fixed value cannot serve a headline
+  that clamps across a 1.9rem–3.4rem range.
 */
 .font-display {
   font-family: var(--font-display), "Arial Narrow", sans-serif;
   font-weight: 400;
   letter-spacing: -0.015em;
-  line-height: 0.9;
+  line-height: 1.04;
   text-transform: uppercase;
+  text-wrap: balance;
 }
 
 .font-display-mixed {
   font-family: var(--font-display), "Arial Narrow", sans-serif;
   font-weight: 400;
   letter-spacing: -0.005em;
-  line-height: 0.98;
+  line-height: 1.16;
+  text-wrap: balance;
+}
+
+@media (min-width: 1024px) {
+  .font-display {
+    line-height: 0.98;
+  }
+
+  .font-display-mixed {
+    line-height: 1.1;
+  }
+}
+
+/* Keeps a single word from being left alone on a paragraph's last line. */
+p {
+  text-wrap: pretty;
 }
 
 .font-mono {

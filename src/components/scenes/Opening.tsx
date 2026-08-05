@@ -111,7 +111,7 @@ export default function Opening() {
             <p className="annot">Audaption · The growth system</p>
             <h1 className="font-display mt-4 max-w-[24rem] text-[clamp(1.9rem,3.6vw,3rem)] text-chalk sm:max-w-[46rem]">
               Companies hire roles.
-              <span className="mt-1 block text-glass">
+              <span className="block text-glass">
                 What they actually need is a{" "}
                 <span className="text-emerald">system</span>.
               </span>

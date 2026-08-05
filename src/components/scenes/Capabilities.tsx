@@ -113,7 +113,7 @@ export default function Capabilities() {
         <p className="annot">Capabilities built on one foundation</p>
         <h2 className="font-display mt-5 max-w-[52rem] text-[clamp(2rem,4.4vw,3.2rem)] text-graphite">
           Built on one foundation.
-          <span className="mt-1 block text-slate">Designed to work as one system.</span>
+          <span className="block text-slate">Designed to work as one system.</span>
         </h2>
         <p className="mt-6 max-w-[46rem] text-lg leading-relaxed text-slate">
           Audaption can build the capability your organization needs next
