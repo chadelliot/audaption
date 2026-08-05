@@ -43,7 +43,7 @@ wording can be changed without touching layout or animation.
 
 ## The enquiry form
 
-`src/app/api/assessment/route.ts` emails the submission and creates a HubSpot
+`server/assessment-route.ts` emails the submission and creates a HubSpot
 contact. Both are best-effort: with no keys configured the route logs the
 submission and still returns success, because a lead lost to a missing
 environment variable is worse than one recorded in a log.
@@ -55,17 +55,24 @@ environment variable is worse than one recorded in a log.
 | `ENQUIRY_FROM` | Verified sender, e.g. `Audaption <site@audaption.com>` |
 | `HUBSPOT_TOKEN` | Optional; creates a CRM contact |
 
-**This route needs a server.** It does not run on a static host — see the
-deployment note below.
+**This route is not built.** It lives in `server/` rather than `src/app`
+because the site is exported statically. See `server/README.md` for how to
+bring it back.
 
 ## Deployment
 
-The custom domain is configured via `CNAME` at the repository root.
+Pushing to `main` builds a static export and publishes it to GitHub Pages via
+`.github/workflows/deploy.yml`. Nothing is committed to a second branch.
 
-Note that this app is not purely static: the enquiry form posts to a Next.js
-route handler. A static export (`output: "export"`) would build and deploy
-fine, but the form would 404 on submit unless it is repointed at a hosted form
-endpoint first.
+The custom domain is set in the repository's Pages settings and carried in
+`public/CNAME` so it survives each deploy. `public/.nojekyll` stops Pages from
+Jekyll-processing the `_next/` directory, which would otherwise strip the
+underscore-prefixed folders and break every asset.
+
+Because Pages serves files and runs no server, the enquiry form posts to
+whatever `NEXT_PUBLIC_FORM_ENDPOINT` is set to — a repository variable read at
+build time. With nothing set, the form falls back to opening the visitor's
+mail client. See `server/README.md`.
 
 ## Previous site
 

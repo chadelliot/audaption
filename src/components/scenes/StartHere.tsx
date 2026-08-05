@@ -19,6 +19,22 @@
 import { useState } from "react";
 import { useAssessment } from "@/lib/assessment";
 
+/*
+  Where the form posts.
+
+  The site is exported statically for GitHub Pages, which serves files and
+  runs no server, so there is no route handler to post to. Set this at build
+  time to a hosted form endpoint — Formspree, Web3Forms and Zapier all accept
+  this JSON as-is — or to /api/assessment if the site ever moves to a host
+  that runs Node again. See server/README.md.
+
+  With nothing configured the submission opens the visitor's mail client with
+  everything already filled in. Not elegant, but it reaches a human, which is
+  the only thing the form is for.
+*/
+const ENDPOINT = process.env.NEXT_PUBLIC_FORM_ENDPOINT ?? "";
+const FALLBACK_TO = "cparker@audaption.com";
+
 const PATHS = [
   {
     name: "Design before the hire",
@@ -46,18 +62,36 @@ export default function StartHere() {
     setStatus("sending");
     setError(null);
     const fd = new FormData(e.currentTarget);
+    const payload = {
+      name: String(fd.get("name") ?? ""),
+      email: String(fd.get("email") ?? ""),
+      company: String(fd.get("company") ?? ""),
+      role: String(fd.get("role") ?? ""),
+      situation: String(fd.get("situation") ?? ""),
+      symptom: symptom ?? "",
+    };
+
+    if (!ENDPOINT) {
+      const body = [
+        `Name: ${payload.name}`,
+        `Email: ${payload.email}`,
+        `Company: ${payload.company}`,
+        `Role: ${payload.role || "—"}`,
+        "",
+        payload.situation || "",
+      ].join("\n");
+      window.location.href = `mailto:${FALLBACK_TO}?subject=${encodeURIComponent(
+        `Growth system enquiry — ${payload.name}, ${payload.company}`,
+      )}&body=${encodeURIComponent(body)}`;
+      setStatus("sent");
+      return;
+    }
+
     try {
-      const res = await fetch("/api/assessment", {
+      const res = await fetch(ENDPOINT, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: fd.get("name"),
-          email: fd.get("email"),
-          company: fd.get("company"),
-          role: fd.get("role"),
-          situation: fd.get("situation"),
-          symptom,
-        }),
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify(payload),
       });
       if (!res.ok) {
         const data = await res.json().catch(() => null);
