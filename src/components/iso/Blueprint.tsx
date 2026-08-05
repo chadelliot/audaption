@@ -47,6 +47,31 @@ const BEAT = 200;
    tracking "the green one" is tracking the same position every time. */
 const BLOCK_SKINS = ["jade", "lapis", "timber"] as const;
 
+/*
+  Two behaviours on a capability change, declared as variants so the carousel
+  can drive them by name from outside this file.
+
+  The platform and everything standing on it travel. They are the one thing
+  genuinely constant between capabilities, so watching them roll away down the
+  road and the next set roll into the same spot is the argument this section
+  is making. The inputs and outcomes belong to *this* capability rather than
+  to the system, so they simply fade — sliding them too would imply they were
+  the same boxes moving, which is the opposite of what is true.
+*/
+const TRAVEL_PX = 190;
+
+const V_TRAVEL = {
+  enter: (d: { x: number; y: number }) => ({ x: -d.x, y: -d.y, opacity: 0 }),
+  show: { x: 0, y: 0, opacity: 1 },
+  leave: (d: { x: number; y: number }) => ({ x: d.x, y: d.y, opacity: 0 }),
+};
+
+const V_FADE = {
+  enter: { opacity: 0 },
+  show: { opacity: 1 },
+  leave: { opacity: 0 },
+};
+
 /* ------------------------------------------------------------------ */
 /* Geometry                                                            */
 /* ------------------------------------------------------------------ */
@@ -103,6 +128,9 @@ export default function Blueprint({
   capability: Capability;
   play: boolean;
 }) {
+  /* The screen offset of a platform that has travelled one slide down the
+     road, handed to the travel variants so the slide follows the rails. */
+  const road = { x: ROAD_STEP.x * TRAVEL_PX, y: ROAD_STEP.y * TRAVEL_PX };
   const still = usePrefersReducedMotion();
   const [step, setStep] = useState(0);
   const [openBlock, setOpenBlock] = useState<number | null>(null);
@@ -194,6 +222,94 @@ export default function Blueprint({
         </marker>
       </defs>
 
+      {/* WHAT TRAVELS — drawn first, so the connectors cross over it */}
+      <motion.g variants={V_TRAVEL} custom={road}>
+        {/* the foundation every capability is built on */}
+        <Arrive on={at(STEP.BASE)}>
+          <Cube b={BASE} s={S} skin="paper" edgeColor={INK} />
+          <FaceLabel
+            b={BASE}
+            s={S}
+            text={FOUNDATION_LABEL}
+            size={15}
+            color={INK}
+            pad={16}
+          />
+        </Arrive>
+
+        {/* the three building blocks */}
+        {capability.blocks.map((blk, i) => {
+          const dim = openBlock !== null && openBlock !== i;
+          return (
+            <Arrive key={blk.title} on={at(STEP.BLOCK_1 + i)}>
+              <motion.g
+                animate={{ opacity: dim ? 0.45 : 1 }}
+                transition={{ duration: 0.25 }}
+              >
+                <Cube
+                  b={BLOCKS[i]}
+                  s={S}
+                  skin={BLOCK_SKINS[i]}
+                  edgeColor={INK}
+                  edgeWidth={openBlock === i ? 2 : 1}
+                />
+                <FaceLabel
+                  b={BLOCKS[i]}
+                  s={S}
+                  text={blk.title.toUpperCase()}
+                  size={13}
+                  color={i === 1 ? "#0d1b2c" : "#06231c"}
+                />
+              </motion.g>
+            </Arrive>
+          );
+        })}
+
+        {/* the bar is tethered to the blocks, so it goes where they go */}
+        <motion.g
+          initial={false}
+          animate={{ opacity: at(STEP.BAR) ? 1 : 0 }}
+          transition={{ duration: 0.4 }}
+          fill="none"
+          stroke={INK}
+          strokeWidth={1.3}
+        >
+          {STALKS.map((d, i) => (
+            <path key={i} d={d} />
+          ))}
+        </motion.g>
+
+        <Arrive on={at(STEP.BAR)} from={-30}>
+          <Cube b={BAR} s={S} skin="stone" edgeColor={INK} />
+          <FaceLabel
+            b={BAR}
+            s={S}
+            side="top"
+            text={capability.bar}
+            size={14}
+            color="#e8eae7"
+            pad={12}
+          />
+        </Arrive>
+
+        {/* triggers sit above the blocks so hover and focus land on a real
+            target; they travel with what they describe */}
+        {capability.blocks.map((blk, i) => (
+          <BlockTrigger
+            key={`t-${blk.title}`}
+            b={BLOCKS[i]}
+            text={blk.tooltip}
+            title={blk.title}
+            open={openBlock === i}
+            onOpen={() => setOpenBlock(i)}
+            onClose={() => setOpenBlock(null)}
+            onToggle={() => setOpenBlock((v) => (v === i ? null : i))}
+          />
+        ))}
+      </motion.g>
+
+      {/* WHAT FADES — this capability's own inputs and outcomes */}
+      <motion.g variants={V_FADE}>
       {/* inputs, painted bottom-up so the box above never buries the label
           of the box below */}
       {[...inputs.keys()]
@@ -203,19 +319,6 @@ export default function Blueprint({
             <Outline b={inputs[i]} label={capability.inputs[i]} />
           </Arrive>
         ))}
-
-      {/* the foundation every capability is built on */}
-      <Arrive on={at(STEP.BASE)}>
-        <Cube b={BASE} s={S} skin="paper" edgeColor={INK} />
-        <FaceLabel
-          b={BASE}
-          s={S}
-          text={FOUNDATION_LABEL}
-          size={15}
-          color={INK}
-          pad={16}
-        />
-      </Arrive>
 
       <motion.g
         initial={false}
@@ -231,60 +334,6 @@ export default function Blueprint({
           <path key={i} d={d} />
         ))}
       </motion.g>
-
-      {/* the three building blocks */}
-      {capability.blocks.map((blk, i) => {
-        const dim = openBlock !== null && openBlock !== i;
-        return (
-          <Arrive key={blk.title} on={at(STEP.BLOCK_1 + i)}>
-            <motion.g
-              animate={{ opacity: dim ? 0.45 : 1 }}
-              transition={{ duration: 0.25 }}
-            >
-              <Cube
-                b={BLOCKS[i]}
-                s={S}
-                skin={BLOCK_SKINS[i]}
-                edgeColor={INK}
-                edgeWidth={openBlock === i ? 2 : 1}
-              />
-              <FaceLabel
-                b={BLOCKS[i]}
-                s={S}
-                text={blk.title.toUpperCase()}
-                size={13}
-                color={i === 1 ? "#0d1b2c" : "#06231c"}
-              />
-            </motion.g>
-          </Arrive>
-        );
-      })}
-
-      <motion.g
-        initial={false}
-        animate={{ opacity: at(STEP.BAR) ? 1 : 0 }}
-        transition={{ duration: 0.4 }}
-        fill="none"
-        stroke={INK}
-        strokeWidth={1.3}
-      >
-        {STALKS.map((d, i) => (
-          <path key={i} d={d} />
-        ))}
-      </motion.g>
-
-      <Arrive on={at(STEP.BAR)} from={-30}>
-        <Cube b={BAR} s={S} skin="stone" edgeColor={INK} />
-        <FaceLabel
-          b={BAR}
-          s={S}
-          side="top"
-          text={capability.bar}
-          size={14}
-          color="#e8eae7"
-          pad={12}
-        />
-      </Arrive>
 
       <motion.g
         initial={false}
@@ -313,21 +362,6 @@ export default function Blueprint({
           </Arrive>
         ))}
 
-      {/* Triggers sit above the blocks so hover and focus land on a real
-          target; the cubes themselves are decorative once labelled. */}
-      {capability.blocks.map((blk, i) => (
-        <BlockTrigger
-          key={`t-${blk.title}`}
-          b={BLOCKS[i]}
-          text={blk.tooltip}
-          title={blk.title}
-          open={openBlock === i}
-          onOpen={() => setOpenBlock(i)}
-          onClose={() => setOpenBlock(null)}
-          onToggle={() => setOpenBlock((v) => (v === i ? null : i))}
-        />
-      ))}
-
       <text
         x={-676}
         y={-522}
@@ -348,6 +382,7 @@ export default function Blueprint({
       >
         BUSINESS OUTCOMES
       </text>
+      </motion.g>
     </svg>
   );
 }
