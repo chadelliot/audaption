@@ -124,9 +124,12 @@ const LAST = STEP.OUTCOMES;
 export default function Blueprint({
   capability,
   play,
+  className = "h-auto w-full min-w-[720px]",
 }: {
   capability: Capability;
   play: boolean;
+  /** Sizing for the svg. The default is the width-led carousel layout. */
+  className?: string;
 }) {
   /* The screen offset of a platform that has travelled one slide down the
      road, handed to the travel variants so the slide follows the rails. */
@@ -193,7 +196,7 @@ export default function Blueprint({
   return (
     <svg
       viewBox={BP_VIEWBOX}
-      className="h-auto w-full min-w-[720px]"
+      className={className}
       role="img"
       aria-label={`${capability.name}: ${capability.inputs.join(", ")} feed ${capability.blocks
         .map((b) => b.title)

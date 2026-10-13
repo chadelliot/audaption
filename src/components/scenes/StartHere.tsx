@@ -35,12 +35,6 @@ import { useAssessment } from "@/lib/assessment";
 const ENDPOINT = process.env.NEXT_PUBLIC_FORM_ENDPOINT ?? "";
 const FALLBACK_TO = "cparker@audaption.com";
 
-const ROADMAP = [
-  { days: "Days 1–30", name: "Align", line: "Confirm the scoreboard, validate segments, set baselines and assign data ownership." },
-  { days: "Days 31–60", name: "Activate", line: "Launch the first signal-driven plays, one campaign per market, with talk tracks for sales." },
-  { days: "Days 61–90", name: "Optimize", line: "Shift budget toward the stronger market, scale what works and set the next quarter." },
-];
-
 const PATHS = [
   {
     name: "Design before the hire",
@@ -121,7 +115,6 @@ export default function StartHere() {
           <p className="mt-6 max-w-[44rem] leading-relaxed text-slate">
             Your organization may already have some of these capabilities in
             place. Others may be missing, underdeveloped, or disconnected.
-            Fund win-rate and execution before adding more top-of-funnel spend.
           </p>
         </div>
 
@@ -208,27 +201,6 @@ export default function StartHere() {
           </div>
         </div>
 
-        {/* the path: sequenced, then the ask */}
-        <div className="mt-px border border-t-0 border-[var(--line-ink-strong)] bg-card px-7 py-10 sm:px-10 sm:py-12">
-          <p className="annot">The first 90 days</p>
-          <ol className="mt-6 grid gap-8 md:grid-cols-3 md:gap-10">
-            {ROADMAP.map((r) => (
-              <li key={r.name} className="border-t-2 border-jade pt-4">
-                <span className="annot">{r.days}</span>
-                <span className="font-display-mixed mt-2 block text-[1.4rem] leading-tight text-graphite">
-                  {r.name}
-                </span>
-                <span className="mt-2 block text-[0.98rem] leading-relaxed text-slate">
-                  {r.line}
-                </span>
-              </li>
-            ))}
-          </ol>
-          <p className="mt-9 max-w-[52rem] text-[1.15rem] leading-relaxed text-graphite">
-            The ask: fund the first play now, review returns at day 90, and
-            move budget to whichever market earns more.
-          </p>
-        </div>
       </div>
     </section>
   );

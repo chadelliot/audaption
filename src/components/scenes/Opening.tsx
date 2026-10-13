@@ -103,20 +103,20 @@ export default function Opening() {
       ref={ref}
       className="sheet-dark relative lg:h-[460vh]"
     >
-      <div className="px-5 pb-16 pt-24 sm:px-8 lg:sticky lg:top-0 lg:flex lg:h-[100svh] lg:flex-col lg:overflow-hidden lg:pb-8">
+      <div className="px-5 pb-16 pt-24 sm:px-8 lg:sticky lg:top-0 lg:flex lg:h-[100svh] lg:flex-col lg:overflow-hidden lg:pb-3 lg:pt-[4.5rem] [@media(max-height:740px)]:lg:pt-[4.25rem]">
         <div className="relative mx-auto w-full max-w-[1500px]">
           {/* One headline, and it stays put. The reader should be able to
               look away and back without the page having changed its mind. */}
           <div>
             <p className="annot">Audaption · The growth system</p>
-            <h1 className="font-display mt-4 max-w-[24rem] text-[clamp(1.9rem,3.6vw,3rem)] text-chalk sm:max-w-[46rem]">
+            <h1 className="font-display mt-4 max-w-[24rem] text-[clamp(1.9rem,min(3.6vw,4.9vh),3rem)] text-chalk sm:max-w-[46rem]">
               Companies hire roles.
               <span className="block text-glass">
                 What they actually need is a{" "}
                 <span className="text-emerald">system</span>.
               </span>
             </h1>
-            <p className="mt-5 max-w-[40rem] leading-relaxed text-glass">
+            <p className="mt-3 max-w-[56rem] leading-relaxed text-glass">
               Before fixing anything, ask what you&rsquo;re actually trying to
               move. Every company has the same four layers, and almost none of
               them line up — which is why the hire lands, works hard, and
@@ -129,7 +129,7 @@ export default function Opening() {
           {!wide && <LayerCards tiers={TIERS} />}
         </div>
 
-        <div className="mx-auto grid w-full max-w-[1500px] grid-cols-[minmax(0,1fr)] items-center gap-6 lg:flex-1 lg:grid-cols-[minmax(0,31rem)_minmax(0,1fr)] lg:gap-14">
+        <div className="mx-auto grid w-full max-w-[1500px] grid-cols-[minmax(0,1fr)] items-center gap-6 lg:flex-1 lg:grid-cols-[minmax(0,34rem)_minmax(0,1fr)] lg:gap-14">
           {/* The readable copy of the animation. Present from the first frame:
               it is the argument, not a reward for scrolling. */}
           <ol className="order-2 hidden lg:order-1 lg:block">
@@ -138,7 +138,7 @@ export default function Opening() {
               return (
                 <li
                   key={t.id}
-                  className="border-t py-5 transition-colors duration-500 first:border-t-0"
+                  className="border-t py-5 transition-colors duration-500 first:border-t-0 [@media(max-height:940px)]:py-2 [@media(max-height:740px)]:py-1.5"
                   style={{ borderColor: on ? "rgba(53,214,169,0.28)" : "var(--line)" }}
                 >
                   <div className="flex items-baseline gap-3">
@@ -149,14 +149,14 @@ export default function Opening() {
                       {t.n}
                     </span>
                     <span
-                      className="font-display-mixed text-[1.55rem] leading-tight transition-colors duration-500"
+                      className="font-display-mixed text-[1.55rem] leading-tight transition-colors duration-500 [@media(max-height:940px)]:text-[1.35rem]"
                       style={{ color: on ? "var(--color-chalk)" : "var(--color-glass-dim)" }}
                     >
                       {t.name}
                     </span>
                   </div>
                   <p
-                    className="mt-2 text-[1.1rem] leading-relaxed transition-colors duration-500"
+                    className="mt-1.5 text-[1.1rem] leading-relaxed transition-colors duration-500 [@media(max-height:940px)]:text-[0.98rem] [@media(max-height:940px)]:leading-snug [@media(max-height:740px)]:text-[0.9rem]"
                     style={{ color: on ? "var(--color-glass)" : "var(--color-glass-dim)" }}
                   >
                     {t.line}
@@ -229,10 +229,11 @@ export default function Opening() {
                   : `${TIERS[landed].n} ${TIERS[landed].name} · set`}
             </p>
             <a
-              href="#symptoms"
+              href="#approach"
+              data-scroll-offset="0"
               className="annot border-b border-transparent pb-1 transition-colors hover:text-chalk"
             >
-              Skip ahead ↓
+              The approach ↓
             </a>
           </div>
         </div>

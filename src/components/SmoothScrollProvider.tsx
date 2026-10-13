@@ -41,7 +41,8 @@ export default function SmoothScrollProvider({
       const el = document.querySelector(hash);
       if (!el) return;
       e.preventDefault();
-      lenis.scrollTo(el as HTMLElement, { offset: -80 });
+      const offset = Number(anchor.getAttribute("data-scroll-offset") ?? -80);
+      lenis.scrollTo(el as HTMLElement, { offset });
     }
     document.addEventListener("click", onClick);
 

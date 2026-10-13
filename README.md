@@ -24,8 +24,10 @@ real text: sharp at any zoom, selectable, translatable and editable in code.
 - `src/lib/iso.ts` — projection, cube geometry, face skins
 - `src/components/iso/` — the cube primitive, sheared face type, the shared
   capability blueprint, tooltips
-- `src/components/scenes/` — one file per homepage section
-- `src/lib/systems.ts` — all section copy, as data
+- `src/components/scenes/` — the opening and the closing enquiry section
+- `src/components/deck/Deck.tsx` — the approach: one decision per screen, each with its own drawing
+- `src/lib/approach.ts` — the approach's chapters and copy, as data
+- `src/lib/systems.ts` — the opening's layers and the blueprint capabilities
 
 Two conventions worth knowing before editing a drawing:
 
@@ -38,8 +40,14 @@ Two conventions worth knowing before editing a drawing:
 
 ## Content
 
-Section copy lives in `src/lib/systems.ts` rather than in the components, so
-wording can be changed without touching layout or animation.
+Copy lives in `src/lib/approach.ts` (the chapters) and `src/lib/systems.ts` (the
+opening and the blueprints) rather than in the components, so wording can be
+changed without touching layout or animation.
+
+The approach is exactly one viewport tall and never scrolls inside itself: a
+drawing is scaled to fit whatever room its chapter's copy leaves, so nothing can
+overlap or run past the screen. Blueprints have an *Enlarge drawing* view for
+the detail. Check any layout change at 1440×780 and 1280×720.
 
 ## The enquiry form
 

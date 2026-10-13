@@ -1,20 +1,17 @@
 import { AssessmentProvider } from "@/lib/assessment";
 import { SiteFooter, SiteHeader } from "@/components/site/Chrome";
 import Opening from "@/components/scenes/Opening";
-import S2Symptoms from "@/components/scenes/S2Symptoms";
-import SystemParts from "@/components/scenes/SystemParts";
-import Capabilities from "@/components/scenes/Capabilities";
+import Deck from "@/components/deck/Deck";
 import StartHere from "@/components/scenes/StartHere";
 
 /*
-  Four sections and a close.
+  A cold open, the approach, and a close.
 
-  Two lists of four run through this page and they are not the same list. The
-  opening names the layers every company already has; "what we build" shows
-  what we do to each of them; "capabilities" shows the four things a client
-  actually asks for, each assembled on top of all of it. Both middle sections
-  say which of the two they are in their own intro copy, because a reader who
-  hits eight named things in a row will otherwise assume they are one list.
+  The opening is the one scroll-driven drawing on the page: four layers that
+  start out of line and set into one stack. After it, the approach is a deck of
+  decisions read one screen at a time (see components/deck/Deck.tsx), each with
+  its own drawing sized to fit the stage it is in. The page used to be a long
+  run of pinned scenes, each of which let its drawing grow past the viewport.
 */
 export default function Home() {
   return (
@@ -22,9 +19,7 @@ export default function Home() {
       <SiteHeader />
       <main>
         <Opening />
-        <S2Symptoms />
-        <SystemParts />
-        <Capabilities />
+        <Deck />
         <StartHere />
       </main>
       <SiteFooter />

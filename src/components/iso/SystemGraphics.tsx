@@ -167,6 +167,15 @@ export function DataGraphic({ play }: GraphicProps) {
   const top = project(0, 0, h, S);
   const ordered = [...sats].sort((a, b) => a.depth - b.depth);
 
+  /* The highest point anywhere in the drawing: the rear corner of the centre
+     block's lid, or of a source behind it. The caption is hung from this, not
+     from the lid's centre, which sits some 70 units lower and put the label
+     straight through the top of the block. */
+  const ceiling = Math.min(
+    project(centre.x, centre.y, h, S).y,
+    ...sats.map((s) => project(s.b.x, s.b.y, s.b.h, S).y),
+  );
+
   return (
     <svg viewBox="-480 -270 960 540" className="h-auto max-h-full w-full" aria-hidden>
       <defs>
@@ -210,15 +219,15 @@ export function DataGraphic({ play }: GraphicProps) {
       <Arrive on={landed > SOURCES.length}>
         <line
           x1={0}
-          y1={top.y - 18}
+          y1={ceiling - 6}
           x2={0}
-          y2={top.y - 46}
+          y2={ceiling - 30}
           stroke="var(--color-jade)"
           strokeWidth={1}
         />
         <Note
           t="ONE CUSTOMER, DEFINED ONCE"
-          at={{ x: 0, y: top.y - 56 }}
+          at={{ x: 0, y: ceiling - 40 }}
           fill="var(--color-jade-deep)"
         />
       </Arrive>

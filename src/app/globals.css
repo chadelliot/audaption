@@ -14,9 +14,10 @@
 */
 
 :root {
-  /* paper — the primary ground. Warm bone, matched to audaption.com. */
-  --color-sheet: #f0ebe3;
-  --color-card: #f8f5ef;
+  /* paper — the primary ground. Near-white, so the drawings carry the colour
+     rather than a tan sheet competing with them. */
+  --color-sheet: #fbfbf9;
+  --color-card: #f3f4f1;
   --color-graphite: #262626;
   --color-slate: #56605a;
   --color-mute: #8a8b84;
