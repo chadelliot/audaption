@@ -15,14 +15,16 @@ export default function S2Symptoms() {
     <section id="symptoms" className="sheet-card px-5 py-24 sm:px-8 sm:py-32">
       <div className="mx-auto max-w-[1500px]">
         <div className="max-w-[52rem]">
-          <p className="annot">What brought you here</p>
+          <p className="annot">The scoreboard · What are we trying to move?</p>
           <h2 className="font-display mt-6 text-[clamp(2rem,4.6vw,3.4rem)] text-graphite">
             Growth is a system you can build.
           </h2>
           <p className="mt-6 max-w-[40rem] text-lg leading-relaxed text-slate">
             Almost nobody arrives asking for one. They arrive with a symptom —
             usually one of these four, and usually the one that came up in the
-            last board meeting.
+            last board meeting. Agree on one scoreboard before fixing
+            anything, because the metric that&rsquo;s holding back the rest
+            gates everything else.
           </p>
         </div>
 
@@ -50,8 +52,13 @@ export default function S2Symptoms() {
         </ul>
 
         <p className="mt-10 max-w-[44rem] text-lg leading-relaxed text-slate">
-          All four are the same problem seen from different chairs. What follows
-          is what that problem looks like once the whole system is laid out.
+          All four are the same problem seen from different chairs.{" "}
+          <span className="text-graphite">
+            Our recommendation: name the one number that gates the rest, fix
+            that first, and protect what is already healthy rather than
+            optimizing it further.
+          </span>{" "}
+          What follows is the whole system, laid out.
         </p>
       </div>
     </section>

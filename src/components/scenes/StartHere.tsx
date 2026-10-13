@@ -35,6 +35,12 @@ import { useAssessment } from "@/lib/assessment";
 const ENDPOINT = process.env.NEXT_PUBLIC_FORM_ENDPOINT ?? "";
 const FALLBACK_TO = "cparker@audaption.com";
 
+const ROADMAP = [
+  { days: "Days 1–30", name: "Align", line: "Confirm the scoreboard, validate segments, set baselines and assign data ownership." },
+  { days: "Days 31–60", name: "Activate", line: "Launch the first signal-driven plays, one campaign per market, with talk tracks for sales." },
+  { days: "Days 61–90", name: "Optimize", line: "Shift budget toward the stronger market, scale what works and set the next quarter." },
+];
+
 const PATHS = [
   {
     name: "Design before the hire",
@@ -115,6 +121,7 @@ export default function StartHere() {
           <p className="mt-6 max-w-[44rem] leading-relaxed text-slate">
             Your organization may already have some of these capabilities in
             place. Others may be missing, underdeveloped, or disconnected.
+            Fund win-rate and execution before adding more top-of-funnel spend.
           </p>
         </div>
 
@@ -140,6 +147,25 @@ export default function StartHere() {
                 </div>
               ))}
             </dl>
+
+            <div className="mt-9 border-t border-[var(--line-ink)] pt-8">
+              <p className="annot">The first 90 days</p>
+              <ol className="mt-5 space-y-5">
+                {ROADMAP.map((r) => (
+                  <li key={r.name} className="grid gap-1.5 sm:grid-cols-[13rem_1fr] sm:gap-6">
+                    <span className="font-display-mixed text-[1.2rem] leading-tight text-graphite">
+                      {r.name}
+                      <span className="annot ml-3">{r.days}</span>
+                    </span>
+                    <span className="text-[0.98rem] leading-relaxed text-slate">{r.line}</span>
+                  </li>
+                ))}
+              </ol>
+              <p className="mt-7 text-[1.05rem] leading-relaxed text-graphite">
+                The ask: fund the first play now, review returns at day 90, and
+                move budget to whichever market earns more.
+              </p>
+            </div>
           </div>
 
           {/* the ask */}

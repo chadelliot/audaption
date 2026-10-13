@@ -112,7 +112,7 @@ export const SYSTEMS: SystemPart[] = [
     ref: "03",
     name: "Go-to-Market Strategy",
     claim: "Know which markets are worth going after.",
-    body: "Every segment, channel and customer type sized on what it is actually worth — not on who argues hardest for it. One number that finance, marketing and the board will all still stand behind next week.",
+    body: "Every segment, channel and customer type sized on what it is actually worth — not on who argues hardest for it. A national ranking isn't a plan, so we test market by market, fund the biggest pool first, and land on one number that finance, marketing and the board will all still stand behind next week.",
     caption: "Every market gets measured. One or two are worth the money.",
     pointsLabel: "Markets we size",
     points: ["Enterprise", "Mid-market", "EMEA", "APAC", "Partner", "SMB"],
@@ -123,7 +123,7 @@ export const SYSTEMS: SystemPart[] = [
     ref: "04",
     name: "Artificial Intelligence",
     claim: "AI only works on top of the other three.",
-    body: "Trusted content and knowledge for AI to work from, and the customer experience it powers. This is why pilots stall: the company skipped the layers underneath and asked AI to stand on nothing.",
+    body: "Trusted content and knowledge for AI to work from, and the customer experience it powers. This is why pilots stall: the company skipped the layers underneath and asked AI to stand on nothing. Our recommendation is always the same: build the three layers first, then let AI act on timing, not guesswork.",
     caption: "Take a layer away and the one above it stops working.",
     pointsLabel: "What AI stands on",
     points: [
@@ -251,7 +251,7 @@ export const CAPABILITIES: Capability[] = [
       },
     ],
     outcomes: ["Win Rates ↑", "Better Forecasting", "Revenue Growth ↑"],
-    feeds: "Turns customer, market, and territory intelligence into a coordinated commercial motion.",
+    feeds: "Same product, different buyer: each market gets its own message, signal and handoff, so deals stop stalling late.",
   },
   {
     id: "analytics",

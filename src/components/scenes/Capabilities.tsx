@@ -121,6 +121,9 @@ export default function Capabilities() {
           strengthens Website Experience. Website behavior improves Marketing
           Analytics. Marketing Analytics sharpens the Go-to-Market Motion. The
           Go-to-Market Motion produces better customer and prospect intelligence.
+          You can&rsquo;t fund all four at once, so we sequence them: start with
+          the one gating your scoreboard, and add the next when the first is
+          earning its keep.
         </p>
 
         {/* tabs, above the drawing */}

@@ -117,9 +117,10 @@ export default function Opening() {
               </span>
             </h1>
             <p className="mt-5 max-w-[40rem] leading-relaxed text-glass">
-              Every company has the same four layers. Almost none of them line
-              up — which is why the hire lands, works hard, and still can&rsquo;t
-              move the number.
+              Before fixing anything, ask what you&rsquo;re actually trying to
+              move. Every company has the same four layers, and almost none of
+              them line up — which is why the hire lands, works hard, and
+              still can&rsquo;t move the number.
             </p>
           </div>
         </div>
