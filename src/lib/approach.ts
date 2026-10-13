@@ -1,41 +1,40 @@
 /*
-  The story: follow one dollar.
+  The story: building the go-to-market strategy.
 
-  The approach on aboutchad.com is a diagnosis — one company, one scorecard, a
-  sequence of analytical questions. This is a different story on purpose. It
-  follows a single dollar of growth spend through the commercial system, gate by
-  gate, from the moment it is allocated to the moment it is proven and spent
-  again. At every gate that dollar either compounds or leaks, and the argument
-  is that the leaks are almost never where a team is looking.
+  The opening says every company has four layers — Customer Data, Customer
+  Journey, Customer Experience, and Go-to-Market Strategy on top. This is the
+  same four, built out, in the same order, and it is the whole argument: a
+  go-to-market strategy is not a document. It is three things you have to know,
+  put into one motion that sales and marketing run together.
 
-  Nine gates, in three movements:
+    Data         what we know about each market and each customer: who the ideal
+                 customer is, and one picture of them as a whole
+    Journey      the steps a buyer takes to a first purchase and to the next
+    Experience   every touchpoint and every signal it throws off, fed back in
+    Strategy     the one motion sales and marketing share — and then the money
+                 behind it, the proof it works, and how it compounds
 
-    Goes out        01 Allocate   02 Reach   03 Convert
-    Gets captured   04 Capture    05 Record  06 Route
-    Comes back      07 Sell       08 Prove   09 Scale
+  Spend, speed to lead, martech and the rest are real work and they matter, but
+  they are not the plot. They are supporting chapters or, more often, deep-dive
+  pages: each chapter that has one links to it (see lib/capabilities.ts).
 
-  Each gate is one question, one flat working exhibit, and one recommendation.
-  Each also stands for a body of work Audaption does — advertising ROI, content
-  and creative, website and conversion, martech, CRM, automation, signal-led
-  selling, analytics, AI — which is why every chapter is also the front door to a
-  deeper page about that work.
-
-  The exhibits live in components/exhibits and are illustrative. They say so in
-  their corner and none is client data. Every exhibit has to carry its chapter's
-  claim, not just illustrate the topic; if a claim changes, change the exhibit
-  with it. The opening's isometric stack is the one drawing left on the page, on
-  purpose.
+  Every chapter is one question, one flat working exhibit, one recommendation.
+  The exhibits live in components/exhibits and are illustrative; they say so in
+  their corner and none is client data. An exhibit has to carry its chapter's
+  claim, not just illustrate the topic: if a claim changes, change the exhibit
+  with it. The opening's isometric stack is the one drawing left, on purpose.
 */
 
 import type { ExhibitId } from "@/components/exhibits";
 
-export type GroupId = "case" | "out" | "in" | "back";
+export type GroupId = "case" | "data" | "journey" | "experience" | "strategy";
 
 export const GROUPS: { id: GroupId; label: string }[] = [
-  { id: "case", label: "The dollar" },
-  { id: "out", label: "Goes out" },
-  { id: "in", label: "Gets captured" },
-  { id: "back", label: "Comes back" },
+  { id: "case", label: "The case" },
+  { id: "data", label: "Data" },
+  { id: "journey", label: "Journey" },
+  { id: "experience", label: "Experience" },
+  { id: "strategy", label: "Strategy" },
 ];
 
 export interface Chapter {
@@ -51,98 +50,109 @@ export interface Chapter {
   rec: string;
   /** The working exhibit the chapter is built around. */
   exhibit: ExhibitId;
+  /** The deep-dive page this chapter opens onto, by slug. */
+  deepDive?: string;
 }
 
 export const CHAPTERS: Chapter[] = [
   {
-    id: "allocate",
-    group: "out",
-    title: "Allocate",
-    question: "Where does the first dollar go?",
-    claim: "Spend where the next dollar earns most, not where the last one did.",
-    body: "Every channel flattens. Past a point, more spend buys less. We read the marginal return of each channel, find the ones past their knee, and move money before the quarter closes rather than after it.",
-    rec: "Cap the saturated channel, fund the one with the steepest curve, and read the curves again every month.",
-    exhibit: "allocate",
+    id: "icp",
+    group: "data",
+    title: "Market",
+    question: "Who are we selling to, market by market?",
+    claim: "Know your best customer before you chase the next one.",
+    body: "We profile the customers who buy, stay and expand, then score every market and account against that profile. The result is an ideal customer profile you can actually count: how many accounts fit, where they are, and which tier deserves effort first.",
+    rec: "Write the ideal customer profile from the customers you keep, then point every team at its top tier.",
+    exhibit: "icp",
+    deepDive: "ideal-customer-profile",
   },
   {
-    id: "reach",
-    group: "out",
-    title: "Reach",
-    question: "What does it say, and to whom?",
-    claim: "Test the message against the audience, not just the channel.",
-    body: "A message that wins with one buyer loses with the next. We run message-by-audience tests and keep what works where, so creative stops being a matter of taste and becomes a library with results attached.",
-    rec: "Retire the generic message. Fund the three combinations that clear the bar and test the rest.",
-    exhibit: "reach",
-  },
-  {
-    id: "convert",
-    group: "out",
-    title: "Convert",
-    question: "What happens when they arrive?",
-    claim: "Make the page respond to the buyer in front of it.",
-    body: "The website is where the message meets behavior. We design how structure, content and interactions help each buyer finish the task they came for, adapt it by market and lifecycle stage, and measure how far each visit progresses.",
-    rec: "Personalize the few pages that carry the most pipeline before redesigning the rest.",
-    exhibit: "website",
-  },
-  {
-    id: "capture",
-    group: "in",
-    title: "Capture",
-    question: "Does the signal survive the stack?",
-    claim: "Most of what a dollar learns is lost between the tools.",
-    body: "Consent gaps, broken tags, overlapping platforms and integrations nobody owns decide how much of a buyer's behavior ever reaches a person who can act on it. The stack is not a list of tools; it is a pipe, and pipes leak at joints.",
-    rec: "Retire the overlapping tools and connect the few integrations that carry signal. Do not buy another platform first.",
-    exhibit: "stack",
-  },
-  {
-    id: "record",
-    group: "in",
-    title: "Record",
-    question: "Who is this customer?",
-    claim: "One account, one record, one owner.",
-    body: "The same company sits in the CRM four times, under four names, with four owners and four versions of its history. Until it is one record with one lifecycle stage, nothing downstream can be trusted, including the AI.",
-    rec: "Merge the duplicates, give every account an owner, and make the record the only place a lifecycle stage is set.",
+    id: "customer",
+    group: "data",
+    title: "Customer",
+    question: "What do we actually know about each customer?",
+    claim: "One customer, seen as a whole.",
+    body: "Today the same company sits in your systems as four records, under four names, with four owners and four versions of its history. We resolve them into one profile that carries what you know: who they are, what they have bought, who decides, how they have engaged. Every team then starts from the same picture.",
+    rec: "Resolve the records into one profile, give every account an owner, and make that profile the source every other system reads.",
     exhibit: "record",
+    deepDive: "crm-automation",
   },
   {
-    id: "route",
-    group: "in",
-    title: "Route",
-    question: "How fast does it reach a person?",
-    claim: "Speed to lead is a system, not a habit.",
-    body: "Win rate falls away in the first hours after a buyer raises a hand. Automation does the work that should never wait on a human: score, route, start the clock, and hand over a record that is already complete.",
-    rec: "Set a response-time promise by segment and automate everything that happens before the first human touch.",
-    exhibit: "route",
+    id: "journey",
+    group: "journey",
+    title: "Journey",
+    question: "How do they get to a decision, and to the next one?",
+    claim: "Map the path buyers take, not the path you drew.",
+    body: "We build the journey from what customers actually did: the stages, how long each takes, who joins when, and where buyers stall or leave. Then we map the road back, the steps to a second purchase, because repeat revenue is a journey of its own.",
+    rec: "Design for the stage that loses the most buyers, and give the return path the same attention as the first sale.",
+    exhibit: "journey",
+    deepDive: "customer-journey",
   },
   {
-    id: "sell",
-    group: "back",
-    title: "Sell",
-    question: "When does a seller act?",
-    claim: "Put the right signal in front of the right seller at the right moment.",
+    id: "touchpoints",
+    group: "experience",
+    title: "Touchpoints",
+    question: "What does each touchpoint say to each buyer?",
+    claim: "Make every touchpoint respond to who is on the other end.",
+    body: "The site, the email, the ad and the call are each a chance to meet a buyer where the journey has taken them. We design what each one shows by market and stage, then measure what it taught us.",
+    rec: "Personalize the few touchpoints that carry the most pipeline before redesigning the rest.",
+    exhibit: "website",
+    deepDive: "website-conversion",
+  },
+  {
+    id: "signals",
+    group: "experience",
+    title: "Signals",
+    question: "What are buyers telling us, and when?",
+    claim: "Turn every touchpoint into a signal someone acts on.",
     body: "An account leaves a trail: ads it engaged with, pages it read, funding it received, a champion who moved on. Read together on one timeline, the trail tells a seller when to call and what to say, instead of when it is convenient.",
     rec: "Agree the handful of signals that matter, who acts on each, and by when. Single-threaded deals stall; multi-threaded ones close.",
     exhibit: "sell",
+    deepDive: "signal-led-selling",
+  },
+  {
+    id: "motion",
+    group: "strategy",
+    title: "Motion",
+    question: "How do sales and marketing run this together?",
+    claim: "One motion, one plan and one scoreboard, shared.",
+    body: "The three layers meet here. For each stage of the journey we set what marketing does, what sales does, and the one measure they share, so handoffs are designed rather than negotiated and nobody optimizes a number the other team cannot see.",
+    rec: "Replace two plans with one: a shared target, shared stages, a shared scoreboard and a named owner for every step.",
+    exhibit: "motion",
+    deepDive: "go-to-market-motion",
+  },
+  {
+    id: "fund",
+    group: "strategy",
+    title: "Fund",
+    question: "Where should the money go?",
+    claim: "Fund the motion where the next dollar earns most.",
+    body: "Once the motion is clear, the money follows it. Every channel flattens, so the average return tells you little about the next dollar. We read the marginal return of each channel and move spend toward the steepest curve before the quarter closes.",
+    rec: "Cap the saturated channel, fund the one with the steepest curve, and read the curves again every month.",
+    exhibit: "allocate",
+    deepDive: "advertising-roi",
   },
   {
     id: "prove",
-    group: "back",
+    group: "strategy",
     title: "Prove",
-    question: "What did the dollar do?",
-    claim: "One number leadership trusts.",
-    body: "Every platform claims the sale. Added together they claim more revenue than the company booked. We reconcile attribution to finance, show credit as a range rather than a verdict, and give the board one number it can repeat.",
-    rec: "Report revenue reconciled to finance, and treat attribution as a range that informs the next allocation.",
+    question: "How do we know it is working?",
+    claim: "Report one number, with the range behind it.",
+    body: "Platforms each claim the sale, so their totals never reconcile. We reconcile credit to finance and show each channel's return as a range, so leadership gets a number it can repeat and a read it can allocate against.",
+    rec: "Report revenue reconciled to finance, and let the range guide the next allocation.",
     exhibit: "prove",
+    deepDive: "marketing-analytics",
   },
   {
     id: "scale",
-    group: "back",
+    group: "strategy",
     title: "Scale",
-    question: "What makes it compound?",
-    claim: "AI works on top of the layers, not instead of them.",
-    body: "Trusted data and knowledge for AI to work from, and the experience it powers. This is why pilots stall: the company skipped the layers underneath and asked AI to stand on nothing.",
-    rec: "Close the gaps in the layers first, then let AI act on them.",
-    exhibit: "ai",
+    question: "How does it compound?",
+    claim: "Build in the order that unlocks automation and AI.",
+    body: "AI does not skip steps. Each layer you build unlocks something it can do: a profile unlocks scoring, a journey unlocks next-best-action, signals unlock timing, a shared motion unlocks forecasting. We build in that order, so each step pays for the next.",
+    rec: "Sequence the build by what each step unlocks, not by what is newest.",
+    exhibit: "aipath",
+    deepDive: "ai-readiness",
   },
 ];
 
@@ -153,50 +163,56 @@ export const CHAPTERS: Chapter[] = [
 export const SUMMARY = {
   id: "summary",
   group: "case" as GroupId,
-  title: "The dollar",
-  eyebrow: "The case · Follow one dollar",
-  headline: "Follow one dollar through your growth system.",
-  lede: "A dollar of growth spend crosses nine gates before it comes back as revenue. At every one it can compound or leak, and the leaks are rarely where a team is looking. Audaption finds them and builds the system that closes them.",
-  plan: [
+  title: "The strategy",
+  eyebrow: "The case · Go-to-market strategy",
+  headline: "Build the go-to-market strategy sales and marketing can run together.",
+  lede: "A go-to-market strategy is not a deck. It is what you know about each market and customer, how those customers really buy, and every touchpoint and signal along the way, built into one motion that sales and marketing run together. We build all three, then the motion on top of them.",
+  layers: [
     {
-      name: "Goes out",
-      line: "Put the first dollar where the next one earns most, say the right thing to the right buyer, and make the page answer.",
+      name: "Data",
+      line: "Who your ideal customer is, market by market, and one picture of each customer as a whole.",
     },
     {
-      name: "Gets captured",
-      line: "Keep every signal the dollar produced: through the stack, into one record, and in front of a person fast.",
+      name: "Journey",
+      line: "The steps a buyer takes to a first purchase, and to the next one.",
     },
     {
-      name: "Comes back",
-      line: "Act on the moment, report one number leadership trusts, and spend it again with more confidence.",
+      name: "Experience",
+      line: "Every touchpoint and signal, fed back in so each one makes the next sharper.",
     },
   ],
+  result: "One go-to-market strategy: sales and marketing aligned in a single motion.",
 };
 
 export const ROADMAP = {
   id: "roadmap",
-  group: "back" as GroupId,
-  title: "First 90 days",
-  eyebrow: "Comes back · The first 90 days",
-  headline: "Baseline, fix, reinvest.",
+  group: "strategy" as GroupId,
+  title: "How we build it",
+  eyebrow: "Strategy · How we build it",
+  headline: "Map it, align it, build it, run it.",
   steps: [
     {
-      days: "Days 1–30",
-      name: "Baseline",
-      line: "Map where the dollar goes, audit the stack and the record, and set the one number everyone agrees to.",
+      n: "01",
+      name: "Map",
+      line: "Profile the market and the customer, trace the real journey, and audit every touchpoint and signal.",
     },
     {
-      days: "Days 31–60",
-      name: "Fix",
-      line: "Close the two biggest leaks: move the saturated spend, connect the integrations that carry signal, set the response-time promise.",
+      n: "02",
+      name: "Align",
+      line: "Turn what we found into one motion for sales and marketing: shared stages, plays, owners and scoreboard.",
     },
     {
-      days: "Days 61–90",
-      name: "Reinvest",
-      line: "Read the new curves, shift budget again, and put the next quarter's plan on the reconciled number.",
+      n: "03",
+      name: "Build",
+      line: "Put it into the systems: the customer record, the routing, the touchpoints and the reporting.",
+    },
+    {
+      n: "04",
+      name: "Run",
+      line: "Operate it with you, read the results against finance, and move money and effort to what is working.",
     },
   ],
-  ask: "Fund the baseline, fix the two biggest leaks, and review the reconciled return at day 90.",
+  ask: "Start with the map. It shows which of the three layers is holding your strategy back, and what to build first.",
 };
 
 /** The deck in reading order. Drives the rail, the controls and the keyboard. */

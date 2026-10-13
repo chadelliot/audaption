@@ -20,13 +20,18 @@ npm run dev
 - **The opening** is the one isometric drawing, on the tan ground: four layers
   that start out of line and set into one stack. It is authored SVG on one projection (`src/lib/iso.ts`,
   `src/components/iso/Cube.tsx`), so every label is real text.
-- **The approach** follows one dollar of growth spend through nine gates (allocate,
-  reach, convert, capture, record, route, sell, prove, scale), in
-  `src/components/deck/Deck.tsx`. It is pinned and scroll-driven: scrolling moves
-  through the chapters, and Next, Back, the rail and the arrow keys scroll to a
-  chapter. Each chapter pairs one question with a flat, data-led exhibit from
-  `src/components/exhibits/` that builds itself in as the chapter arrives. The
-  story is deliberately not the diagnosis on aboutchad.com.
+- **The approach** is the go-to-market strategy, built out in the same four layers
+  the opening names: Data, Journey, Experience, Strategy. It is a pinned,
+  scroll-driven deck (`src/components/deck/Deck.tsx`) of nine chapters; scrolling
+  moves through them, and Next, Back, the rail and the arrow keys scroll to one.
+  Each chapter is one question, one flat working exhibit from
+  `src/components/exhibits/` that builds itself in as the chapter arrives, and one
+  recommendation. The story is deliberately not the diagnosis on aboutchad.com.
+- **The deep dives** are one page per body of work, at `/capabilities/<slug>/`,
+  generated from `src/lib/capabilities.ts` by `src/components/capability/`. A
+  chapter links to its page. A new page is a data entry, not a build: add it to
+  that file and it exists, with the same anatomy as the rest (where the value
+  leaks, the exhibit, how we ensure it, what you get, how it connects).
 - **The close** is the enquiry form.
 
 Every exhibit is an *illustrative* example and says so in its corner. None of it

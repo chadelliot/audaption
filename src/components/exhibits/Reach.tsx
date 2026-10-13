@@ -38,11 +38,11 @@ const best = MESSAGES[2]; // “Faster delivery” has the widest spread
 const hi = Math.max(...best.v);
 const lo = Math.min(...best.v);
 
-const shade = (v: number) => {
-  if (v < RETIRE) return "rgba(180,136,90,0.12)";
-  const t = Math.min(1, (v - RETIRE) / (5.4 - RETIRE));
-  return `rgba(41,165,135,${(0.1 + t * 0.62).toFixed(2)})`;
-};
+/* One tint, two levels. The winners are the only cells that carry colour;
+   everything else is a quiet grey, and a retired cell is just a lighter number.
+   The earlier version shaded every cell by intensity and read as a heat map,
+   which is a chart for analysts, not for the people who choose the message. */
+const shade = (v: number) => (v >= BAR ? "rgba(41,165,135,0.22)" : "rgba(38,38,38,0.045)");
 
 export default function Reach() {
   return (
@@ -68,13 +68,13 @@ export default function Reach() {
           </div>
 
           <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1 border-t border-[var(--line-ink)] pt-2.5">
-            <Key swatch={<span className="inline-block h-3 w-5 bg-[rgba(41,165,135,0.7)] ring-2 ring-jade-deep" />}>
+            <Key swatch={<span className="inline-block h-3 w-5 bg-[rgba(41,165,135,0.3)] ring-2 ring-jade-deep" />}>
               Clears the bar ({BAR}+)
             </Key>
-            <Key swatch={<span className="inline-block h-3 w-5 bg-[rgba(41,165,135,0.25)]" />}>
-              Test further
+            <Key swatch={<span className="inline-block h-3 w-5 bg-[rgba(38,38,38,0.07)]" />}>
+              Keep testing
             </Key>
-            <Key swatch={<span className="inline-block h-3 w-5 bg-[rgba(180,136,90,0.18)]" />}>
+            <Key swatch={<span className="inline-block h-3 w-5 border border-dashed border-[var(--line-ink-strong)]" />}>
               Retired (under {RETIRE})
             </Key>
           </div>
@@ -82,8 +82,8 @@ export default function Reach() {
 
         <div className="flex flex-col gap-3">
           <Reveal delay={1.0}>
-            <Card tone="good" className="px-5 py-4">
-              <Label tone="good">Fund these three</Label>
+            <Card className="px-5 py-4">
+              <Label>Fund these three</Label>
               <ol className="mt-2 space-y-2">
                 {wins.slice(0, 3).map((w, i) => (
                   <li key={w.msg + w.aud} className="flex items-baseline gap-3">
@@ -140,8 +140,8 @@ function Row({ m, r }: { m: (typeof MESSAGES)[number]; r: number }) {
               <span
                 className="font-display text-[1.45rem] leading-none"
                 style={{
-                  color: v < RETIRE ? "var(--color-timber-ink)" : "var(--color-graphite)",
-                  opacity: v < RETIRE ? 0.7 : 1,
+                  color: win ? "var(--color-graphite)" : "var(--color-slate)",
+                  opacity: v < RETIRE ? 0.45 : 1,
                 }}
               >
                 {v.toFixed(1)}

@@ -1,7 +1,7 @@
 "use client";
 
 /*
-  05 — Who is this customer?
+  02 — Data: what do we actually know about each customer?
 
   Four records for one company, and what they become. The four are deliberately
   ordinary: a sales import, a web form, an event list, a support ticket — the
@@ -73,6 +73,7 @@ export default function Record() {
             </div>
             <dl className="mt-4 space-y-1.5 text-[0.9rem]">
               <Line k="Owner" v="M. Chen" />
+              <Line k="Fit" v="Tier A · 92 of 100" />
               <Line k="Lifecycle" v="Customer · expanding" />
               <Line k="ARR" v="$246K" />
               <Line k="Last touch" v="3 days ago" />

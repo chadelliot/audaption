@@ -21,6 +21,7 @@
 */
 
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
+import Link from "next/link";
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "framer-motion";
 import { EXHIBITS, type ExhibitId } from "@/components/exhibits";
 import { FitBox } from "@/components/exhibits/ui";
@@ -34,6 +35,7 @@ import {
   type Chapter,
   type Step,
 } from "@/lib/approach";
+import { CAPABILITY } from "@/lib/capabilities";
 import { lenisRef } from "@/lib/lenisInstance";
 import { usePrefersReducedMotion } from "@/lib/reducedMotion";
 
@@ -179,11 +181,11 @@ function Rail({ current, onPick }: { current: number; onPick: (n: number) => voi
     <div className="flex w-[13.5rem] shrink-0 flex-col border-r border-[var(--line-ink)] xl:w-[15rem]">
     <nav
       aria-label="The approach"
-      className="min-h-0 flex-1 overflow-y-auto px-5 pb-2 pt-6 no-bar"
+      className="min-h-0 flex-1 overflow-y-auto px-5 pb-2 pt-6 no-bar [@media(max-height:780px)]:pt-4"
     >
       {GROUPS.map((g) => (
-        <div key={g.id} className="mb-6 [@media(max-height:820px)]:mb-4 [@media(max-height:720px)]:mb-3">
-          <p className="annot mb-2">{g.label}</p>
+        <div key={g.id} className="mb-6 [@media(max-height:820px)]:mb-3.5 [@media(max-height:760px)]:mb-2.5">
+          <p className="annot mb-2 [@media(max-height:820px)]:mb-1">{g.label}</p>
           <ul>
             {STEPS.map((s, n) => {
               const m = stepMeta(s);
@@ -236,7 +238,7 @@ function Controls({ i, onGo }: { i: number; onGo: (n: number) => void }) {
       <p className="annot mb-1">
         {String(i + 1).padStart(2, "0")} / {String(STEPS.length).padStart(2, "0")}
       </p>
-      <p className="annot mb-3 text-[0.6rem] text-mute!">
+      <p className="annot mb-3 text-[0.6rem] text-mute! [@media(max-height:780px)]:hidden">
         {last ? "Keep scrolling" : "Scroll, or use Next"}
       </p>
       <div className="flex items-center gap-2">
@@ -289,6 +291,20 @@ function Recommendation({ text, label = "Recommendation" }: { text: string; labe
   );
 }
 
+/** The way from a chapter into the page that goes deeper on it. */
+function GoDeeper({ slug }: { slug?: string }) {
+  const page = slug ? CAPABILITY[slug] : undefined;
+  if (!page) return null;
+  return (
+    <Link
+      href={`/capabilities/${page.slug}/`}
+      className="annot mt-2.5 inline-block border-b border-transparent pb-0.5 text-[0.64rem] leading-snug tracking-[0.08em]! text-jade-deep! transition-colors hover:border-jade-deep"
+    >
+      Deep dive · {page.title} →
+    </Link>
+  );
+}
+
 function ChapterView({ chapter: c, n }: { chapter: Chapter; n: number }) {
   const num = String(n).padStart(2, "0");
   return (
@@ -305,6 +321,7 @@ function ChapterView({ chapter: c, n }: { chapter: Chapter; n: number }) {
         <p className="pt-[1.55rem] text-[0.95rem] leading-relaxed text-slate">{c.body}</p>
         <div className="pt-[1.55rem]">
           <Recommendation text={c.rec} />
+          <GoDeeper slug={c.deepDive} />
         </div>
       </div>
       <Stage id={c.exhibit} />
@@ -316,40 +333,32 @@ function SummaryView() {
   return (
     <div className="flex h-full min-h-0 flex-col justify-center">
       <p className="annot">{SUMMARY.eyebrow}</p>
-      <h2 className="font-display mt-4 max-w-[52rem] text-[clamp(2rem,3.7vw,3.3rem)] text-graphite">
-        Follow <span className="text-jade">one dollar</span> through your growth system.
+      <h2 className="font-display mt-4 max-w-[58rem] text-[clamp(1.9rem,3.4vw,3.1rem)] text-graphite">
+        Build the <span className="text-jade">go-to-market strategy</span> sales and marketing can
+        run together.
       </h2>
-      <p className="mt-5 max-w-[46rem] text-[1.1rem] leading-relaxed text-slate">
-        {SUMMARY.lede}
-      </p>
+      <p className="mt-5 max-w-[46rem] text-[1.08rem] leading-relaxed text-slate">{SUMMARY.lede}</p>
 
-      <ol className="mt-10 grid max-w-[64rem] grid-cols-3 gap-8 xl:gap-12">
-        {SUMMARY.plan.map((p) => (
+      <ol className="mt-8 grid max-w-[64rem] grid-cols-3 gap-8 xl:gap-12">
+        {SUMMARY.layers.map((p, i) => (
           <li key={p.name} className="border-t-2 border-jade pt-4">
-            <span className="font-display-mixed block text-[1.6rem] leading-tight text-graphite">
+            <span className="annot text-[0.62rem]">Layer {i + 1}</span>
+            <span className="font-display-mixed mt-1 block text-[1.6rem] leading-tight text-graphite">
               {p.name}
             </span>
-            <span className="mt-2 block text-[0.98rem] leading-relaxed text-slate">
-              {p.line}
-            </span>
+            <span className="mt-2 block text-[0.98rem] leading-relaxed text-slate">{p.line}</span>
           </li>
         ))}
       </ol>
 
-      <ol className="mt-9 flex max-w-[64rem] flex-wrap items-center gap-x-1.5 gap-y-2">
-        {CHAPTERS.map((c, n) => (
-          <li key={c.id} className="flex items-center gap-1.5">
-            <span className="font-mono border border-[var(--line-ink-strong)] bg-white px-2 py-1 text-[0.66rem] uppercase tracking-[0.1em] text-slate">
-              <span className="mr-1.5 text-jade-deep">{String(n + 1).padStart(2, "0")}</span>
-              {c.title}
-            </span>
-            {n < CHAPTERS.length - 1 ? <span aria-hidden className="text-mute">›</span> : null}
-          </li>
-        ))}
-      </ol>
-      <p className="annot mt-6">
-        {CHAPTERS.length} gates, in order · scroll to follow the dollar
-      </p>
+      <div className="mt-6 flex max-w-[64rem] items-center gap-4 bg-graphite px-5 py-3.5 text-chalk">
+        <span aria-hidden className="text-[1.3rem] text-emerald">
+          ↓
+        </span>
+        <p className="text-[1rem] leading-snug">{SUMMARY.result}</p>
+      </div>
+
+      <p className="annot mt-6">Scroll to build it, one layer at a time</p>
     </div>
   );
 }
@@ -359,25 +368,29 @@ function RoadmapView() {
     <div className="flex h-full min-h-0 flex-col justify-center">
       <p className="annot">{ROADMAP.eyebrow}</p>
       <h2 className="font-display mt-4 max-w-[52rem] text-[clamp(2rem,3.7vw,3.3rem)] text-graphite">
-        Baseline, fix, <span className="text-jade">reinvest</span>.
+        Map it, align it, build it, <span className="text-jade">run it</span>.
       </h2>
 
-      <ol className="mt-10 grid max-w-[64rem] grid-cols-3 gap-8 xl:gap-12">
+      <ol className="mt-9 grid max-w-[68rem] grid-cols-4 gap-6 xl:gap-9">
         {ROADMAP.steps.map((s) => (
           <li key={s.name} className="border-t-2 border-jade pt-4">
-            <span className="annot">{s.days}</span>
-            <span className="font-display-mixed mt-2 block text-[1.6rem] leading-tight text-graphite">
+            <span className="annot">{s.n}</span>
+            <span className="font-display-mixed mt-1 block text-[1.6rem] leading-tight text-graphite">
               {s.name}
             </span>
-            <span className="mt-2 block text-[0.98rem] leading-relaxed text-slate">
-              {s.line}
-            </span>
+            <span className="mt-2 block text-[0.95rem] leading-relaxed text-slate">{s.line}</span>
           </li>
         ))}
       </ol>
 
-      <div className="mt-10 max-w-[46rem]">
-        <Recommendation label="The ask" text={ROADMAP.ask} />
+      <div className="mt-9 max-w-[46rem]">
+        <Recommendation label="Where to start" text={ROADMAP.ask} />
+        <Link
+          href="/capabilities/"
+          className="annot mt-2.5 inline-block border-b border-transparent pb-0.5 text-[0.64rem] tracking-[0.08em]! text-jade-deep! transition-colors hover:border-jade-deep"
+        >
+          Or go deeper on any part of it →
+        </Link>
       </div>
     </div>
   );
@@ -417,22 +430,22 @@ function MobileList() {
     <div className="mx-auto max-w-[40rem] space-y-14">
       <div>
         <p className="annot">{SUMMARY.eyebrow}</p>
-        <h2 className="font-display mt-4 text-[clamp(2rem,9vw,2.6rem)] text-graphite">
-          Follow <span className="text-jade">one dollar</span> through your growth system.
+        <h2 className="font-display mt-4 text-[clamp(1.8rem,8vw,2.4rem)] text-graphite">
+          Build the <span className="text-jade">go-to-market strategy</span> sales and marketing can
+          run together.
         </h2>
         <p className="mt-4 leading-relaxed text-slate">{SUMMARY.lede}</p>
         <ul className="mt-6 space-y-4">
-          {SUMMARY.plan.map((p) => (
+          {SUMMARY.layers.map((p) => (
             <li key={p.name} className="border-t-2 border-jade pt-3">
-              <span className="font-display-mixed block text-[1.4rem] text-graphite">
-                {p.name}
-              </span>
-              <span className="mt-1 block text-[1rem] leading-relaxed text-slate">
-                {p.line}
-              </span>
+              <span className="font-display-mixed block text-[1.4rem] text-graphite">{p.name}</span>
+              <span className="mt-1 block text-[1rem] leading-relaxed text-slate">{p.line}</span>
             </li>
           ))}
         </ul>
+        <p className="mt-5 bg-graphite px-4 py-3 text-[0.98rem] leading-snug text-chalk">
+          {SUMMARY.result}
+        </p>
       </div>
 
       {CHAPTERS.map((c, n) => (
@@ -440,13 +453,14 @@ function MobileList() {
           <p className="annot">
             {String(n + 1).padStart(2, "0")} · {GROUP_LABEL[c.group]} · {c.question}
           </p>
-          <h3 className="font-display-mixed mt-3 text-[1.7rem] text-graphite">{c.claim}</h3>
+          <h3 className="font-display-mixed mt-3 text-[1.65rem] text-graphite">{c.claim}</h3>
           <p className="mt-3 leading-relaxed text-slate">{c.body}</p>
           <div className="mt-5">
             <MobileExhibit id={c.exhibit} />
           </div>
           <div className="mt-5">
             <Recommendation text={c.rec} />
+            <GoDeeper slug={c.deepDive} />
           </div>
         </article>
       ))}
@@ -454,23 +468,19 @@ function MobileList() {
       <div>
         <p className="annot">{ROADMAP.eyebrow}</p>
         <h3 className="font-display mt-4 text-[clamp(1.8rem,8vw,2.3rem)] text-graphite">
-          Baseline, fix, <span className="text-jade">reinvest</span>.
+          Map it, align it, build it, <span className="text-jade">run it</span>.
         </h3>
         <ol className="mt-6 space-y-4">
           {ROADMAP.steps.map((s) => (
             <li key={s.name} className="border-t-2 border-jade pt-3">
-              <span className="annot">{s.days}</span>
-              <span className="font-display-mixed mt-1 block text-[1.4rem] text-graphite">
-                {s.name}
-              </span>
-              <span className="mt-1 block text-[1rem] leading-relaxed text-slate">
-                {s.line}
-              </span>
+              <span className="annot">{s.n}</span>
+              <span className="font-display-mixed mt-1 block text-[1.4rem] text-graphite">{s.name}</span>
+              <span className="mt-1 block text-[1rem] leading-relaxed text-slate">{s.line}</span>
             </li>
           ))}
         </ol>
         <div className="mt-6">
-          <Recommendation label="The ask" text={ROADMAP.ask} />
+          <Recommendation label="Where to start" text={ROADMAP.ask} />
         </div>
         <a
           href="#start"

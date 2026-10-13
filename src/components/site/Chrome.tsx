@@ -1,17 +1,18 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 
 /*
   The header keeps the paper ground the whole way down. It used to fade in on
   scroll and pick up whatever sheet was behind it, which meant the one fixed
   element on the page was the least stable thing on it.
 */
-export function SiteHeader() {
+export function SiteHeader({ home = true }: { home?: boolean }) {
   return (
     <header className="fixed inset-x-0 top-0 z-50 bg-sheet">
       <div className="mx-auto flex max-w-[1500px] items-center justify-between px-5 py-4 sm:px-8">
-        <a href="#opening" className="block" aria-label="Audaption, home">
+        <a href={home ? "#opening" : "/"} className="block" aria-label="Audaption, home">
           <Image
             src="/audaption-logo.svg"
             alt="Audaption"
@@ -22,19 +23,27 @@ export function SiteHeader() {
           />
         </a>
 
-        <a
-          href="#start"
-          className="font-mono border border-[var(--line-ink-strong)] px-4 py-2 text-[0.72rem] uppercase tracking-[0.14em] text-slate transition-colors hover:border-jade hover:text-jade"
-        >
-          Chat with an expert
-        </a>
+        <div className="flex items-center gap-5">
+          <Link
+            href="/capabilities/"
+            className="font-mono hidden text-[0.72rem] uppercase tracking-[0.14em] text-slate transition-colors hover:text-jade sm:block"
+          >
+            Deep dives
+          </Link>
+          <a
+            href={home ? "#start" : "/#start"}
+            className="font-mono border border-[var(--line-ink-strong)] px-4 py-2 text-[0.72rem] uppercase tracking-[0.14em] text-slate transition-colors hover:border-jade hover:text-jade"
+          >
+            Chat with an expert
+          </a>
+        </div>
       </div>
       <div className="h-px w-full bg-[var(--line-ink)]" />
     </header>
   );
 }
 
-export function SiteFooter() {
+export function SiteFooter({ home = true }: { home?: boolean }) {
   return (
     // Continues the dark ground of sheet 07 rather than flipping back to paper
     // for a footer nobody asked to read.
@@ -54,9 +63,12 @@ export function SiteFooter() {
           </p>
         </div>
         <div className="flex flex-col gap-2 sm:items-end">
-          <a href="#start" className="annot hover:text-chalk!">
+          <a href={home ? "#start" : "/#start"} className="annot hover:text-chalk!">
             Chat with an expert
           </a>
+          <Link href="/capabilities/" className="annot hover:text-chalk!">
+            Deep dives
+          </Link>
           <a href="/legacy" className="annot hover:text-chalk!">
             Previous site
           </a>
