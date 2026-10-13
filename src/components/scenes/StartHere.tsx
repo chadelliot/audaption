@@ -147,25 +147,6 @@ export default function StartHere() {
                 </div>
               ))}
             </dl>
-
-            <div className="mt-9 border-t border-[var(--line-ink)] pt-8">
-              <p className="annot">The first 90 days</p>
-              <ol className="mt-5 space-y-5">
-                {ROADMAP.map((r) => (
-                  <li key={r.name} className="grid gap-1.5 sm:grid-cols-[13rem_1fr] sm:gap-6">
-                    <span className="font-display-mixed text-[1.2rem] leading-tight text-graphite">
-                      {r.name}
-                      <span className="annot ml-3">{r.days}</span>
-                    </span>
-                    <span className="text-[0.98rem] leading-relaxed text-slate">{r.line}</span>
-                  </li>
-                ))}
-              </ol>
-              <p className="mt-7 text-[1.05rem] leading-relaxed text-graphite">
-                The ask: fund the first play now, review returns at day 90, and
-                move budget to whichever market earns more.
-              </p>
-            </div>
           </div>
 
           {/* the ask */}
@@ -225,6 +206,28 @@ export default function StartHere() {
               </form>
             )}
           </div>
+        </div>
+
+        {/* the path: sequenced, then the ask */}
+        <div className="mt-px border border-t-0 border-[var(--line-ink-strong)] bg-card px-7 py-10 sm:px-10 sm:py-12">
+          <p className="annot">The first 90 days</p>
+          <ol className="mt-6 grid gap-8 md:grid-cols-3 md:gap-10">
+            {ROADMAP.map((r) => (
+              <li key={r.name} className="border-t-2 border-jade pt-4">
+                <span className="annot">{r.days}</span>
+                <span className="font-display-mixed mt-2 block text-[1.4rem] leading-tight text-graphite">
+                  {r.name}
+                </span>
+                <span className="mt-2 block text-[0.98rem] leading-relaxed text-slate">
+                  {r.line}
+                </span>
+              </li>
+            ))}
+          </ol>
+          <p className="mt-9 max-w-[52rem] text-[1.15rem] leading-relaxed text-graphite">
+            The ask: fund the first play now, review returns at day 90, and
+            move budget to whichever market earns more.
+          </p>
         </div>
       </div>
     </section>
