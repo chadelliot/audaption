@@ -11,6 +11,8 @@ const anton = localFont({
   weight: "400",
   display: "swap",
   adjustFontFallback: false,
+  // Only the archived /legacy page draws with Anton now.
+  preload: false,
 });
 
 const jost = Jost({

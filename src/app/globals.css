@@ -142,44 +142,78 @@ body {
 }
 
 /*
-  Anton has one weight and a very tight vertical rhythm, and it needs negative
-  tracking at display sizes or it reads as a poster rather than as signage.
+  Headings are Jost, the same family as the body, in semibold.
 
-  Leading is set from the font's measured ink rather than by eye. Anton's caps
-  occupy 0.867em; its mixed-case ascender-to-descender ink is 0.986em. The
-  previous values — 0.9 and 0.98 — left a 0.033em gap between lines of caps and
-  a *negative* gap in mixed case, where one line's descenders overlapped the
-  next line's ascenders outright.
+  They used to be Anton: a tall, condensed, all-caps poster face. It read as
+  signage laid over a text face, two voices on one page. Jost at 600 keeps the
+  hierarchy — a heading is clearly a heading — while sounding like the same
+  author as the paragraph under it. Sentence case, tight tracking at size,
+  and tabular figures so a number that counts up does not jitter as it does.
 
-  Both are now set to leave roughly 0.17em of air at the sizes these run at on
-  a phone, tightening at `lg` where the same headline is half again as large.
-  Leading and size move in opposite directions: big type needs proportionally
-  less air, small type more, and a single fixed value cannot serve a headline
-  that clamps across a 1.9rem–3.4rem range.
+  Jost is wider than Anton, so display sizes across the site were brought down
+  to match. Leading tightens as size grows: big type needs proportionally less
+  air than small, and one value cannot serve a heading that clamps across a wide
+  range.
+
+  The archived homepage at /legacy was drawn for Anton and keeps it; see the
+  `.legacy` rules below.
 */
 .font-display {
-  font-family: var(--font-display), "Arial Narrow", sans-serif;
-  font-weight: 400;
-  letter-spacing: -0.015em;
+  font-family: var(--font-jost), system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.03em;
   line-height: 1.04;
-  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
   text-wrap: balance;
 }
 
 .font-display-mixed {
-  font-family: var(--font-display), "Arial Narrow", sans-serif;
-  font-weight: 400;
-  letter-spacing: -0.005em;
-  line-height: 1.16;
+  font-family: var(--font-jost), system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.022em;
+  line-height: 1.12;
+  font-variant-numeric: tabular-nums;
   text-wrap: balance;
 }
 
 @media (min-width: 1024px) {
   .font-display {
-    line-height: 0.98;
+    line-height: 1.02;
   }
 
   .font-display-mixed {
+    line-height: 1.1;
+  }
+}
+
+/*
+  The previous homepage, preserved as it was drawn: Anton, all caps, with the
+  leading measured from the font's own ink (caps occupy 0.867em, mixed-case
+  ascender-to-descender 0.986em).
+*/
+.legacy .font-display {
+  font-family: var(--font-display), "Arial Narrow", sans-serif;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  line-height: 1.04;
+  text-transform: uppercase;
+  font-variant-numeric: normal;
+}
+
+.legacy .font-display-mixed {
+  font-family: var(--font-display), "Arial Narrow", sans-serif;
+  font-weight: 400;
+  letter-spacing: -0.005em;
+  line-height: 1.16;
+  font-variant-numeric: normal;
+}
+
+@media (min-width: 1024px) {
+  .legacy .font-display {
+    line-height: 0.98;
+  }
+
+  .legacy .font-display-mixed {
     line-height: 1.1;
   }
 }

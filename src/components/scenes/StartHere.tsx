@@ -109,7 +109,7 @@ export default function StartHere() {
       <div className="mx-auto max-w-[1500px]">
         <div className="max-w-[52rem]">
           <p className="annot">Your next stage of growth</p>
-          <h2 className="font-display mt-6 text-[clamp(2rem,4.6vw,3.4rem)] text-graphite">
+          <h2 className="font-display mt-6 text-[clamp(1.9rem,3.8vw,3rem)] text-graphite">
             Build what your next stage of growth requires.
           </h2>
           <p className="mt-6 max-w-[44rem] leading-relaxed text-slate">

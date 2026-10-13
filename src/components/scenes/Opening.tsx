@@ -111,7 +111,7 @@ export default function Opening() {
               look away and back without the page having changed its mind. */}
           <div>
             <p className="annot">Audaption · The growth system</p>
-            <h1 className="font-display mt-4 max-w-[24rem] text-[clamp(1.9rem,min(3.6vw,4.9vh),3rem)] text-graphite sm:max-w-[46rem]">
+            <h1 className="font-display mt-4 max-w-[26rem] text-[clamp(1.75rem,min(3.1vw,4.5vh),2.75rem)] text-graphite sm:max-w-[60rem]">
               Companies hire roles.
               <span className="block text-slate">
                 What they actually need is a{" "}

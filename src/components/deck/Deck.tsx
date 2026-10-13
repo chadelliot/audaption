@@ -298,7 +298,7 @@ function ChapterView({ chapter: c, n }: { chapter: Chapter; n: number }) {
           <p className="annot">
             {num} · {GROUP_LABEL[c.group]} · {c.question}
           </p>
-          <h2 className="font-display-mixed mt-3 text-[clamp(1.4rem,2.1vw,2.1rem)] text-graphite">
+          <h2 className="font-display-mixed mt-3 text-[clamp(1.25rem,1.8vw,1.8rem)] text-graphite">
             {c.claim}
           </h2>
         </div>
@@ -316,7 +316,7 @@ function SummaryView() {
   return (
     <div className="flex h-full min-h-0 flex-col justify-center">
       <p className="annot">{SUMMARY.eyebrow}</p>
-      <h2 className="font-display mt-4 max-w-[52rem] text-[clamp(2.2rem,4.4vw,3.9rem)] text-graphite">
+      <h2 className="font-display mt-4 max-w-[52rem] text-[clamp(2rem,3.7vw,3.3rem)] text-graphite">
         Follow <span className="text-jade">one dollar</span> through your growth system.
       </h2>
       <p className="mt-5 max-w-[46rem] text-[1.1rem] leading-relaxed text-slate">
@@ -358,7 +358,7 @@ function RoadmapView() {
   return (
     <div className="flex h-full min-h-0 flex-col justify-center">
       <p className="annot">{ROADMAP.eyebrow}</p>
-      <h2 className="font-display mt-4 max-w-[52rem] text-[clamp(2.2rem,4.4vw,3.9rem)] text-graphite">
+      <h2 className="font-display mt-4 max-w-[52rem] text-[clamp(2rem,3.7vw,3.3rem)] text-graphite">
         Baseline, fix, <span className="text-jade">reinvest</span>.
       </h2>
 
