@@ -14,13 +14,14 @@
 */
 
 import {
+  useEffect,
   useLayoutEffect,
   useRef,
   useState,
   type CSSProperties,
   type ReactNode,
 } from "react";
-import { motion } from "framer-motion";
+import { animate, motion } from "framer-motion";
 import { usePrefersReducedMotion } from "@/lib/reducedMotion";
 
 export type Tone = "plain" | "good" | "leak" | "ink";
@@ -152,6 +153,36 @@ export function GrowBar({
       className={`h-full ${className}`}
     />
   );
+}
+
+/** A number that counts up to its value as its chapter arrives. */
+export function CountUp({
+  to,
+  from = 0,
+  delay = 0,
+  duration = 1.1,
+  format = (v: number) => String(Math.round(v)),
+}: {
+  to: number;
+  from?: number;
+  delay?: number;
+  duration?: number;
+  format?: (v: number) => string;
+}) {
+  const still = usePrefersReducedMotion();
+  const [v, setV] = useState(from);
+  useEffect(() => {
+    if (still) return;
+    const c = animate(from, to, {
+      duration,
+      delay,
+      ease: [0.22, 1, 0.36, 1],
+      onUpdate: setV,
+    });
+    return () => c.stop();
+  }, [to, from, delay, duration, still]);
+  /* Someone who asked for less motion gets the finished number, not a count. */
+  return <>{format(still ? to : v)}</>;
 }
 
 /*

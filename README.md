@@ -17,13 +17,16 @@ npm run dev
 
 ## What is on the page
 
-- **The opening** is the one isometric drawing: four layers that start out of line
-  and set into one stack. It is authored SVG on one projection (`src/lib/iso.ts`,
+- **The opening** is the one isometric drawing, on the tan ground: four layers
+  that start out of line and set into one stack. It is authored SVG on one projection (`src/lib/iso.ts`,
   `src/components/iso/Cube.tsx`), so every label is real text.
-- **The approach** is a deck of decisions, one screen each, in
-  `src/components/deck/Deck.tsx`. Each chapter pairs a question with a flat,
-  data-led working exhibit from `src/components/exhibits/` (scoreboard, segments,
-  message, funnel, website, signals, AI readiness, plays).
+- **The approach** follows one dollar of growth spend through nine gates (allocate,
+  reach, convert, capture, record, route, sell, prove, scale), in
+  `src/components/deck/Deck.tsx`. It is pinned and scroll-driven: scrolling moves
+  through the chapters, and Next, Back, the rail and the arrow keys scroll to a
+  chapter. Each chapter pairs one question with a flat, data-led exhibit from
+  `src/components/exhibits/` that builds itself in as the chapter arrives. The
+  story is deliberately not the diagnosis on aboutchad.com.
 - **The close** is the enquiry form.
 
 Every exhibit is an *illustrative* example and says so in its corner. None of it

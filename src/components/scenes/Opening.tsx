@@ -43,8 +43,10 @@ const SCATTER: { x: number; y: number }[] = [
   { x: 150, y: -126 },
 ];
 
-/* Value rises with the layer; jade anchors the one that carries the rest. */
-const SKIN = ["jade", "glass", "timber", "chalk"] as const;
+/* Value rises with the layer; jade anchors the one that carries the rest. The
+   top layer is paper, so the finished stack ends on the lightest solid. */
+const SKIN = ["jade", "glass", "timber", "paperLift"] as const;
+const INK = "#262626";
 
 const boxes: Box[] = TIERS.map((_, i) => box(0, 0, i * PITCH, W, W, H));
 
@@ -101,7 +103,7 @@ export default function Opening() {
     <section
       id="opening"
       ref={ref}
-      className="sheet-dark relative lg:h-[460vh]"
+      className="sheet-tan relative lg:h-[460vh]"
     >
       <div className="px-5 pb-16 pt-24 sm:px-8 lg:sticky lg:top-0 lg:flex lg:h-[100svh] lg:flex-col lg:overflow-hidden lg:pb-3 lg:pt-[4.5rem] [@media(max-height:740px)]:lg:pt-[4.25rem]">
         <div className="relative mx-auto w-full max-w-[1500px]">
@@ -109,14 +111,14 @@ export default function Opening() {
               look away and back without the page having changed its mind. */}
           <div>
             <p className="annot">Audaption · The growth system</p>
-            <h1 className="font-display mt-4 max-w-[24rem] text-[clamp(1.9rem,min(3.6vw,4.9vh),3rem)] text-chalk sm:max-w-[46rem]">
+            <h1 className="font-display mt-4 max-w-[24rem] text-[clamp(1.9rem,min(3.6vw,4.9vh),3rem)] text-graphite sm:max-w-[46rem]">
               Companies hire roles.
-              <span className="block text-glass">
+              <span className="block text-slate">
                 What they actually need is a{" "}
-                <span className="text-emerald">system</span>.
+                <span className="text-jade">system</span>.
               </span>
             </h1>
-            <p className="mt-3 max-w-[56rem] leading-relaxed text-glass">
+            <p className="mt-3 max-w-[56rem] leading-relaxed text-slate">
               Before fixing anything, ask what you&rsquo;re actually trying to
               move. Every company has the same four layers, and almost none of
               them line up — which is why the hire lands, works hard, and
@@ -139,25 +141,25 @@ export default function Opening() {
                 <li
                   key={t.id}
                   className="border-t py-5 transition-colors duration-500 first:border-t-0 [@media(max-height:940px)]:py-2 [@media(max-height:740px)]:py-1.5"
-                  style={{ borderColor: on ? "rgba(53,214,169,0.28)" : "var(--line)" }}
+                  style={{ borderColor: on ? "rgba(41,165,135,0.5)" : "var(--line-ink)" }}
                 >
                   <div className="flex items-baseline gap-3">
                     <span
                       className="font-mono text-[0.82rem] tracking-[0.16em] transition-colors duration-500"
-                      style={{ color: on ? "var(--color-emerald)" : "var(--color-glass-dim)" }}
+                      style={{ color: on ? "var(--color-jade-deep)" : "var(--color-mute)" }}
                     >
                       {t.n}
                     </span>
                     <span
                       className="font-display-mixed text-[1.55rem] leading-tight transition-colors duration-500 [@media(max-height:940px)]:text-[1.35rem]"
-                      style={{ color: on ? "var(--color-chalk)" : "var(--color-glass-dim)" }}
+                      style={{ color: on ? "var(--color-graphite)" : "var(--color-mute)" }}
                     >
                       {t.name}
                     </span>
                   </div>
                   <p
                     className="mt-1.5 text-[1.1rem] leading-relaxed transition-colors duration-500 [@media(max-height:940px)]:text-[0.98rem] [@media(max-height:940px)]:leading-snug [@media(max-height:740px)]:text-[0.9rem]"
-                    style={{ color: on ? "var(--color-glass)" : "var(--color-glass-dim)" }}
+                    style={{ color: on ? "var(--color-slate)" : "var(--color-mute)" }}
                   >
                     {t.line}
                   </p>
@@ -177,7 +179,7 @@ export default function Opening() {
                   y1={-352}
                   x2={0}
                   y2={236}
-                  stroke="var(--color-emerald)"
+                  stroke="var(--color-jade)"
                   strokeWidth={1}
                   strokeDasharray="2 6"
                 />
@@ -186,8 +188,8 @@ export default function Opening() {
               <GhostCube
                 b={box(0, 0, -0.02, W, W, 0.02)}
                 s={S}
-                stroke="rgba(125,143,137,0.28)"
-                fill="rgba(125,143,137,0.03)"
+                stroke="rgba(38,38,38,0.3)"
+                fill="rgba(38,38,38,0.03)"
                 dashed
               />
 
@@ -196,9 +198,9 @@ export default function Opening() {
               ))}
 
               <motion.g style={{ opacity: sealOpacity }}>
-                <line x1={-206} y1={-300} x2={-206} y2={196} stroke="var(--color-emerald)" strokeWidth={1} />
-                <line x1={-212} y1={-300} x2={-200} y2={-300} stroke="var(--color-emerald)" strokeWidth={1} />
-                <line x1={-212} y1={196} x2={-200} y2={196} stroke="var(--color-emerald)" strokeWidth={1} />
+                <line x1={-206} y1={-300} x2={-206} y2={196} stroke="var(--color-jade)" strokeWidth={1} />
+                <line x1={-212} y1={-300} x2={-200} y2={-300} stroke="var(--color-jade)" strokeWidth={1} />
+                <line x1={-212} y1={196} x2={-200} y2={196} stroke="var(--color-jade)" strokeWidth={1} />
                 <text
                   x={-218}
                   y={-52}
@@ -206,7 +208,7 @@ export default function Opening() {
                   className="font-mono"
                   fontSize={11}
                   letterSpacing="0.18em"
-                  fill="var(--color-emerald)"
+                  fill="var(--color-jade-deep)"
                   transform="rotate(-90 -218 -52)"
                 >
                   ONE SYSTEM
@@ -217,10 +219,10 @@ export default function Opening() {
         </div>
 
         <div className="mx-auto hidden w-full max-w-[1500px] lg:block">
-          <div className="flex flex-wrap items-center justify-between gap-x-8 gap-y-3 border-t border-[var(--line)] pt-4">
+          <div className="flex flex-wrap items-center justify-between gap-x-8 gap-y-3 border-t border-[var(--line-ink)] pt-4">
             <p
               className="annot transition-colors duration-500"
-              style={{ color: complete ? "var(--color-emerald)" : undefined }}
+              style={{ color: complete ? "var(--color-jade-deep)" : undefined }}
             >
               {complete
                 ? "Lined up · four layers, one set of definitions"
@@ -231,7 +233,7 @@ export default function Opening() {
             <a
               href="#approach"
               data-scroll-offset="0"
-              className="annot border-b border-transparent pb-1 transition-colors hover:text-chalk"
+              className="annot border-b border-transparent pb-1 transition-colors hover:text-graphite"
             >
               The approach ↓
             </a>
@@ -277,10 +279,19 @@ function Layer({
         <GhostCube b={b} s={S} dashed />
       </motion.g>
       <motion.g style={{ opacity: solid }}>
-        <Cube b={b} s={S} skin={SKIN[i]} />
+        <Cube b={b} s={S} skin={SKIN[i]} edgeColor={INK} />
       </motion.g>
       <motion.g style={{ opacity: tag }}>
-        <Tag at={v} n={n} label={label} reach={62} size={15} />
+        <Tag
+          at={v}
+          n={n}
+          label={label}
+          reach={62}
+          size={15}
+          ink={INK}
+          accent="#1d7a63"
+          dim="rgba(38,38,38,0.35)"
+        />
       </motion.g>
     </motion.g>
   );

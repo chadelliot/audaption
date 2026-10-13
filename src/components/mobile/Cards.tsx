@@ -13,7 +13,7 @@ const TIER_TINT = [
   "var(--color-jade)",
   "#5b7fb0",
   "var(--color-timber)",
-  "var(--color-chalk)",
+  "var(--color-mute)",
 ];
 
 export function LayerCards({ tiers }: { tiers: TierBand[] }) {
@@ -22,18 +22,18 @@ export function LayerCards({ tiers }: { tiers: TierBand[] }) {
       {tiers.map((t, i) => (
         <li
           key={t.id}
-          className="border-l-2 bg-[rgba(232,234,231,0.04)] py-3 pl-4 pr-3"
+          className="border-l-2 bg-[rgba(38,38,38,0.04)] py-3 pl-4 pr-3"
           style={{ borderColor: TIER_TINT[i] }}
         >
           <div className="flex items-baseline gap-3">
-            <span className="font-mono text-[0.78rem] tracking-[0.16em] text-emerald">
+            <span className="font-mono text-[0.78rem] tracking-[0.16em] text-jade-deep">
               {t.n}
             </span>
-            <span className="font-display-mixed text-[1.35rem] leading-tight text-chalk">
+            <span className="font-display-mixed text-[1.35rem] leading-tight text-graphite">
               {t.name}
             </span>
           </div>
-          <p className="mt-1.5 text-[1rem] leading-relaxed text-glass">{t.line}</p>
+          <p className="mt-1.5 text-[1rem] leading-relaxed text-slate">{t.line}</p>
         </li>
       ))}
     </ol>

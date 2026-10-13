@@ -1,35 +1,41 @@
 /*
-  The approach, as a sequence of decisions.
+  The story: follow one dollar.
 
-  A commercial growth strategy is not a list of services. It is an order of
-  questions, each answered before the next is asked, each ending in a
-  recommendation. Every chapter pairs one question with one exhibit — a flat,
-  data-led working exhibit in the register of a board pack, not a drawing:
+  The approach on aboutchad.com is a diagnosis — one company, one scorecard, a
+  sequence of analytical questions. This is a different story on purpose. It
+  follows a single dollar of growth spend through the commercial system, gate by
+  gate, from the moment it is allocated to the moment it is proven and spent
+  again. At every gate that dollar either compounds or leaks, and the argument
+  is that the leaks are almost never where a team is looking.
 
-    01 Scoreboard    win rate against target, and the rest of the board
-    02 Segmentation  ranked segments with the headroom left in each
-    03 Message       two markets side by side: lead with, sounds like, roles
-    04 Funnel        the bottleneck flagged, then the fix, then the lift
-    05 Website       one page, two buyers, and the rule that picks each
-    06 Signals       a clickable explorer: marketing play, sales play
-    07 Scale         which AI use cases the layers actually unlock
-    08 Invest        two plays, their budgets, handoffs and returns
+  Nine gates, in three movements:
+
+    Goes out        01 Allocate   02 Reach   03 Convert
+    Gets captured   04 Capture    05 Record  06 Route
+    Comes back      07 Sell       08 Prove   09 Scale
+
+  Each gate is one question, one flat working exhibit, and one recommendation.
+  Each also stands for a body of work Audaption does — advertising ROI, content
+  and creative, website and conversion, martech, CRM, automation, signal-led
+  selling, analytics, AI — which is why every chapter is also the front door to a
+  deeper page about that work.
 
   The exhibits live in components/exhibits and are illustrative. They say so in
-  their corner, and none of them is client data. Every exhibit has to carry its
-  chapter's claim, not just illustrate the topic; if a claim changes, change the
-  exhibit with it. The opening's isometric stack is the one drawing left on the
-  page, on purpose.
+  their corner and none is client data. Every exhibit has to carry its chapter's
+  claim, not just illustrate the topic; if a claim changes, change the exhibit
+  with it. The opening's isometric stack is the one drawing left on the page, on
+  purpose.
 */
 
 import type { ExhibitId } from "@/components/exhibits";
 
-export type GroupId = "case" | "diagnose" | "act";
+export type GroupId = "case" | "out" | "in" | "back";
 
 export const GROUPS: { id: GroupId; label: string }[] = [
-  { id: "case", label: "The case" },
-  { id: "diagnose", label: "Diagnose" },
-  { id: "act", label: "Act" },
+  { id: "case", label: "The dollar" },
+  { id: "out", label: "Goes out" },
+  { id: "in", label: "Gets captured" },
+  { id: "back", label: "Comes back" },
 ];
 
 export interface Chapter {
@@ -49,138 +55,148 @@ export interface Chapter {
 
 export const CHAPTERS: Chapter[] = [
   {
-    id: "scoreboard",
-    group: "diagnose",
-    title: "Scoreboard",
-    question: "What defines success?",
-    claim: "Agree on one scoreboard before fixing anything.",
-    body: "Most teams track a dozen numbers and argue about the one that is off. We settle the metrics, the definitions and the source of truth first, then find the single number that is holding the rest back.",
-    rec: "Prioritize the metric that gates the rest. Protect what is already healthy rather than optimizing it further.",
-    exhibit: "scoreboard",
+    id: "allocate",
+    group: "out",
+    title: "Allocate",
+    question: "Where does the first dollar go?",
+    claim: "Spend where the next dollar earns most, not where the last one did.",
+    body: "Every channel flattens. Past a point, more spend buys less. We read the marginal return of each channel, find the ones past their knee, and move money before the quarter closes rather than after it.",
+    rec: "Cap the saturated channel, fund the one with the steepest curve, and read the curves again every month.",
+    exhibit: "allocate",
   },
   {
-    id: "segmentation",
-    group: "diagnose",
-    title: "Segmentation",
-    question: "Where should we compete?",
-    claim: "You cannot win everywhere, so rank where you can.",
-    body: "Every segment, channel and customer type sized on what it is actually worth: deal size, buying committee, sales cycle, room to expand. A national ranking is not a plan, so we test it market by market.",
-    rec: "Fund the largest open pool first and sequence the rest behind it. One or two markets are worth the money.",
-    exhibit: "segments",
+    id: "reach",
+    group: "out",
+    title: "Reach",
+    question: "What does it say, and to whom?",
+    claim: "Test the message against the audience, not just the channel.",
+    body: "A message that wins with one buyer loses with the next. We run message-by-audience tests and keep what works where, so creative stops being a matter of taste and becomes a library with results attached.",
+    rec: "Retire the generic message. Fund the three combinations that clear the bar and test the rest.",
+    exhibit: "reach",
   },
   {
-    id: "message",
-    group: "diagnose",
-    title: "Message",
-    question: "Who gets the message, and where?",
-    claim: "Same product, different buyer.",
-    body: "Messaging is built per market and per buying role, not per tier. The market changes what you lead with: outcomes and supplier consolidation for an enterprise committee, speed and a reliable service for an operations manager.",
-    rec: "Write one message per market and buyer, then retire the generic deck.",
-    exhibit: "message",
-  },
-  {
-    id: "funnel",
-    group: "diagnose",
-    title: "Funnel",
-    question: "Where does growth leak?",
-    claim: "Find where qualified buyers stall.",
-    body: "Opportunity is rarely the problem. We map real customer progression, phase by phase, and find where attention, conversion, handoffs or revenue are lost. It is usually late, and usually in a handoff.",
-    rec: "Fund win-rate enablement before adding top-of-funnel spend.",
-    exhibit: "funnel",
-  },
-  {
-    id: "website",
-    group: "act",
-    title: "Website",
-    question: "How should the experience respond?",
-    claim: "Make the site respond to the buyer in front of it.",
+    id: "convert",
+    group: "out",
+    title: "Convert",
+    question: "What happens when they arrive?",
+    claim: "Make the page respond to the buyer in front of it.",
     body: "The website is where the message meets behavior. We design how structure, content and interactions help each buyer finish the task they came for, adapt it by market and lifecycle stage, and measure how far each visit progresses.",
     rec: "Personalize the few pages that carry the most pipeline before redesigning the rest.",
     exhibit: "website",
   },
   {
-    id: "signals",
-    group: "act",
-    title: "Signals",
-    question: "When should we act?",
-    claim: "Act on timing, not guesswork.",
-    body: "Every stage throws off signals: new funding, an executive hire, a champion who leaves, a competitive evaluation, spend that starts to fall. With one customer record, each signal triggers a marketing play and a sales play.",
-    rec: "Define the handful of signals that matter and who acts on each. Single-threaded deals stall; multi-threaded ones close.",
-    exhibit: "signals",
+    id: "capture",
+    group: "in",
+    title: "Capture",
+    question: "Does the signal survive the stack?",
+    claim: "Most of what a dollar learns is lost between the tools.",
+    body: "Consent gaps, broken tags, overlapping platforms and integrations nobody owns decide how much of a buyer's behavior ever reaches a person who can act on it. The stack is not a list of tools; it is a pipe, and pipes leak at joints.",
+    rec: "Retire the overlapping tools and connect the few integrations that carry signal. Do not buy another platform first.",
+    exhibit: "stack",
+  },
+  {
+    id: "record",
+    group: "in",
+    title: "Record",
+    question: "Who is this customer?",
+    claim: "One account, one record, one owner.",
+    body: "The same company sits in the CRM four times, under four names, with four owners and four versions of its history. Until it is one record with one lifecycle stage, nothing downstream can be trusted, including the AI.",
+    rec: "Merge the duplicates, give every account an owner, and make the record the only place a lifecycle stage is set.",
+    exhibit: "record",
+  },
+  {
+    id: "route",
+    group: "in",
+    title: "Route",
+    question: "How fast does it reach a person?",
+    claim: "Speed to lead is a system, not a habit.",
+    body: "Win rate falls away in the first hours after a buyer raises a hand. Automation does the work that should never wait on a human: score, route, start the clock, and hand over a record that is already complete.",
+    rec: "Set a response-time promise by segment and automate everything that happens before the first human touch.",
+    exhibit: "route",
+  },
+  {
+    id: "sell",
+    group: "back",
+    title: "Sell",
+    question: "When does a seller act?",
+    claim: "Put the right signal in front of the right seller at the right moment.",
+    body: "An account leaves a trail: ads it engaged with, pages it read, funding it received, a champion who moved on. Read together on one timeline, the trail tells a seller when to call and what to say, instead of when it is convenient.",
+    rec: "Agree the handful of signals that matter, who acts on each, and by when. Single-threaded deals stall; multi-threaded ones close.",
+    exhibit: "sell",
+  },
+  {
+    id: "prove",
+    group: "back",
+    title: "Prove",
+    question: "What did the dollar do?",
+    claim: "One number leadership trusts.",
+    body: "Every platform claims the sale. Added together they claim more revenue than the company booked. We reconcile attribution to finance, show credit as a range rather than a verdict, and give the board one number it can repeat.",
+    rec: "Report revenue reconciled to finance, and treat attribution as a range that informs the next allocation.",
+    exhibit: "prove",
   },
   {
     id: "scale",
-    group: "act",
+    group: "back",
     title: "Scale",
-    question: "What makes it scale?",
-    claim: "AI only works on top of the other layers.",
-    body: "Trusted data and knowledge for AI to work from, and the customer experience it powers. This is why pilots stall: the company skipped the layers underneath and asked AI to stand on nothing.",
-    rec: "Build the layers first, then let AI act on them.",
+    question: "What makes it compound?",
+    claim: "AI works on top of the layers, not instead of them.",
+    body: "Trusted data and knowledge for AI to work from, and the experience it powers. This is why pilots stall: the company skipped the layers underneath and asked AI to stand on nothing.",
+    rec: "Close the gaps in the layers first, then let AI act on them.",
     exhibit: "ai",
-  },
-  {
-    id: "invest",
-    group: "act",
-    title: "Invest",
-    question: "Where should we invest?",
-    claim: "Fund two plays, then follow the returns.",
-    body: "A unified go-to-market motion connects segmentation, lifecycle design and commercial orchestration, so Sales and Marketing share territory, routing, timing and handoffs. Start with the largest open pool and the fastest payback.",
-    rec: "Fund both plays now. At day 90, move budget to whichever earns more.",
-    exhibit: "plays",
   },
 ];
 
 /* ------------------------------------------------------------------ */
-/* The two chapters that are text, not drawings                        */
+/* The two steps that are text, not exhibits                           */
 /* ------------------------------------------------------------------ */
 
 export const SUMMARY = {
   id: "summary",
   group: "case" as GroupId,
-  title: "Executive summary",
-  eyebrow: "The case · Executive summary",
-  headline: "A plan to stop growth from leaking.",
-  lede: "Audaption designs the commercial system behind the role you are hiring for: what you measure, where you compete, what you say, where deals stall, how your site responds and when to act. Marketing capabilities are the plays inside that system, not the strategy.",
+  title: "The dollar",
+  eyebrow: "The case · Follow one dollar",
+  headline: "Follow one dollar through your growth system.",
+  lede: "A dollar of growth spend crosses nine gates before it comes back as revenue. At every one it can compound or leak, and the leaks are rarely where a team is looking. Audaption finds them and builds the system that closes them.",
   plan: [
     {
-      name: "Focus",
-      line: "Pick the one number that gates the rest, and the one or two markets worth the money.",
+      name: "Goes out",
+      line: "Put the first dollar where the next one earns most, say the right thing to the right buyer, and make the page answer.",
     },
     {
-      name: "Fix",
-      line: "Find where qualified buyers stall and win more of the opportunities you already have.",
+      name: "Gets captured",
+      line: "Keep every signal the dollar produced: through the stack, into one record, and in front of a person fast.",
     },
     {
-      name: "Align",
-      line: "Run Marketing and Sales off one scoreboard, one set of signals and a 90-day plan.",
+      name: "Comes back",
+      line: "Act on the moment, report one number leadership trusts, and spend it again with more confidence.",
     },
   ],
 };
 
 export const ROADMAP = {
   id: "roadmap",
-  group: "act" as GroupId,
+  group: "back" as GroupId,
   title: "First 90 days",
-  eyebrow: "Act · The first 90 days",
-  headline: "Align, activate, optimize.",
+  eyebrow: "Comes back · The first 90 days",
+  headline: "Baseline, fix, reinvest.",
   steps: [
     {
       days: "Days 1–30",
-      name: "Align",
-      line: "Confirm the scoreboard, validate the segments, set baselines and assign data ownership.",
+      name: "Baseline",
+      line: "Map where the dollar goes, audit the stack and the record, and set the one number everyone agrees to.",
     },
     {
       days: "Days 31–60",
-      name: "Activate",
-      line: "Launch the first signal-driven plays, one campaign per market, with talk tracks for Sales.",
+      name: "Fix",
+      line: "Close the two biggest leaks: move the saturated spend, connect the integrations that carry signal, set the response-time promise.",
     },
     {
       days: "Days 61–90",
-      name: "Optimize",
-      line: "Shift budget toward the stronger market, scale what works and set the next quarter.",
+      name: "Reinvest",
+      line: "Read the new curves, shift budget again, and put the next quarter's plan on the reconciled number.",
     },
   ],
-  ask: "Fund the first plays now, review returns at day 90, and move budget to whichever market earns more.",
+  ask: "Fund the baseline, fix the two biggest leaks, and review the reconciled return at day 90.",
 };
 
 /** The deck in reading order. Drives the rail, the controls and the keyboard. */

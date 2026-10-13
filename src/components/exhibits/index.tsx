@@ -5,36 +5,40 @@
 
   Each chapter in lib/approach.ts names one of these. They are plain components
   with no props, so a chapter can be re-pointed at a different exhibit by
-  changing one string.
+  changing one string. Each builds itself in on mount, which is what makes a
+  chapter feel like it is loading as the reader arrives at it.
 */
 
 import type { ComponentType } from "react";
 import AiReadiness from "./AiReadiness";
-import Funnel from "./Funnel";
-import Message from "./Message";
-import Plays from "./Plays";
-import Scoreboard from "./Scoreboard";
-import Segments from "./Segments";
-import Signals from "./Signals";
+import Allocate from "./Allocate";
+import Prove from "./Prove";
+import Reach from "./Reach";
+import RecordGate from "./Record";
+import Route from "./Route";
+import Sell from "./Sell";
+import Stack from "./Stack";
 import Website from "./Website";
 
 export type ExhibitId =
-  | "scoreboard"
-  | "segments"
-  | "message"
-  | "funnel"
+  | "allocate"
+  | "reach"
   | "website"
-  | "signals"
-  | "ai"
-  | "plays";
+  | "stack"
+  | "record"
+  | "route"
+  | "sell"
+  | "prove"
+  | "ai";
 
 export const EXHIBITS: Record<ExhibitId, ComponentType> = {
-  scoreboard: Scoreboard,
-  segments: Segments,
-  message: Message,
-  funnel: Funnel,
+  allocate: Allocate,
+  reach: Reach,
   website: Website,
-  signals: Signals,
+  stack: Stack,
+  record: RecordGate,
+  route: Route,
+  sell: Sell,
+  prove: Prove,
   ai: AiReadiness,
-  plays: Plays,
 };

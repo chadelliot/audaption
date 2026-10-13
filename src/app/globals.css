@@ -18,6 +18,8 @@
      rather than a tan sheet competing with them. */
   --color-sheet: #fbfbf9;
   --color-card: #f3f4f1;
+  /* the opening's ground — the warm bone the site used to be printed on */
+  --color-tan: #efe9df;
   --color-graphite: #262626;
   --color-slate: #56605a;
   --color-mute: #8a8b84;
@@ -218,6 +220,14 @@ p {
   background: var(--color-sheet);
   color: var(--color-graphite);
   --annot-c: var(--color-mute);
+  --rule: var(--line-ink);
+  --rule-strong: var(--line-ink-strong);
+}
+
+.sheet-tan {
+  background: var(--color-tan);
+  color: var(--color-graphite);
+  --annot-c: var(--color-slate);
   --rule: var(--line-ink);
   --rule-strong: var(--line-ink-strong);
 }

@@ -20,8 +20,8 @@
   same argument and the same exhibit, stacked.
 */
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
+import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "framer-motion";
 import { EXHIBITS, type ExhibitId } from "@/components/exhibits";
 import { FitBox } from "@/components/exhibits/ui";
 import {
@@ -34,20 +34,79 @@ import {
   type Chapter,
   type Step,
 } from "@/lib/approach";
+import { lenisRef } from "@/lib/lenisInstance";
 import { usePrefersReducedMotion } from "@/lib/reducedMotion";
 
 const LAST = STEPS.length - 1;
 const GROUP_LABEL = Object.fromEntries(GROUPS.map((g) => [g.id, g.label]));
 
+/** Viewport-heights of scroll each step is given. */
+const BAND = 0.8;
+
 export default function Deck() {
   const ref = useRef<HTMLElement>(null);
   const still = usePrefersReducedMotion();
   const [i, setI] = useState(0);
+  const [pinned, setPinned] = useState(true);
+  /* While a Next / rail click is scrolling the page to a chapter, the chapters
+     it passes on the way are not shown — only where it lands. */
+  const travelling = useRef(false);
 
-  const go = useCallback(
-    (n: number) => setI(Math.min(LAST, Math.max(0, n))),
-    [],
-  );
+  /* The pin only exists on wide screens; checked here and not in CSS because
+     the scroll maths has to agree with the layout. */
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const sync = () => setPinned(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start start", "end end"],
+  });
+
+  /* Scroll position picks the chapter. A little hysteresis at each edge keeps
+     the page from flickering between two chapters when the reader rests on the
+     boundary. */
+  useMotionValueEvent(scrollYProgress, "change", (v) => {
+    if (!pinned || travelling.current) return;
+    const raw = v * STEPS.length;
+    setI((cur) => {
+      const next = Math.min(LAST, Math.max(0, Math.floor(raw)));
+      if (next === cur) return cur;
+      const into = raw - next;
+      /* Only damp the edge between neighbours. A jump of several chapters is a
+         jump, and should land where it lands. */
+      if (next === cur + 1 && into < 0.1) return cur;
+      if (next === cur - 1 && into > 0.9) return cur;
+      return next;
+    });
+  });
+
+  /* Next, Back, the rail and the arrow keys all do the same thing: scroll to
+     the middle of a chapter's band, so the page and the chapter never disagree. */
+  const go = useCallback((n: number) => {
+    const el = ref.current;
+    if (!el) return;
+    const target = Math.min(LAST, Math.max(0, n));
+    const r = el.getBoundingClientRect();
+    const range = el.offsetHeight - window.innerHeight;
+    const y = r.top + window.scrollY + ((target + 0.5) / STEPS.length) * range;
+
+    travelling.current = true;
+    setI(target);
+    const done = () => {
+      travelling.current = false;
+    };
+    if (lenisRef.current) {
+      lenisRef.current.scrollTo(y, { duration: 0.9, onComplete: done });
+    } else {
+      window.scrollTo({ top: y, behavior: "smooth" });
+      window.setTimeout(done, 900);
+    }
+  }, []);
 
   /* Arrow keys page the deck, but only while it is what the reader is looking
      at, and never while they are typing in the form further down. */
@@ -61,21 +120,26 @@ export default function Deck() {
       const el = ref.current;
       if (!el) return;
       const r = el.getBoundingClientRect();
-      const seen = Math.min(r.bottom, innerHeight) - Math.max(r.top, 0);
-      if (seen < innerHeight * 0.6) return;
-      setI((n) => Math.min(LAST, Math.max(0, n + (e.key === "ArrowRight" ? 1 : -1))));
+      if (r.top > innerHeight * 0.4 || r.bottom < innerHeight * 0.6) return;
+      e.preventDefault();
+      go(i + (e.key === "ArrowRight" ? 1 : -1));
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, []);
+  }, [go, i]);
 
   const step = STEPS[i];
   const meta = stepMeta(step);
 
   return (
-    <section id="approach" ref={ref} className="sheet-light">
+    <section
+      id="approach"
+      ref={ref}
+      className="sheet-light relative lg:h-[calc(max(640px,100svh)_+_var(--deck-scroll))]"
+      style={{ "--deck-scroll": `${STEPS.length * BAND * 100}svh` } as CSSProperties}
+    >
       {/* ---------------------------------------------------------- desktop */}
-      <div className="hidden lg:block">
+      <div className="hidden lg:sticky lg:top-0 lg:block">
         <div className="mx-auto flex h-[max(640px,100svh)] max-w-[1600px] pt-[57px]">
           <Rail current={i} onPick={go} />
 
@@ -84,10 +148,10 @@ export default function Deck() {
               <AnimatePresence mode="wait" initial={false}>
                 <motion.div
                   key={meta.id}
-                  initial={still ? false : { opacity: 0, y: 12 }}
+                  initial={still ? false : { opacity: 0, y: 14 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={still ? undefined : { opacity: 0 }}
-                  transition={{ duration: still ? 0 : 0.28, ease: "easeOut" }}
+                  exit={still ? undefined : { opacity: 0, y: -8 }}
+                  transition={{ duration: still ? 0 : 0.26, ease: "easeOut" }}
                   className="h-full min-h-0"
                 >
                   <StepView step={step} />
@@ -118,7 +182,7 @@ function Rail({ current, onPick }: { current: number; onPick: (n: number) => voi
       className="min-h-0 flex-1 overflow-y-auto px-5 pb-2 pt-6 no-bar"
     >
       {GROUPS.map((g) => (
-        <div key={g.id} className="mb-6 [@media(max-height:720px)]:mb-3.5">
+        <div key={g.id} className="mb-6 [@media(max-height:820px)]:mb-4 [@media(max-height:720px)]:mb-3">
           <p className="annot mb-2">{g.label}</p>
           <ul>
             {STEPS.map((s, n) => {
@@ -131,7 +195,7 @@ function Rail({ current, onPick }: { current: number; onPick: (n: number) => voi
                     type="button"
                     onClick={() => onPick(n)}
                     aria-current={on ? "step" : undefined}
-                    className="group flex w-full items-baseline gap-2.5 py-1.5 text-left [@media(max-height:720px)]:py-0.5"
+                    className="group flex w-full items-baseline gap-2.5 py-1.5 text-left [@media(max-height:820px)]:py-1 [@media(max-height:720px)]:py-0.5"
                   >
                     <span
                       aria-hidden
@@ -168,9 +232,12 @@ function Controls({ i, onGo }: { i: number; onGo: (n: number) => void }) {
   const first = i === 0;
   const last = i === LAST;
   return (
-    <div className="shrink-0 border-t border-[var(--line-ink)] px-5 py-4">
-      <p className="annot mb-3">
+    <div className="shrink-0 border-t border-[var(--line-ink)] px-5 py-3.5">
+      <p className="annot mb-1">
         {String(i + 1).padStart(2, "0")} / {String(STEPS.length).padStart(2, "0")}
+      </p>
+      <p className="annot mb-3 text-[0.6rem] text-mute!">
+        {last ? "Keep scrolling" : "Scroll, or use Next"}
       </p>
       <div className="flex items-center gap-2">
         <button
@@ -250,7 +317,7 @@ function SummaryView() {
     <div className="flex h-full min-h-0 flex-col justify-center">
       <p className="annot">{SUMMARY.eyebrow}</p>
       <h2 className="font-display mt-4 max-w-[52rem] text-[clamp(2.2rem,4.4vw,3.9rem)] text-graphite">
-        A plan to stop growth from <span className="text-jade">leaking</span>.
+        Follow <span className="text-jade">one dollar</span> through your growth system.
       </h2>
       <p className="mt-5 max-w-[46rem] text-[1.1rem] leading-relaxed text-slate">
         {SUMMARY.lede}
@@ -269,8 +336,19 @@ function SummaryView() {
         ))}
       </ol>
 
-      <p className="annot mt-10">
-        {CHAPTERS.length} decisions, in order · use Next, the rail, or the arrow keys
+      <ol className="mt-9 flex max-w-[64rem] flex-wrap items-center gap-x-1.5 gap-y-2">
+        {CHAPTERS.map((c, n) => (
+          <li key={c.id} className="flex items-center gap-1.5">
+            <span className="font-mono border border-[var(--line-ink-strong)] bg-white px-2 py-1 text-[0.66rem] uppercase tracking-[0.1em] text-slate">
+              <span className="mr-1.5 text-jade-deep">{String(n + 1).padStart(2, "0")}</span>
+              {c.title}
+            </span>
+            {n < CHAPTERS.length - 1 ? <span aria-hidden className="text-mute">›</span> : null}
+          </li>
+        ))}
+      </ol>
+      <p className="annot mt-6">
+        {CHAPTERS.length} gates, in order · scroll to follow the dollar
       </p>
     </div>
   );
@@ -281,7 +359,7 @@ function RoadmapView() {
     <div className="flex h-full min-h-0 flex-col justify-center">
       <p className="annot">{ROADMAP.eyebrow}</p>
       <h2 className="font-display mt-4 max-w-[52rem] text-[clamp(2.2rem,4.4vw,3.9rem)] text-graphite">
-        Align, activate, <span className="text-jade">optimize</span>.
+        Baseline, fix, <span className="text-jade">reinvest</span>.
       </h2>
 
       <ol className="mt-10 grid max-w-[64rem] grid-cols-3 gap-8 xl:gap-12">
@@ -340,7 +418,7 @@ function MobileList() {
       <div>
         <p className="annot">{SUMMARY.eyebrow}</p>
         <h2 className="font-display mt-4 text-[clamp(2rem,9vw,2.6rem)] text-graphite">
-          A plan to stop growth from <span className="text-jade">leaking</span>.
+          Follow <span className="text-jade">one dollar</span> through your growth system.
         </h2>
         <p className="mt-4 leading-relaxed text-slate">{SUMMARY.lede}</p>
         <ul className="mt-6 space-y-4">
@@ -376,7 +454,7 @@ function MobileList() {
       <div>
         <p className="annot">{ROADMAP.eyebrow}</p>
         <h3 className="font-display mt-4 text-[clamp(1.8rem,8vw,2.3rem)] text-graphite">
-          Align, activate, <span className="text-jade">optimize</span>.
+          Baseline, fix, <span className="text-jade">reinvest</span>.
         </h3>
         <ol className="mt-6 space-y-4">
           {ROADMAP.steps.map((s) => (
