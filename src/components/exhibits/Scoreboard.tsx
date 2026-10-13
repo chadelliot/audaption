@@ -82,7 +82,7 @@ export default function Scoreboard() {
 
       <div>
         <Label className="mb-2">The rest of the board · seven numbers</Label>
-        <div className="grid grid-cols-2 gap-px bg-[var(--line-ink)] sm:grid-cols-4 lg:grid-cols-7">
+        <div className="grid grid-cols-2 gap-px bg-[var(--line-ink)] sm:grid-cols-4 xl:grid-cols-7">
           {BOARD.map((m, i) => (
             <Reveal key={m.k} delay={0.15 + i * 0.04}>
               <div

@@ -77,7 +77,7 @@ export default function Segments() {
                 className="relative flex h-full flex-col px-4 pb-4 pt-5"
                 style={{ borderTop: top ? "3px solid var(--color-jade)" : undefined }}
               >
-                <div className="flex items-center justify-between gap-2">
+                <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1.5">
                   <span className="flex items-center gap-2">
                     <span
                       className="font-mono flex h-6 w-6 items-center justify-center text-[0.75rem]"
@@ -89,7 +89,7 @@ export default function Segments() {
                     >
                       {s.rank}
                     </span>
-                    <span className="font-display-mixed text-[1.35rem] leading-none text-graphite">
+                    <span className="font-display-mixed text-[1.15rem] leading-none text-graphite xl:text-[1.35rem]">
                       {s.name}
                     </span>
                   </span>
@@ -98,7 +98,7 @@ export default function Segments() {
                   </Chip>
                 </div>
 
-                <p className="font-display mt-4 text-[1.75rem] leading-none text-graphite">
+                <p className="font-display mt-4 text-[1.35rem] leading-none text-graphite xl:text-[1.75rem]">
                   {s.acv}
                 </p>
                 <Label className="mt-1">Typical deal size (ACV)</Label>
@@ -112,7 +112,7 @@ export default function Segments() {
                       {[1, 2, 3, 4].map((n) => (
                         <span
                           key={n}
-                          className="h-1.5 w-5"
+                          className="h-1.5 w-3.5 xl:w-5"
                           style={{
                             background: n <= s.expand ? "var(--color-jade)" : "rgba(38,38,38,0.12)",
                           }}
@@ -150,9 +150,9 @@ export default function Segments() {
 
 function Row({ k, v }: { k: string; v: string }) {
   return (
-    <div className="flex items-baseline justify-between gap-3">
+    <div className="flex flex-col gap-0.5 xl:flex-row xl:items-baseline xl:justify-between xl:gap-3">
       <dt className="annot text-[0.62rem]">{k}</dt>
-      <dd className="text-right text-graphite">{v}</dd>
+      <dd className="text-graphite xl:text-right">{v}</dd>
     </div>
   );
 }

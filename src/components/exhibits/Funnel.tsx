@@ -30,7 +30,7 @@ export default function Funnel() {
         <Illustrative>$120M B2B manufacturer</Illustrative>
       </div>
 
-      <div className="grid grid-cols-2 gap-px bg-[var(--line-ink)] sm:grid-cols-4 lg:grid-cols-7">
+      <div className="grid grid-cols-2 gap-px bg-[var(--line-ink)] sm:grid-cols-4 xl:grid-cols-7">
         {STAGES.map((s, i) => (
           <Reveal key={s.k} delay={i * 0.06}>
             <div
