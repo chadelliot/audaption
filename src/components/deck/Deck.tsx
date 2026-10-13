@@ -3,30 +3,27 @@
 /*
   The approach, one decision per screen.
 
-  This is the part of the page that used to be two pinned scroll runs. Those
-  drew a 992×854 isometric drawing into a 780px viewport, so on a 13" laptop it
-  overran the screen and sat on top of its own copy. The fault was structural:
-  the page let a drawing be as large as its own artwork, and trusted the
-  viewport to keep up.
+  This is the part of the page that used to be two pinned scroll runs of
+  isometric drawings. Those were as large as their own artwork — 854px tall in a
+  780px viewport — so on a 13" laptop they overran the screen and sat on top of
+  their own copy. They have been replaced by flat working exhibits (see
+  components/exhibits), and the layout rule is inverted: the deck is exactly one
+  viewport tall, the copy takes the room it needs, and the exhibit is given what
+  is left and *fitted* to it — it is scaled down if it would be taller, never
+  allowed to be. Nothing can overlap and nothing can run off the screen.
 
-  Here the rule is inverted. The deck is exactly one viewport tall; the copy
-  takes the room it needs; the drawing is given whatever is left and scaled to
-  fit it. Nothing is allowed to be taller than the stage it is in, so nothing
-  can overlap anything else.
+  The reader moves with Next and Back, the rail, or the arrow keys. An exhibit
+  mounts when its chapter opens and unmounts when it closes, which is also what
+  replays its build each time.
 
-  The reader moves with Next and Back, the rail, or the arrow keys, at their own
-  pace. A drawing mounts when its chapter opens and unmounts when it closes,
-  which is also what replays its assembly each time.
-
-  Below `lg` the deck is not paged. The drawings are dropped for the same
-  reason as before — their labels are unreadable at phone width — and each
-  chapter becomes a plain section carrying the same argument.
+  Below `lg` the deck is not paged: each chapter is a plain section carrying the
+  same argument and the same exhibit, stacked.
 */
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import Blueprint from "@/components/iso/Blueprint";
-import { GRAPHICS } from "@/components/iso/SystemGraphics";
+import { EXHIBITS, type ExhibitId } from "@/components/exhibits";
+import { FitBox } from "@/components/exhibits/ui";
 import {
   CHAPTERS,
   GROUPS,
@@ -35,10 +32,8 @@ import {
   SUMMARY,
   stepMeta,
   type Chapter,
-  type DrawingId,
   type Step,
 } from "@/lib/approach";
-import { CAPABILITIES } from "@/lib/systems";
 import { usePrefersReducedMotion } from "@/lib/reducedMotion";
 
 const LAST = STEPS.length - 1;
@@ -229,35 +224,13 @@ function Recommendation({ text, label = "Recommendation" }: { text: string; labe
 
 function ChapterView({ chapter: c, n }: { chapter: Chapter; n: number }) {
   const num = String(n).padStart(2, "0");
-  const eyebrow = (
-    <p className="annot">
-      {num} · {GROUP_LABEL[c.group]} · {c.question}
-    </p>
-  );
-
-  if (c.layout === "split") {
-    return (
-      <div className="grid h-full min-h-0 grid-cols-[minmax(0,22rem)_minmax(0,1fr)] gap-10 xl:grid-cols-[minmax(0,25rem)_minmax(0,1fr)] xl:gap-14">
-        <div className="flex min-h-0 flex-col">
-          {eyebrow}
-          <h2 className="font-display-mixed mt-3 text-[clamp(1.4rem,2.1vw,2.1rem)] text-graphite">
-            {c.claim}
-          </h2>
-          <p className="mt-4 text-[0.98rem] leading-relaxed text-slate">{c.body}</p>
-          <div className="mt-auto pt-6">
-            <Recommendation text={c.rec} />
-          </div>
-        </div>
-        <Stage drawing={c.drawing} ruled={false} />
-      </div>
-    );
-  }
-
   return (
-    <div className="flex h-full min-h-0 flex-col gap-5">
+    <div className="flex h-full min-h-0 flex-col gap-4">
       <div className="grid shrink-0 grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)_minmax(0,15rem)] items-start gap-x-8 xl:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)_minmax(0,17rem)] xl:gap-x-10">
         <div>
-          {eyebrow}
+          <p className="annot">
+            {num} · {GROUP_LABEL[c.group]} · {c.question}
+          </p>
           <h2 className="font-display-mixed mt-3 text-[clamp(1.4rem,2.1vw,2.1rem)] text-graphite">
             {c.claim}
           </h2>
@@ -267,7 +240,7 @@ function ChapterView({ chapter: c, n }: { chapter: Chapter; n: number }) {
           <Recommendation text={c.rec} />
         </div>
       </div>
-      <Stage drawing={c.drawing} />
+      <Stage id={c.exhibit} />
     </div>
   );
 }
@@ -336,91 +309,18 @@ function RoadmapView() {
 /* The stage                                                           */
 /* ------------------------------------------------------------------ */
 
-const isBlueprint = (d: DrawingId) =>
-  d === "analytics" || d === "content" || d === "website" || d === "gtm";
-
 /**
- * Where a drawing lives. It is given a box of definite size and told to fit
- * inside it — never to take the width it would like. The box is absolutely
- * filled so a percentage max-height inside it has something to resolve
- * against, which is the thing the old grid cells never gave it.
+ * Where an exhibit lives: a box of definite size, ruled off from the copy
+ * above it, with the exhibit fitted inside. The box is the guarantee — see
+ * FitBox for why an exhibit cannot be taller than it.
  */
-function Stage({ drawing, ruled = true }: { drawing?: DrawingId; ruled?: boolean }) {
-  const [open, setOpen] = useState(false);
-  if (!drawing) return null;
-  const big = isBlueprint(drawing);
-
+function Stage({ id }: { id: ExhibitId }) {
+  const Exhibit = EXHIBITS[id];
   return (
-    <div
-      className={`relative min-h-0 min-w-0 flex-1 ${ruled ? "border-t border-[var(--line-ink)]" : ""}`}
-    >
-      <div className="absolute inset-0 flex items-center justify-center pt-2">
-        <Drawing id={drawing} />
-      </div>
-      {big ? (
-        <button
-          type="button"
-          onClick={() => setOpen(true)}
-          className="annot absolute bottom-1 right-0 z-10 border border-[var(--line-ink-strong)] bg-[var(--color-sheet)] px-3 py-1.5 transition-colors hover:border-jade hover:text-jade!"
-        >
-          Enlarge drawing ⤢
-        </button>
-      ) : null}
-      {open ? <Lightbox id={drawing} onClose={() => setOpen(false)} /> : null}
-    </div>
-  );
-}
-
-function Drawing({ id }: { id: DrawingId }) {
-  if (id === "signals" || id === "journey" || id === "strategy" || id === "ai") {
-    const G = GRAPHICS[id];
-    return (
-      <div className="flex h-full w-full items-center justify-center">
-        <div className="flex h-full w-full max-w-[70rem] items-center justify-center [&>svg]:max-h-full">
-          <G play />
-        </div>
-      </div>
-    );
-  }
-  const cap = CAPABILITIES.find((c) => c.id === id);
-  if (!cap) return null;
-  return (
-    <motion.div initial="show" animate="show" className="h-full w-full">
-      <Blueprint capability={cap} play className="h-full w-full" />
-    </motion.div>
-  );
-}
-
-/** The blueprint at the largest size the screen can hold, on request. */
-function Lightbox({ id, onClose }: { id: DrawingId; onClose: () => void }) {
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
-    window.addEventListener("keydown", onKey);
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      window.removeEventListener("keydown", onKey);
-      document.body.style.overflow = prev;
-    };
-  }, [onClose]);
-
-  return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-label="Enlarged drawing"
-      className="fixed inset-0 z-[80] bg-[var(--color-card)] p-4 sm:p-6"
-    >
-      <button
-        type="button"
-        onClick={onClose}
-        className="annot absolute bottom-5 right-6 z-10 border border-[var(--line-ink-strong)] bg-[var(--color-card)] px-3 py-1.5 hover:border-jade hover:text-jade!"
-      >
-        Close ✕
-      </button>
-      <div className="flex h-full w-full items-center justify-center">
-        <Drawing id={id} />
-      </div>
+    <div className="relative min-h-0 min-w-0 flex-1 border-t border-[var(--line-ink)] pt-4">
+      <FitBox>
+        <Exhibit />
+      </FitBox>
     </div>
   );
 }
@@ -428,6 +328,11 @@ function Lightbox({ id, onClose }: { id: DrawingId; onClose: () => void }) {
 /* ------------------------------------------------------------------ */
 /* Phones: the same argument, no paging, no drawings                   */
 /* ------------------------------------------------------------------ */
+
+function MobileExhibit({ id }: { id: ExhibitId }) {
+  const Exhibit = EXHIBITS[id];
+  return <Exhibit />;
+}
 
 function MobileList() {
   return (
@@ -459,16 +364,9 @@ function MobileList() {
           </p>
           <h3 className="font-display-mixed mt-3 text-[1.7rem] text-graphite">{c.claim}</h3>
           <p className="mt-3 leading-relaxed text-slate">{c.body}</p>
-          <ul className="mt-4 flex flex-wrap gap-2">
-            {c.points.map((p) => (
-              <li
-                key={p}
-                className="border border-[var(--line-ink-strong)] bg-[var(--color-card)] px-2.5 py-1 text-[0.85rem] leading-snug text-slate"
-              >
-                {p}
-              </li>
-            ))}
-          </ul>
+          <div className="mt-5">
+            <MobileExhibit id={c.exhibit} />
+          </div>
           <div className="mt-5">
             <Recommendation text={c.rec} />
           </div>

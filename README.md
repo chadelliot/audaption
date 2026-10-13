@@ -15,43 +15,35 @@ npm install
 npm run dev
 ```
 
-## The drawing set
+## What is on the page
 
-Every diagram on the homepage is authored SVG built on one true-isometric
-projection in `src/lib/iso.ts`. Nothing is a rendered image, so every label is
-real text: sharp at any zoom, selectable, translatable and editable in code.
+- **The opening** is the one isometric drawing: four layers that start out of line
+  and set into one stack. It is authored SVG on one projection (`src/lib/iso.ts`,
+  `src/components/iso/Cube.tsx`), so every label is real text.
+- **The approach** is a deck of decisions, one screen each, in
+  `src/components/deck/Deck.tsx`. Each chapter pairs a question with a flat,
+  data-led working exhibit from `src/components/exhibits/` (scoreboard, segments,
+  message, funnel, website, signals, AI readiness, plays).
+- **The close** is the enquiry form.
 
-- `src/lib/iso.ts` — projection, cube geometry, face skins
-- `src/components/iso/` — the cube primitive, sheared face type, the shared
-  capability blueprint, tooltips
-- `src/components/scenes/` — the opening and the closing enquiry section
-- `src/components/deck/Deck.tsx` — the approach: one decision per screen, each with its own drawing
-- `src/lib/approach.ts` — the approach's chapters and copy, as data
-- `src/lib/systems.ts` — the opening's layers and the blueprint capabilities
+Every exhibit is an *illustrative* example and says so in its corner. None of it
+is client data; keep it that way.
 
-Two conventions worth knowing before editing a drawing:
+Two rules worth knowing before editing an exhibit:
 
-1. **Type is sheared into the face of a solid, not laid over it.** `FaceLabel`
-   maps the baseline onto the plane. A label that floats beside an object stops
-   it reading as dimensional.
-2. **A vertical stack is painted bottom-up.** The box above occludes the top
-   face of the box below, so drawing in reading order buries every label but
-   the last.
+1. **An exhibit must carry its chapter's claim.** If a chapter's claim changes
+   (`src/lib/approach.ts`), change its exhibit with it. Timber is only ever used
+   for what is leaking, weak or unowned.
+2. **Exhibits are fitted, not sized.** `FitBox` scales an exhibit to the stage it
+   is in, so one can be made denser without ever running off a laptop screen.
+   Check any change at 1440×780 and 1280×720.
 
 ## Content
 
 Copy lives in `src/lib/approach.ts` (the chapters) and `src/lib/systems.ts` (the
-opening and the blueprints) rather than in the components, so wording can be
+opening) rather than in the components, so wording can be
 changed without touching layout or animation.
 
-The approach is exactly one viewport tall and never scrolls inside itself: a
-drawing is scaled to fit whatever room its chapter's copy leaves, so nothing can
-overlap or run past the screen. Blueprints have an *Enlarge drawing* view for
-the detail. Check any layout change at 1440×780 and 1280×720.
-
-Every drawing has to carry its chapter's claim, not just illustrate the topic;
-if a chapter's claim changes, change its drawing with it (see the note at the
-top of `src/lib/approach.ts`).
 
 ## The enquiry form
 

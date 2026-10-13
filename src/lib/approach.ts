@@ -1,36 +1,28 @@
 /*
   The approach, as a sequence of decisions.
 
-  This replaces the old tour of four layers and four marketing capabilities,
-  which read as a list of services. A commercial growth strategy is not a list:
-  it is an order of questions, each one answered before the next is asked, each
-  ending in a recommendation. The marketing capabilities are not the headline
-  any more; they are the plays that sit inside the answers, so each one now
-  appears as the drawing for the question it actually helps answer.
+  A commercial growth strategy is not a list of services. It is an order of
+  questions, each answered before the next is asked, each ending in a
+  recommendation. Every chapter pairs one question with one exhibit — a flat,
+  data-led working exhibit in the register of a board pack, not a drawing:
 
-  Every chapter pairs one question with one drawing:
+    01 Scoreboard    win rate against target, and the rest of the board
+    02 Segmentation  ranked segments with the headroom left in each
+    03 Message       two markets side by side: lead with, sounds like, roles
+    04 Funnel        the bottleneck flagged, then the fix, then the lift
+    05 Website       one page, two buyers, and the rule that picks each
+    06 Signals       a clickable explorer: marketing play, sales play
+    07 Scale         which AI use cases the layers actually unlock
+    08 Invest        two plays, their budgets, handoffs and returns
 
-    01 Scoreboard    Marketing Analytics blueprint
-    02 Segmentation  Go-to-Market Strategy drawing
-    03 Message       Content Marketing blueprint
-    04 Funnel        Customer Journey drawing
-    05 Signals       Customer Data drawing
-    06 Scale         Artificial Intelligence drawing
-    05 Website       Website Experience blueprint
-    06 Signals       Customer Data drawing, labelled with signals
-    07 Scale         Artificial Intelligence drawing
-    08 Invest        Unified Go-to-Market Motion blueprint
-
-  Every drawing has to carry its chapter's claim, not just illustrate the topic.
-  The funnel drawing shows its biggest loss late, because the chapter says deals
-  are lost late; the segmentation drawing prints the order to fund markets in,
-  not dollar figures; the signals drawing names signals, not data sources. If a
-  chapter's claim changes, change its drawing with it.
-
-  No numbers appear here that are not Audaption's to claim. The structure is
-  borrowed from the approach page; the figures on that page belong to its
-  fictional case and stay there.
+  The exhibits live in components/exhibits and are illustrative. They say so in
+  their corner, and none of them is client data. Every exhibit has to carry its
+  chapter's claim, not just illustrate the topic; if a claim changes, change the
+  exhibit with it. The opening's isometric stack is the one drawing left on the
+  page, on purpose.
 */
+
+import type { ExhibitId } from "@/components/exhibits";
 
 export type GroupId = "case" | "diagnose" | "act";
 
@@ -39,16 +31,6 @@ export const GROUPS: { id: GroupId; label: string }[] = [
   { id: "diagnose", label: "Diagnose" },
   { id: "act", label: "Act" },
 ];
-
-export type DrawingId =
-  | "analytics"
-  | "strategy"
-  | "content"
-  | "journey"
-  | "website"
-  | "signals"
-  | "ai"
-  | "gtm";
 
 export interface Chapter {
   id: string;
@@ -61,16 +43,8 @@ export interface Chapter {
   body: string;
   /** The one-line recommendation every chapter ends on. */
   rec: string;
-  /** What the drawing shows, in words — what a phone gets instead of it. */
-  points: string[];
-  /** Which drawing the chapter is built around. Absent for text chapters. */
-  drawing?: DrawingId;
-  /**
-   * `stack` puts the copy in a band above a wide drawing. `split` puts it
-   * beside a tall one. Blueprints are 1.74:1 and need the width; the AI
-   * drawing is nearly square and needs the height.
-   */
-  layout: "stack" | "split";
+  /** The working exhibit the chapter is built around. */
+  exhibit: ExhibitId;
 }
 
 export const CHAPTERS: Chapter[] = [
@@ -82,14 +56,7 @@ export const CHAPTERS: Chapter[] = [
     claim: "Agree on one scoreboard before fixing anything.",
     body: "Most teams track a dozen numbers and argue about the one that is off. We settle the metrics, the definitions and the source of truth first, then find the single number that is holding the rest back.",
     rec: "Prioritize the metric that gates the rest. Protect what is already healthy rather than optimizing it further.",
-    points: [
-      "Customer and revenue data, campaign and channel performance",
-      "One measurement model, one set of definitions",
-      "Performance analysis and an executive view",
-      "Trusted visibility, clearer investment decisions",
-    ],
-    drawing: "analytics",
-    layout: "stack",
+    exhibit: "scoreboard",
   },
   {
     id: "segmentation",
@@ -99,9 +66,7 @@ export const CHAPTERS: Chapter[] = [
     claim: "You cannot win everywhere, so rank where you can.",
     body: "Every segment, channel and customer type sized on what it is actually worth: deal size, buying committee, sales cycle, room to expand. A national ranking is not a plan, so we test it market by market.",
     rec: "Fund the largest open pool first and sequence the rest behind it. One or two markets are worth the money.",
-    points: ["Enterprise", "Mid-market", "EMEA", "APAC", "Partner", "SMB"],
-    drawing: "strategy",
-    layout: "stack",
+    exhibit: "segments",
   },
   {
     id: "message",
@@ -111,14 +76,7 @@ export const CHAPTERS: Chapter[] = [
     claim: "Same product, different buyer.",
     body: "Messaging is built per market and per buying role, not per tier. The market changes what you lead with: outcomes and supplier consolidation for an enterprise committee, speed and a reliable service for an operations manager.",
     rec: "Write one message per market and buyer, then retire the generic deck.",
-    points: [
-      "Customer research, growth priorities, competitive landscape",
-      "Customer intelligence and prospect intent",
-      "One content strategy per market",
-      "Organic visibility, sales enablement, qualified pipeline",
-    ],
-    drawing: "content",
-    layout: "stack",
+    exhibit: "message",
   },
   {
     id: "funnel",
@@ -128,9 +86,7 @@ export const CHAPTERS: Chapter[] = [
     claim: "Find where qualified buyers stall.",
     body: "Opportunity is rarely the problem. We map real customer progression, phase by phase, and find where attention, conversion, handoffs or revenue are lost. It is usually late, and usually in a handoff.",
     rec: "Fund win-rate enablement before adding top-of-funnel spend.",
-    points: ["Discover", "Consider", "Engage", "Convert", "Retain"],
-    drawing: "journey",
-    layout: "stack",
+    exhibit: "funnel",
   },
   {
     id: "website",
@@ -140,13 +96,7 @@ export const CHAPTERS: Chapter[] = [
     claim: "Make the site respond to the buyer in front of it.",
     body: "The website is where the message meets behavior. We design how structure, content and interactions help each buyer finish the task they came for, adapt it by market and lifecycle stage, and measure how far each visit progresses.",
     rec: "Personalize the few pages that carry the most pipeline before redesigning the rest.",
-    points: [
-      "Behavior analytics, voice of customer, journey mapping",
-      "Experience design, personalization, measurement",
-      "Conversion up, personalized by market, behavioral signals",
-    ],
-    drawing: "website",
-    layout: "stack",
+    exhibit: "website",
   },
   {
     id: "signals",
@@ -156,16 +106,7 @@ export const CHAPTERS: Chapter[] = [
     claim: "Act on timing, not guesswork.",
     body: "Every stage throws off signals: new funding, an executive hire, a champion who leaves, a competitive evaluation, spend that starts to fall. With one customer record, each signal triggers a marketing play and a sales play.",
     rec: "Define the handful of signals that matter and who acts on each. Single-threaded deals stall; multi-threaded ones close.",
-    points: [
-      "Funding received",
-      "New executive",
-      "Active intent",
-      "Champion change",
-      "Competitive evaluation",
-      "Declining spend",
-    ],
-    drawing: "signals",
-    layout: "stack",
+    exhibit: "signals",
   },
   {
     id: "scale",
@@ -175,14 +116,7 @@ export const CHAPTERS: Chapter[] = [
     claim: "AI only works on top of the other layers.",
     body: "Trusted data and knowledge for AI to work from, and the customer experience it powers. This is why pilots stall: the company skipped the layers underneath and asked AI to stand on nothing.",
     rec: "Build the layers first, then let AI act on them.",
-    points: [
-      "Customer Data",
-      "Customer Journey",
-      "Go-to-Market Strategy",
-      "Customer Experience",
-    ],
-    drawing: "ai",
-    layout: "split",
+    exhibit: "ai",
   },
   {
     id: "invest",
@@ -192,13 +126,7 @@ export const CHAPTERS: Chapter[] = [
     claim: "Fund two plays, then follow the returns.",
     body: "A unified go-to-market motion connects segmentation, lifecycle design and commercial orchestration, so Sales and Marketing share territory, routing, timing and handoffs. Start with the largest open pool and the fastest payback.",
     rec: "Fund both plays now. At day 90, move budget to whichever earns more.",
-    points: [
-      "Ideal customer profile, market opportunity, territories",
-      "Segmentation, lifecycle design, commercial orchestration",
-      "Win rates up, better forecasting, revenue growth",
-    ],
-    drawing: "gtm",
-    layout: "stack",
+    exhibit: "plays",
   },
 ];
 
