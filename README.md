@@ -49,6 +49,10 @@ drawing is scaled to fit whatever room its chapter's copy leaves, so nothing can
 overlap or run past the screen. Blueprints have an *Enlarge drawing* view for
 the detail. Check any layout change at 1440×780 and 1280×720.
 
+Every drawing has to carry its chapter's claim, not just illustrate the topic;
+if a chapter's claim changes, change its drawing with it (see the note at the
+top of `src/lib/approach.ts`).
+
 ## The enquiry form
 
 `server/assessment-route.ts` emails the submission and creates a HubSpot

@@ -90,8 +90,8 @@ export const CAPABILITIES: Capability[] = [
   {
     id: "content",
     name: "Content Marketing",
-    bar: "CONTENT MARKETING",
-    inputs: ["Customer Research", "Growth Priorities", "Competitive Landscape"],
+    bar: "MESSAGE BY MARKET",
+    inputs: ["Market Segments", "Buying Roles", "Competitive Landscape"],
     blocks: [
       {
         title: "Customer Intelligence",
@@ -104,9 +104,9 @@ export const CAPABILITIES: Capability[] = [
           "What prospective audiences search for, engage with, compare, and signal before becoming customers.",
       },
       {
-        title: "Content Strategy",
+        title: "Message by Market",
         tooltip:
-          "How customer and prospect intelligence becomes themes, narratives, formats, channels, and activation priorities.",
+          "How customer and prospect intelligence becomes one message per market and buying role: what to lead with, in which format and channel, and for whom.",
       },
     ],
     outcomes: ["Organic Visibility ↑", "Sales Enablement", "Qualified Pipeline ↑"],
@@ -134,8 +134,8 @@ export const CAPABILITIES: Capability[] = [
           "How engagement, conversion, journey progression, and experience performance are tracked and used to improve the site.",
       },
     ],
-    outcomes: ["Conversion ↑", "Deeper Engagement", "Personalized Experiences"],
-    feeds: "Produces behavioral data for Marketing Analytics.",
+    outcomes: ["Conversion ↑", "Personalized by Market", "Behavioral Signals"],
+    feeds: "Turns each visit into a behavioral signal the scoreboard and the sales team can act on.",
   },
   {
     id: "gtm",
@@ -170,7 +170,7 @@ export const CAPABILITIES: Capability[] = [
   {
     id: "analytics",
     name: "Marketing Analytics",
-    bar: "MARKETING ANALYTICS",
+    bar: "ONE SCOREBOARD",
     inputs: [
       "Customer + Revenue Data",
       "Campaign + Channel Performance",

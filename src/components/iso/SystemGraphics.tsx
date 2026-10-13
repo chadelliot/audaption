@@ -82,12 +82,14 @@ const Note = ({
   size = 15,
   fill = INK,
   anchor = "middle",
+  weight,
 }: {
   t: string;
   at: P;
   size?: number;
   fill?: string;
   anchor?: "middle" | "start" | "end";
+  weight?: number;
 }) => (
   <text
     x={at.x}
@@ -95,6 +97,7 @@ const Note = ({
     textAnchor={anchor}
     className="font-mono"
     fontSize={size}
+    fontWeight={weight}
     letterSpacing="0.12em"
     fill={fill}
   >
@@ -143,18 +146,50 @@ function Outline({ b, s, hatch = "sysHatch" }: { b: Box; s: number; hatch?: stri
 */
 const SOURCES = ["CRM", "WEBSITE", "ADS", "SUPPORT", "BILLING", "PRODUCT"];
 
-export function DataGraphic({ play }: GraphicProps) {
-  const S = 60;
-  const R = 3.1;
-  const landed = useTimeline(play, SOURCES.length + 1, 300);
+/** Where the six outside blocks stand, as world (x, y) centres. */
+const SPOTS: [number, number][] = [
+  [3.6, -1.8],
+  [3.6, 0],
+  [3.6, 1.8],
+  [1.8, 3.6],
+  [0, 3.6],
+  [-1.8, 3.6],
+];
 
-  const h = 0.8 + Math.min(landed, SOURCES.length) * 0.22;
+/*
+  The same drawing carries a second claim. Customer Data says every source feeds
+  one view; Signals says every signal lands on one record, which is why a play
+  can fire on it. Same geometry, different names — the six outside blocks are
+  not ours either way, so they keep the hatched face.
+*/
+const SIGNALS = ["FUNDING", "NEW EXEC", "INTENT", "CHAMPION", "RIVAL", "SPEND ↓"];
+
+interface DataProps extends GraphicProps {
+  sources?: string[];
+  centre?: string;
+  note?: string;
+  /** Which face carries each outside block's name. */
+  labelSide?: "left" | "top";
+}
+
+export function DataGraphic({
+  play,
+  sources = SOURCES,
+  centre: centreLabel = "ONE VIEW",
+  note = "ONE CUSTOMER, DEFINED ONCE",
+  labelSide = "left",
+}: DataProps) {
+  const S = 60;
+  const landed = useTimeline(play, sources.length + 1, 300);
+
+  const h = 0.8 + Math.min(landed, sources.length) * 0.22;
   const centre = box(-1.4, -1.4, 0, 2.8, 2.8, h);
 
-  const sats = SOURCES.map((name, i) => {
-    const a = (Math.PI / 3) * i + Math.PI / 6;
-    const cx = R * Math.cos(a);
-    const cy = R * Math.sin(a);
+  /* Two rows of three, one down each flank of the block, both in front of it.
+     A ring around the block hid the two behind it — their labels, and so their
+     part of the claim, were simply not visible. */
+  const sats = sources.map((name, i) => {
+    const [cx, cy] = SPOTS[i];
     return {
       name,
       i,
@@ -200,23 +235,23 @@ export function DataGraphic({ play }: GraphicProps) {
         .map((s) => (
           <Arrive key={s.name} on={landed > s.i} from={46}>
             <Outline b={s.b} s={S} />
-            <FaceLabel b={s.b} s={S} text={s.name} size={12} color={INK} />
+            <FaceLabel b={s.b} s={S} side={labelSide} text={s.name} size={12} color={INK} />
           </Arrive>
         ))}
 
       <Cube b={centre} s={S} skin="jade" edgeColor={INK} />
-      <FaceLabel b={centre} s={S} text="ONE VIEW" size={14} />
+      <FaceLabel b={centre} s={S} text={centreLabel} size={14} />
 
       {ordered
         .filter((s) => s.depth >= 0)
         .map((s) => (
           <Arrive key={s.name} on={landed > s.i} from={46}>
             <Outline b={s.b} s={S} />
-            <FaceLabel b={s.b} s={S} text={s.name} size={12} color={INK} />
+            <FaceLabel b={s.b} s={S} side={labelSide} text={s.name} size={12} color={INK} />
           </Arrive>
         ))}
 
-      <Arrive on={landed > SOURCES.length}>
+      <Arrive on={landed > sources.length}>
         <line
           x1={0}
           y1={ceiling - 6}
@@ -226,7 +261,7 @@ export function DataGraphic({ play }: GraphicProps) {
           strokeWidth={1}
         />
         <Note
-          t="ONE CUSTOMER, DEFINED ONCE"
+          t={note}
           at={{ x: 0, y: ceiling - 40 }}
           fill="var(--color-jade-deep)"
         />
@@ -250,14 +285,25 @@ export function DataGraphic({ play }: GraphicProps) {
 */
 const PHASES = ["DISCOVER", "CONSIDER", "ENGAGE", "CONVERT", "RETAIN"];
 
-/** Where each unit stops. `5` means it came through the whole journey. */
-const UNITS: { stop: number; lane: number }[] = [
-  { stop: 5, lane: 0 },
-  { stop: 1, lane: 0 },
-  { stop: 5, lane: 1 },
-  { stop: 2, lane: 1 },
-  { stop: 3, lane: 2 },
-  { stop: 5, lane: 2 },
+/*
+  Where each unit stops. `5` means it came through the whole journey; `slot`
+  keeps units that stop in the same phase side by side instead of stacked on
+  one another.
+
+  The shape is the claim: opportunity gets in, a little drops at the top, and
+  the biggest loss is late, at the point of conversion. That is what the Funnel
+  chapter says and what the approach page's funnel finds — qualified opportunity
+  is not the problem, deals are lost late.
+*/
+const UNITS: { stop: number; slot: number }[] = [
+  { stop: 5, slot: 0 },
+  { stop: 2, slot: 0 },
+  { stop: 4, slot: 0 },
+  { stop: 5, slot: 1 },
+  { stop: 4, slot: 1 },
+  { stop: 3, slot: 0 },
+  { stop: 4, slot: 2 },
+  { stop: 5, slot: 2 },
 ];
 
 const SEG_W = 2.4;
@@ -274,8 +320,11 @@ export function JourneyGraphic({ play }: GraphicProps) {
 
   /* Which phases lost somebody, for the diagnostic marks. */
   const leaks = PHASES.map((_, n) =>
-    UNITS.filter((u, i) => u.stop === n + 1 && step > i).length,
+    UNITS.filter((u, i) => u.stop === n + 1 && u.stop < PHASES.length && step > i)
+      .length,
   );
+  /* The phase that loses the most is the leak; it is named as one. */
+  const worst = Math.max(...leaks);
 
   return (
     <svg viewBox="-470 -250 920 430" className="h-auto max-h-full w-full" aria-hidden>
@@ -320,7 +369,8 @@ export function JourneyGraphic({ play }: GraphicProps) {
             <Note
               t={`${n} LOST HERE`}
               at={project(SEG_X(i) + SEG_W / 2, 3.5, SEG_Z(i), S)}
-              size={13}
+              size={n === worst && n > 1 ? 15 : 13}
+              weight={n === worst && n > 1 ? 600 : undefined}
               fill="var(--color-timber-ink)"
             />
           </Arrive>
@@ -329,8 +379,9 @@ export function JourneyGraphic({ play }: GraphicProps) {
 
       <Arrive on={step > UNITS.length}>
         <Note
-          t="EVERY STOP IS SOMETHING TO DESIGN AROUND"
-          at={project(0.4, 5.4, 0, S)}
+          t="DEALS ARE LOST LATE, NOT AT THE TOP"
+          at={{ x: -440, y: project(0.4, 5.4, 0, S).y }}
+          anchor="start"
           fill="var(--color-jade-deep)"
         />
       </Arrive>
@@ -347,7 +398,7 @@ function Unit({
   S,
   step,
 }: {
-  u: { stop: number; lane: number };
+  u: { stop: number; slot: number };
   i: number;
   S: number;
   step: number;
@@ -357,9 +408,10 @@ function Unit({
   /* Units that stop step out of the flow and sit in front of the phase that
      lost them; units that finish rest on the last segment. */
   const n = done ? PHASES.length - 1 : u.stop - 1;
-  const x = SEG_X(n) + (done ? 1.2 : 0.7);
-  const y = done ? -0.35 + u.lane * 0.06 : 1.5 + u.lane * 0.15;
-  const b = box(x, y, SEG_Z(n) + (done ? SEG_H : 0), 0.8, 0.8, 0.5);
+  /* Three side by side must fit a 2.4-wide segment without touching. */
+  const x = SEG_X(n) + 0.04 + u.slot * 0.8;
+  const y = done ? -0.3 : 1.5;
+  const b = box(x, y, SEG_Z(n) + (done ? SEG_H : 0), 0.64, 0.64, 0.46);
 
   return (
     <motion.g
@@ -382,13 +434,19 @@ function Unit({
   in the drawing's own perspective — floating labels collided with each other
   and read as a chart legend rather than as part of the object.
 */
+/*
+  The heights are illustrative and the drawing says so. It used to print dollar
+  figures on the two picked columns; those were not Audaption's to claim. What
+  the drawing argues is the order — the biggest open pool is funded first, the
+  next after it, and the rest wait — so that is what is printed.
+*/
 const MARKETS: { name: string; v: number; pick: boolean; spend?: string }[] = [
   { name: "SMB", v: 1.1, pick: false },
   { name: "PARTNER", v: 1.6, pick: false },
   { name: "APAC", v: 2.0, pick: false },
-  { name: "MID-MARKET", v: 2.8, pick: true, spend: "$4.2M" },
+  { name: "MID-MARKET", v: 2.8, pick: true, spend: "2ND" },
   { name: "EMEA", v: 2.2, pick: false },
-  { name: "ENTERPRISE", v: 3.6, pick: true, spend: "$6.8M" },
+  { name: "ENTERPRISE", v: 3.6, pick: true, spend: "1ST" },
 ];
 
 export function StrategyGraphic({ play }: GraphicProps) {
@@ -416,6 +474,16 @@ export function StrategyGraphic({ play }: GraphicProps) {
       {MARKETS.map((m, i) => (
         <Market key={m.name} m={m} i={i} S={S} on={step > i} />
       ))}
+
+      <Arrive on={step > MARKETS.length}>
+        <Note
+          t="FUND THE BIGGEST OPEN POOL FIRST · HEIGHTS ILLUSTRATIVE"
+          at={{ x: -330, y: 168 }}
+          anchor="start"
+          size={13}
+          fill="var(--color-jade-deep)"
+        />
+      </Arrive>
     </svg>
   );
 }
@@ -563,8 +631,22 @@ export function AiGraphic({ play }: GraphicProps) {
   );
 }
 
+/** The Signals chapter's drawing: every signal lands on one record. */
+export function SignalsGraphic({ play }: GraphicProps) {
+  return (
+    <DataGraphic
+      play={play}
+      sources={SIGNALS}
+      centre="ONE RECORD"
+      note="EVERY SIGNAL LANDS ON ONE RECORD"
+      labelSide="top"
+    />
+  );
+}
+
 export const GRAPHICS = {
   data: DataGraphic,
+  signals: SignalsGraphic,
   journey: JourneyGraphic,
   strategy: StrategyGraphic,
   ai: AiGraphic,

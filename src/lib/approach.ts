@@ -16,11 +16,16 @@
     04 Funnel        Customer Journey drawing
     05 Signals       Customer Data drawing
     06 Scale         Artificial Intelligence drawing
-    07 Invest        Unified Go-to-Market Motion blueprint
+    05 Website       Website Experience blueprint
+    06 Signals       Customer Data drawing, labelled with signals
+    07 Scale         Artificial Intelligence drawing
+    08 Invest        Unified Go-to-Market Motion blueprint
 
-  Website Experience has no chapter of its own. It is the surface the funnel
-  and signals chapters act on, and its blueprint is still in
-  components/iso/Blueprint.tsx and lib/systems.ts if it earns one back.
+  Every drawing has to carry its chapter's claim, not just illustrate the topic.
+  The funnel drawing shows its biggest loss late, because the chapter says deals
+  are lost late; the segmentation drawing prints the order to fund markets in,
+  not dollar figures; the signals drawing names signals, not data sources. If a
+  chapter's claim changes, change its drawing with it.
 
   No numbers appear here that are not Audaption's to claim. The structure is
   borrowed from the approach page; the figures on that page belong to its
@@ -40,7 +45,8 @@ export type DrawingId =
   | "strategy"
   | "content"
   | "journey"
-  | "data"
+  | "website"
+  | "signals"
   | "ai"
   | "gtm";
 
@@ -127,6 +133,22 @@ export const CHAPTERS: Chapter[] = [
     layout: "stack",
   },
   {
+    id: "website",
+    group: "act",
+    title: "Website",
+    question: "How should the experience respond?",
+    claim: "Make the site respond to the buyer in front of it.",
+    body: "The website is where the message meets behavior. We design how structure, content and interactions help each buyer finish the task they came for, adapt it by market and lifecycle stage, and measure how far each visit progresses.",
+    rec: "Personalize the few pages that carry the most pipeline before redesigning the rest.",
+    points: [
+      "Behavior analytics, voice of customer, journey mapping",
+      "Experience design, personalization, measurement",
+      "Conversion up, personalized by market, behavioral signals",
+    ],
+    drawing: "website",
+    layout: "stack",
+  },
+  {
     id: "signals",
     group: "act",
     title: "Signals",
@@ -134,8 +156,15 @@ export const CHAPTERS: Chapter[] = [
     claim: "Act on timing, not guesswork.",
     body: "Every stage throws off signals: new funding, an executive hire, a champion who leaves, a competitive evaluation, spend that starts to fall. With one customer record, each signal triggers a marketing play and a sales play.",
     rec: "Define the handful of signals that matter and who acts on each. Single-threaded deals stall; multi-threaded ones close.",
-    points: ["CRM", "Website", "Ads", "Support", "Billing", "Product"],
-    drawing: "data",
+    points: [
+      "Funding received",
+      "New executive",
+      "Active intent",
+      "Champion change",
+      "Competitive evaluation",
+      "Declining spend",
+    ],
+    drawing: "signals",
     layout: "stack",
   },
   {
@@ -183,7 +212,7 @@ export const SUMMARY = {
   title: "Executive summary",
   eyebrow: "The case · Executive summary",
   headline: "A plan to stop growth from leaking.",
-  lede: "Audaption designs the commercial system behind the role you are hiring for: what you measure, where you compete, what you say, where deals stall and when to act. Marketing capabilities are the plays inside that system, not the strategy.",
+  lede: "Audaption designs the commercial system behind the role you are hiring for: what you measure, where you compete, what you say, where deals stall, how your site responds and when to act. Marketing capabilities are the plays inside that system, not the strategy.",
   plan: [
     {
       name: "Focus",

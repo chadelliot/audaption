@@ -123,7 +123,7 @@ function Rail({ current, onPick }: { current: number; onPick: (n: number) => voi
       className="min-h-0 flex-1 overflow-y-auto px-5 pb-2 pt-6 no-bar"
     >
       {GROUPS.map((g) => (
-        <div key={g.id} className="mb-6">
+        <div key={g.id} className="mb-6 [@media(max-height:720px)]:mb-3.5">
           <p className="annot mb-2">{g.label}</p>
           <ul>
             {STEPS.map((s, n) => {
@@ -136,7 +136,7 @@ function Rail({ current, onPick }: { current: number; onPick: (n: number) => voi
                     type="button"
                     onClick={() => onPick(n)}
                     aria-current={on ? "step" : undefined}
-                    className="group flex w-full items-baseline gap-2.5 py-1.5 text-left"
+                    className="group flex w-full items-baseline gap-2.5 py-1.5 text-left [@media(max-height:720px)]:py-0.5"
                   >
                     <span
                       aria-hidden
@@ -297,7 +297,7 @@ function SummaryView() {
       </ol>
 
       <p className="annot mt-10">
-        Seven decisions, in order · use Next, the rail, or the arrow keys
+        {CHAPTERS.length} decisions, in order · use Next, the rail, or the arrow keys
       </p>
     </div>
   );
@@ -337,7 +337,7 @@ function RoadmapView() {
 /* ------------------------------------------------------------------ */
 
 const isBlueprint = (d: DrawingId) =>
-  d === "analytics" || d === "content" || d === "gtm";
+  d === "analytics" || d === "content" || d === "website" || d === "gtm";
 
 /**
  * Where a drawing lives. It is given a box of definite size and told to fit
@@ -372,7 +372,7 @@ function Stage({ drawing, ruled = true }: { drawing?: DrawingId; ruled?: boolean
 }
 
 function Drawing({ id }: { id: DrawingId }) {
-  if (id === "data" || id === "journey" || id === "strategy" || id === "ai") {
+  if (id === "signals" || id === "journey" || id === "strategy" || id === "ai") {
     const G = GRAPHICS[id];
     return (
       <div className="flex h-full w-full items-center justify-center">
