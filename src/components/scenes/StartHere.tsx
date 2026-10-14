@@ -105,7 +105,10 @@ export default function StartHere() {
   }
 
   return (
-    <section id="start" className="sheet-light px-5 py-24 sm:px-8 sm:py-32">
+    <section
+      id="start"
+      className="sheet-light px-5 py-24 max-lg:border-t-4 max-lg:border-jade max-lg:bg-[var(--color-tan)] sm:px-8 sm:py-32"
+    >
       <div className="mx-auto max-w-[1500px]">
         <div className="max-w-[52rem]">
           <p className="annot">Your next stage of growth</p>

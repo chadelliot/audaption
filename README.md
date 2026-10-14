@@ -27,10 +27,12 @@ npm run dev
   Each chapter is one question, one flat working exhibit from
   `src/components/exhibits/` that builds itself in as the chapter arrives, and one
   recommendation. The story is deliberately not the diagnosis on aboutchad.com.
-- **On a phone** the approach is one chapter at a time, not a long scroll
-  (`src/components/deck/MobileDeck.tsx`): pinned chapter tabs with a progress line,
-  text first and the graphic second, swipe or a docked Back / Next, and a "show the
-  whole picture" peek on tall graphics. The laptop deck is a separate component.
+- **On a phone** the approach is one fixed screen, one chapter at a time
+  (`src/components/deck/MobileDeck.tsx`): chapter tabs on top, two panes (the idea,
+  which always fits without scrolling, and the graphic), and a dark control dock at
+  the bottom with one "See the graphic" button above Back / Next. Swipe sideways to
+  change chapter. The contact section below has its own tan ground so the end of
+  the deck is obvious. The laptop deck is a separate component.
 - **The deep dives** are one page per body of work, at `/capabilities/<slug>/`,
   generated from `src/lib/capabilities.ts` by `src/components/capability/`. A
   chapter links to its page. A new page is a data entry, not a build: add it to

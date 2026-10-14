@@ -299,3 +299,16 @@ p {
     scroll-behavior: auto !important;
   }
 }
+
+/*
+  On a phone the approach is one fixed screen, and scrolling should come to rest
+  on it rather than stop half-way past it. A proximity snap does that without
+  trapping anyone: it only settles when a scroll ends near the screen, and a
+  hard swipe carries straight on to the next section. Laptops are untouched.
+*/
+@media (max-width: 1023px) {
+  html {
+    scroll-snap-type: y proximity;
+    scroll-padding-top: 58px;
+  }
+}
