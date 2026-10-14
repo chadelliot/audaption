@@ -126,7 +126,7 @@ export function IconTile({
  * Northbridge Supply: a graphite square, a jade bridge deck and its arch.
  * It is deliberately plain — if it looks like a logo at 16px it is doing its job.
  */
-export function NorthbridgeMark({ size = 24, rounded = false }: { size?: number; rounded?: boolean }) {
+export function NorthbridgeMark({ size = 24 }: { size?: number }) {
   return (
     <svg
       viewBox="0 0 32 32"
@@ -135,7 +135,7 @@ export function NorthbridgeMark({ size = 24, rounded = false }: { size?: number;
       role="img"
       aria-label="Northbridge Supply"
       className="shrink-0"
-      style={rounded ? { borderRadius: "22%" } : undefined}
+      style={{ borderRadius: "22%" }}
     >
       <rect width="32" height="32" fill="#262626" />
       <path d="M0 20.5h32" stroke="#29a587" strokeWidth="3" />

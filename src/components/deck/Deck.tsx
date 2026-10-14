@@ -39,9 +39,8 @@ import { CAPABILITY } from "@/lib/capabilities";
 import { lenisRef } from "@/lib/lenisInstance";
 import { usePrefersReducedMotion } from "@/lib/reducedMotion";
 
-import { Icon, IconTile } from "@/components/exhibits/icons";
+import { IconTile } from "@/components/exhibits/icons";
 const LAYER_ICON = { Data: "data", Journey: "journey", Experience: "experience" } as const;
-const STEP_ICON = ["map", "align", "build", "run"] as const;
 
 const LAST = STEPS.length - 1;
 const GROUP_LABEL = Object.fromEntries(GROUPS.map((g) => [g.id, g.label]));
@@ -445,7 +444,6 @@ function RoadmapView() {
                 paddingLeft: i ? "2rem" : "1.25rem",
               }}
             >
-              <Icon name={STEP_ICON[i]} size={18} />
               <span className="font-mono text-[0.72rem] opacity-70">{s.n}</span>
               <span className="font-display-mixed text-[1.4rem] leading-none">{s.name}</span>
             </div>

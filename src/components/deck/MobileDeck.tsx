@@ -39,12 +39,11 @@ import {
   type Chapter,
   type Step,
 } from "@/lib/approach";
-import { Icon, IconTile } from "@/components/exhibits/icons";
+import { IconTile } from "@/components/exhibits/icons";
 import { CAPABILITY } from "@/lib/capabilities";
 import { usePrefersReducedMotion } from "@/lib/reducedMotion";
 
 const LAYER_ICON = { Data: "data", Journey: "journey", Experience: "experience" } as const;
-const STEP_ICON = ["map", "align", "build", "run"] as const;
 const LAST = STEPS.length - 1;
 const GROUP_LABEL = Object.fromEntries(GROUPS.map((g) => [g.id, g.label]));
 
@@ -358,13 +357,13 @@ function Roadmap({ pane }: { pane: number }) {
         {ROADMAP.steps.map((s, k) => (
           <li key={s.name} className="flex gap-3.5">
             <span
-              className="font-display flex h-8 w-8 shrink-0 items-center justify-center gap-0 text-[0.95rem]"
+              className="font-display flex h-8 w-8 shrink-0 items-center justify-center text-[0.95rem]"
               style={{
                 background: ["rgba(41,165,135,0.18)", "rgba(41,165,135,0.38)", "rgba(41,165,135,0.66)", "#1d7a63"][k],
                 color: k > 1 ? "#fff" : "#262626",
               }}
             >
-              <Icon name={STEP_ICON[k]} size={17} />
+              {s.n}
             </span>
             <span>
               <span className="font-display-mixed block text-[1.15rem] leading-tight text-graphite">{s.name}</span>
