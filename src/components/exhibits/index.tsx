@@ -28,6 +28,7 @@ import RecordGate from "./Record";
 import Route from "./Route";
 import Sell from "./Sell";
 import Stack from "./Stack";
+import Touchpoints from "./Touchpoints";
 import Website from "./Website";
 
 export type ExhibitId =
@@ -35,6 +36,7 @@ export type ExhibitId =
   | "record"
   | "journey"
   | "website"
+  | "touchpoints"
   | "sell"
   | "motion"
   | "allocate"
@@ -51,6 +53,7 @@ export const EXHIBITS: Record<ExhibitId, ComponentType> = {
   record: RecordGate,
   journey: Journey,
   website: Website,
+  touchpoints: Touchpoints,
   sell: Sell,
   motion: Motion,
   allocate: Allocate,

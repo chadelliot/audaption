@@ -161,11 +161,12 @@ export default function Deck() {
     >
       {/* ---------------------------------------------------------- desktop */}
       <div className="hidden lg:sticky lg:top-0 lg:block">
+        <DeepDiveTab step={step} />
         <div className="mx-auto flex h-[max(640px,100svh)] max-w-[1600px] pt-[57px]">
           <Rail current={i} onPick={go} />
 
           <div className="flex min-w-0 flex-1 flex-col">
-            <div className="relative min-h-0 flex-1 px-10 pb-3 pt-5">
+            <div className="relative min-h-0 flex-1 pb-3 pl-10 pr-[4.25rem] pt-5">
               <AnimatePresence mode="wait" initial={false}>
                 <motion.div
                   key={meta.id}
@@ -310,17 +311,72 @@ function Recommendation({ text, label = "Recommendation" }: { text: string; labe
   );
 }
 
-/** The way from a chapter into the page that goes deeper on it. */
-function GoDeeper({ slug }: { slug?: string }) {
+/**
+ * The way from a chapter into the page that goes deeper on it, as a solid badge.
+ * On a phone this is the whole affordance; on a laptop it is the docked tab
+ * below, and this does not render.
+ */
+function GoDeeper({ slug, all }: { slug?: string; all?: boolean }) {
   const page = slug ? CAPABILITY[slug] : undefined;
-  if (!page) return null;
+  if (!page && !all) return null;
   return (
     <Link
-      href={`/capabilities/${page.slug}/`}
-      className="annot mt-2.5 inline-block border-b border-transparent pb-0.5 text-[0.64rem] leading-snug tracking-[0.08em]! text-jade-deep! transition-colors hover:border-jade-deep"
+      href={page ? `/capabilities/${page.slug}/` : "/capabilities/"}
+      className="font-mono mt-4 inline-flex items-center gap-2.5 bg-jade px-4 py-2.5 text-[0.7rem] uppercase tracking-[0.12em] text-white transition-colors hover:bg-jade-deep"
     >
-      Deep dive · {page.title} →
+      {page ? `Learn more · ${page.title}` : "All deep dives"}
+      <span aria-hidden>↗</span>
     </Link>
+  );
+}
+
+/**
+ * The docked tab: a solid jade spine on the right edge of the screen, set
+ * sideways, that carries the reader from this chapter into its deep-dive page.
+ * It is deliberately narrow — present on every chapter that has a page, never
+ * competing with the exhibit — and it slides in as the chapter does.
+ */
+function DeepDiveTab({ step }: { step: Step }) {
+  let href: string | undefined;
+  let label = "";
+  if (step.kind === "chapter" && step.chapter.deepDive) {
+    const p = CAPABILITY[step.chapter.deepDive];
+    if (p) {
+      href = `/capabilities/${p.slug}/`;
+      label = p.title;
+    }
+  } else if (step.kind === "roadmap") {
+    href = "/capabilities/";
+    label = "All deep dives";
+  }
+
+  return (
+    <AnimatePresence mode="wait" initial={false}>
+      {href ? (
+        <motion.div
+          key={href}
+          className="absolute right-0 top-1/2 z-20 -translate-y-1/2"
+          initial={{ x: 48, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          exit={{ x: 48, opacity: 0 }}
+          transition={{ duration: 0.3, ease: "easeOut" }}
+        >
+          <Link
+            href={href}
+            aria-label={`Learn more: ${label}`}
+            className="group flex items-center gap-2.5 bg-jade px-2.5 py-5 text-white shadow-[-6px_8px_24px_-12px_rgba(29,122,99,0.55)] transition-colors hover:bg-jade-deep"
+            style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}
+          >
+            <span className="font-mono text-[0.66rem] uppercase tracking-[0.16em]">
+              Learn more <span className="opacity-60">·</span> {label}
+            </span>
+            <span aria-hidden className="text-[1rem] leading-none transition-transform group-hover:translate-x-0.5">
+              ↗
+            </span>
+          </Link>
+        </motion.div>
+      ) : null}
+    </AnimatePresence>
   );
 }
 
@@ -340,7 +396,6 @@ function ChapterView({ chapter: c, n }: { chapter: Chapter; n: number }) {
         <p className="pt-[1.55rem] text-[0.95rem] leading-relaxed text-slate">{c.body}</p>
         <div className="pt-[1.55rem]">
           <Recommendation text={c.rec} />
-          <GoDeeper slug={c.deepDive} />
         </div>
       </div>
       <Stage id={c.exhibit} />
@@ -414,12 +469,6 @@ function RoadmapView() {
 
       <div className="mt-9 max-w-[46rem]">
         <Recommendation label="Where to start" text={ROADMAP.ask} />
-        <Link
-          href="/capabilities/"
-          className="annot mt-2.5 inline-block border-b border-transparent pb-0.5 text-[0.64rem] tracking-[0.08em]! text-jade-deep! transition-colors hover:border-jade-deep"
-        >
-          Or go deeper on any part of it →
-        </Link>
       </div>
     </div>
   );
@@ -511,6 +560,8 @@ function MobileList() {
         <div className="mt-6">
           <Recommendation label="Where to start" text={ROADMAP.ask} />
         </div>
+        <GoDeeper all />
+        <br />
         <a
           href="#start"
           className="font-mono mt-6 inline-block bg-jade px-5 py-3 text-[0.75rem] uppercase tracking-[0.14em] text-white"

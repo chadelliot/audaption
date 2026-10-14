@@ -32,6 +32,10 @@ npm run dev
   chapter links to its page. A new page is a data entry, not a build: add it to
   that file and it exists, with the same anatomy as the rest (where the value
   leaks, the exhibit, how we ensure it, what you get, how it connects).
+- **Getting to the deep dives**: each chapter has a docked "Learn more" tab on the
+  right edge of the screen (a solid badge on phones), and the header's *Deep dives*
+  menu opens a panel of every page with a live miniature of whichever one is
+  hovered (`src/components/site/DeepDiveMenu.tsx`).
 - **The close** is the enquiry form.
 
 Every exhibit is an *illustrative* example and says so in its corner. None of it

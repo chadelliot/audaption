@@ -266,3 +266,47 @@ export function FitBox({ children }: { children: ReactNode }) {
     </div>
   );
 }
+
+/*
+  A live miniature.
+
+  Renders a real exhibit at its natural width and scales the whole thing down to
+  fit a box, so a menu can show what a page is about by showing the page's own
+  exhibit rather than a picture of it. It is decorative and inert: it cannot be
+  focused or clicked, and it is hidden from assistive technology, because the
+  link beside it already says everything it says.
+*/
+export function Thumb({
+  children,
+  natural = 1120,
+  className = "",
+}: {
+  children: ReactNode;
+  /** The width the exhibit is designed for. */
+  natural?: number;
+  className?: string;
+}) {
+  const box = useRef<HTMLDivElement>(null);
+  const [s, setS] = useState(0.5);
+
+  useLayoutEffect(() => {
+    const el = box.current;
+    if (!el) return;
+    const fit = () => setS(el.clientWidth / natural);
+    fit();
+    const ro = new ResizeObserver(fit);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [natural]);
+
+  return (
+    <div ref={box} aria-hidden className={`pointer-events-none relative overflow-hidden ${className}`}>
+      <div
+        className="absolute left-0 top-0 origin-top-left"
+        style={{ width: natural, transform: `scale(${s})` }}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}

@@ -277,9 +277,9 @@ export const CAPABILITIES: Capability[] = [
         v: "Page views are counted but journey progression is not, so the site never tells the rest of the system what a buyer is ready for.",
       },
     ],
-    exhibits: ["website"],
+    exhibits: ["touchpoints", "website"],
     exhibitNote:
-      "One page opening two ways, the rule that decides which, and how each did against the default.",
+      "The funnel and what we say at each stage to two different buyers, then one page opening two ways, the rule that decides which, and how each did against the default.",
     ensure: [
       {
         k: "Baseline",

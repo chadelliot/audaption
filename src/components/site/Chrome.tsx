@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import DeepDiveMenu from "@/components/site/DeepDiveMenu";
 
 /*
   The header keeps the paper ground the whole way down. It used to fade in on
@@ -24,17 +25,12 @@ export function SiteHeader({ home = true }: { home?: boolean }) {
         </a>
 
         <div className="flex items-center gap-5">
-          <Link
-            href="/capabilities/"
-            className="font-mono hidden text-[0.72rem] uppercase tracking-[0.14em] text-slate transition-colors hover:text-jade sm:block"
-          >
-            Deep dives
-          </Link>
+          <DeepDiveMenu />
           <a
             href={home ? "#start" : "/#start"}
             className="font-mono border border-[var(--line-ink-strong)] px-4 py-2 text-[0.72rem] uppercase tracking-[0.14em] text-slate transition-colors hover:border-jade hover:text-jade"
           >
-            Chat with an expert
+            Chat<span className="hidden sm:inline"> with an expert</span>
           </a>
         </div>
       </div>

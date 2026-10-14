@@ -94,9 +94,9 @@ export const CHAPTERS: Chapter[] = [
     title: "Touchpoints",
     question: "What does each touchpoint say to each buyer?",
     claim: "Make every touchpoint respond to who is on the other end.",
-    body: "The site, the email, the ad and the call are each a chance to meet a buyer where the journey has taken them. We design what each one shows by market and stage, then measure what it taught us.",
+    body: "At every stage of the funnel there is a touchpoint, and each is a chance to meet a buyer where the journey has taken them. We design what each one says by market and role, so the same product reaches an enterprise buying group and an operations manager in the words that fit each, then we read what each one taught us.",
     rec: "Personalize the few touchpoints that carry the most pipeline before redesigning the rest.",
-    exhibit: "website",
+    exhibit: "touchpoints",
     deepDive: "website-conversion",
   },
   {
