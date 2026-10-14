@@ -18,6 +18,14 @@
 import { motion } from "framer-motion";
 import { usePrefersReducedMotion } from "@/lib/reducedMotion";
 import { Card, Chip, CountUp, Illustrative, Label, Reveal } from "./ui";
+import { Icon, type IconName } from "./icons";
+
+const SOURCE_ICON: Record<string, IconName> = {
+  "Sales import": "sheet",
+  "Web form": "form",
+  "Event list": "event",
+  "Support ticket": "support",
+};
 
 const SOURCES = [
   { k: "Sales import", name: "Northwind Industrial", owner: "J. Alvarez", flag: "" },
@@ -64,7 +72,10 @@ export default function Record() {
                 className="flex flex-col justify-center border border-dashed border-[var(--line-ink-strong)] bg-white px-3.5"
                 style={{ height: `${ROW}rem` }}
               >
-                <p className="annot text-[0.58rem]">{s.k}</p>
+                <p className="annot flex items-center gap-1.5 text-[0.58rem]">
+                  <Icon name={SOURCE_ICON[s.k]} size={13} />
+                  {s.k}
+                </p>
                 <p className="truncate text-[0.9rem] font-semibold leading-tight text-graphite">{s.name}</p>
                 <p
                   className="text-[0.76rem]"

@@ -39,6 +39,10 @@ import { CAPABILITY } from "@/lib/capabilities";
 import { lenisRef } from "@/lib/lenisInstance";
 import { usePrefersReducedMotion } from "@/lib/reducedMotion";
 
+import { Icon, IconTile } from "@/components/exhibits/icons";
+const LAYER_ICON = { Data: "data", Journey: "journey", Experience: "experience" } as const;
+const STEP_ICON = ["map", "align", "build", "run"] as const;
+
 const LAST = STEPS.length - 1;
 const GROUP_LABEL = Object.fromEntries(GROUPS.map((g) => [g.id, g.label]));
 
@@ -395,7 +399,10 @@ function SummaryView() {
       <ol className="mt-8 grid max-w-[64rem] grid-cols-3 gap-8 xl:gap-12">
         {SUMMARY.layers.map((p, i) => (
           <li key={p.name} className="border-t-2 border-jade pt-4">
-            <span className="annot text-[0.62rem]">Layer {i + 1}</span>
+            <span className="flex items-center justify-between">
+              <span className="annot text-[0.62rem]">Layer {i + 1}</span>
+              <IconTile name={LAYER_ICON[p.name as keyof typeof LAYER_ICON]} />
+            </span>
             <span className="font-display-mixed mt-1 block text-[1.6rem] leading-tight text-graphite">
               {p.name}
             </span>
@@ -438,6 +445,7 @@ function RoadmapView() {
                 paddingLeft: i ? "2rem" : "1.25rem",
               }}
             >
+              <Icon name={STEP_ICON[i]} size={18} />
               <span className="font-mono text-[0.72rem] opacity-70">{s.n}</span>
               <span className="font-display-mixed text-[1.4rem] leading-none">{s.name}</span>
             </div>

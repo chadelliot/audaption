@@ -39,9 +39,12 @@ import {
   type Chapter,
   type Step,
 } from "@/lib/approach";
+import { Icon, IconTile } from "@/components/exhibits/icons";
 import { CAPABILITY } from "@/lib/capabilities";
 import { usePrefersReducedMotion } from "@/lib/reducedMotion";
 
+const LAYER_ICON = { Data: "data", Journey: "journey", Experience: "experience" } as const;
+const STEP_ICON = ["map", "align", "build", "run"] as const;
 const LAST = STEPS.length - 1;
 const GROUP_LABEL = Object.fromEntries(GROUPS.map((g) => [g.id, g.label]));
 
@@ -331,7 +334,8 @@ function Summary({ pane }: { pane: number }) {
       <ol className="mt-4 grid grid-cols-3 gap-3">
         {SUMMARY.layers.map((p, k) => (
           <li key={p.name} className="border-t-2 border-jade pt-2">
-            <span className="annot text-[0.56rem]">Layer {k + 1}</span>
+            <IconTile name={LAYER_ICON[p.name as keyof typeof LAYER_ICON]} size={26} />
+            <span className="annot mt-1.5 block text-[0.56rem]">Layer {k + 1}</span>
             <span className="font-display-mixed block text-[1.15rem] leading-tight text-graphite">{p.name}</span>
           </li>
         ))}
@@ -354,13 +358,13 @@ function Roadmap({ pane }: { pane: number }) {
         {ROADMAP.steps.map((s, k) => (
           <li key={s.name} className="flex gap-3.5">
             <span
-              className="font-display flex h-8 w-8 shrink-0 items-center justify-center text-[0.95rem]"
+              className="font-display flex h-8 w-8 shrink-0 items-center justify-center gap-0 text-[0.95rem]"
               style={{
                 background: ["rgba(41,165,135,0.18)", "rgba(41,165,135,0.38)", "rgba(41,165,135,0.66)", "#1d7a63"][k],
                 color: k > 1 ? "#fff" : "#262626",
               }}
             >
-              {s.n}
+              <Icon name={STEP_ICON[k]} size={17} />
             </span>
             <span>
               <span className="font-display-mixed block text-[1.15rem] leading-tight text-graphite">{s.name}</span>

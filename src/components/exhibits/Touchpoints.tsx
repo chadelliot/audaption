@@ -23,6 +23,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { usePrefersReducedMotion } from "@/lib/reducedMotion";
 import { Card, Chip, Illustrative, Label } from "./ui";
+import { CHANNEL_ICON, Icon, NorthbridgeMark, type IconName } from "./icons";
 
 /* ------------------------------------------------------------------ */
 /* The mockups                                                         */
@@ -56,7 +57,7 @@ function MockView({ m, tone }: { m: Mock; tone: "dark" | "light" }) {
       <Frame>
         <div className="flex h-full flex-col">
           <div className="flex items-center gap-2 px-3 py-2.5">
-            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-graphite text-[0.7rem] font-semibold text-white">N</span>
+            <NorthbridgeMark size={28} rounded />
             <div>
               <p className="text-[0.74rem] font-semibold leading-tight text-graphite">{BRAND}</p>
               <p className="text-[0.62rem] leading-tight text-mute">Sponsored</p>
@@ -94,7 +95,10 @@ function MockView({ m, tone }: { m: Mock; tone: "dark" | "light" }) {
             <span className="font-mono flex-1 truncate bg-white px-2 py-0.5 text-[0.6rem] text-mute">{m.url}</span>
           </div>
           <div className="flex items-center gap-3 border-b border-[var(--line-ink)] px-4 py-2">
-            <span className="text-[0.74rem] font-semibold text-graphite">{BRAND}</span>
+            <span className="flex items-center gap-1.5 text-[0.74rem] font-semibold text-graphite">
+              <NorthbridgeMark size={16} />
+              {BRAND}
+            </span>
             <span className="ml-auto flex gap-3 text-[0.62rem] text-mute">
               <span>Solutions</span>
               <span>Industries</span>
@@ -121,7 +125,10 @@ function MockView({ m, tone }: { m: Mock; tone: "dark" | "light" }) {
           <div className="space-y-0.5 border-b border-[var(--line-ink)] bg-[rgba(38,38,38,0.03)] px-3.5 py-2 text-[0.66rem] leading-snug">
             <p>
               <span className="text-mute">From </span>
-              <span className="font-medium text-graphite">Dana at {BRAND}</span>
+              <span className="inline-flex items-center gap-1 align-middle font-medium text-graphite">
+                <NorthbridgeMark size={13} />
+                Dana at {BRAND}
+              </span>
             </p>
             <p>
               <span className="text-mute">To </span>
@@ -140,8 +147,8 @@ function MockView({ m, tone }: { m: Mock; tone: "dark" | "light" }) {
                 {m.button}
               </span>
               {m.attach ? (
-                <span className="border border-[var(--line-ink-strong)] px-2 py-1 text-[0.62rem] text-slate">
-                  ▤ {m.attach}
+                <span className="inline-flex items-center gap-1 border border-[var(--line-ink-strong)] px-2 py-1 text-[0.62rem] text-slate">
+                  <Icon name="sheet" size={12} /> {m.attach}
                 </span>
               ) : null}
             </div>
@@ -157,7 +164,10 @@ function MockView({ m, tone }: { m: Mock; tone: "dark" | "light" }) {
         <div className="flex h-full flex-col">
           <div className="flex items-center justify-between border-b border-[var(--line-ink)] bg-[rgba(38,38,38,0.03)] px-3.5 py-2">
             <span className="font-mono text-[0.58rem] uppercase tracking-[0.14em] text-mute">{m.kicker}</span>
-            <span className="text-[0.62rem] text-mute">{BRAND}</span>
+            <span className="inline-flex items-center gap-1 text-[0.62rem] text-mute">
+              <NorthbridgeMark size={13} />
+              {BRAND}
+            </span>
           </div>
           <div className="flex flex-1 flex-col px-4 py-3">
             <p className="font-display-mixed text-[1.3rem] leading-tight text-graphite">{m.title}</p>
@@ -213,7 +223,10 @@ function MockView({ m, tone }: { m: Mock; tone: "dark" | "light" }) {
     <Frame>
       <div className="flex h-full flex-col bg-[rgba(38,38,38,0.03)]">
         <div className="flex items-center justify-center border-b border-[var(--line-ink)] bg-white py-2">
-          <span className="text-[0.72rem] font-semibold text-graphite">{BRAND}</span>
+          <span className="flex items-center gap-1.5 text-[0.72rem] font-semibold text-graphite">
+            <NorthbridgeMark size={16} rounded />
+            {BRAND}
+          </span>
         </div>
         <div className="flex flex-1 flex-col justify-end gap-1.5 px-3.5 py-3">
           {m.thread.map((b, i) => (
@@ -243,6 +256,7 @@ function MockView({ m, tone }: { m: Mock; tone: "dark" | "light" }) {
 
 const STAGES: {
   k: string;
+  icon: IconName;
   left: number;
   goal: string;
   channels: string[];
@@ -252,6 +266,7 @@ const STAGES: {
 }[] = [
   {
     k: "Notice a problem",
+    icon: "alert",
     left: 100,
     goal: "Name the problem, and see they are not alone with it.",
     channels: ["Paid social", "Industry report"],
@@ -273,6 +288,7 @@ const STAGES: {
   },
   {
     k: "Compare options",
+    icon: "compare",
     left: 64,
     goal: "See how we differ, in their own terms.",
     channels: ["Website"],
@@ -296,6 +312,7 @@ const STAGES: {
   },
   {
     k: "Build the case",
+    icon: "case",
     left: 41,
     goal: "Get something finance and the sponsor can sign.",
     channels: ["Email", "ROI calculator"],
@@ -324,6 +341,7 @@ const STAGES: {
   },
   {
     k: "Decide",
+    icon: "decide",
     left: 29,
     goal: "Settle risk, terms and approvals.",
     channels: ["Seller", "Proposal"],
@@ -353,6 +371,7 @@ const STAGES: {
   },
   {
     k: "Adopt & expand",
+    icon: "expand",
     left: 24,
     goal: "Get value fast, then find the next use.",
     channels: ["Success reviews", "Text"],
@@ -429,7 +448,8 @@ export default function Touchpoints() {
                   clipPath: "polygon(0 0, 100% 0, calc(100% - 10px) 100%, 10px 100%)",
                 }}
               >
-                <span className="min-w-0">
+                <Icon name={st.icon} size={18} className="-ml-1" />
+                <span className="min-w-0 flex-1">
                   <span
                     className="annot block text-[0.54rem] leading-none"
                     style={{ color: active ? "rgba(255,255,255,0.8)" : undefined }}
@@ -463,7 +483,10 @@ export default function Touchpoints() {
               <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2 border-b border-[var(--line-ink)] px-5 py-3">
                 <div>
                   <Label tone="good">Stage {on + 1}</Label>
-                  <p className="font-display-mixed mt-0.5 text-[1.35rem] leading-none text-graphite">{s.k}</p>
+                  <p className="font-display-mixed mt-0.5 flex items-center gap-2 text-[1.35rem] leading-none text-graphite">
+                    <Icon name={s.icon} size={20} className="text-jade-deep" />
+                    {s.k}
+                  </p>
                   <p className="mt-1.5 text-[0.82rem] leading-snug text-slate">
                     <span className="font-medium text-graphite">The buyer is trying to:</span> {s.goal}
                   </p>
@@ -472,7 +495,10 @@ export default function Touchpoints() {
                   <Label>The touchpoint</Label>
                   {s.channels.map((c) => (
                     <Chip key={c} tone="solid">
-                      {c}
+                      <span className="inline-flex items-center gap-1.5">
+                        {CHANNEL_ICON[c] ? <Icon name={CHANNEL_ICON[c]} size={12} /> : null}
+                        {c}
+                      </span>
                     </Chip>
                   ))}
                 </div>
@@ -493,6 +519,7 @@ export default function Touchpoints() {
                       color: buyer === k ? "#fff" : "#56605a",
                     }}
                   >
+                    <Icon name={k ? "person" : "building"} size={13} />
                     {l}
                   </button>
                 ))}
@@ -506,9 +533,11 @@ export default function Touchpoints() {
                   <div key={label} className={`${buyer === k ? "" : "hidden"} sm:block`}>
                     <p className="mb-1.5 flex items-center gap-2">
                       <span
-                        className="inline-block h-2.5 w-2.5"
+                        className="flex h-5 w-5 items-center justify-center text-white"
                         style={{ background: tone === "dark" ? "#262626" : "#29a587" }}
-                      />
+                      >
+                        <Icon name={k ? "person" : "building"} size={13} />
+                      </span>
                       <span className="annot text-[0.6rem] text-graphite!">{label}</span>
                     </p>
                     <MockView m={m} tone={tone} />
@@ -517,6 +546,7 @@ export default function Touchpoints() {
               </div>
 
               <div className="mt-auto flex items-center gap-3 border-t border-[var(--line-ink)] bg-[rgba(41,165,135,0.06)] px-5 py-2.5">
+                <Icon name="signal" size={16} className="text-jade-deep" />
                 <Label tone="good">What it tells us</Label>
                 <p className="text-[0.86rem] text-graphite">{s.signal}</p>
               </div>

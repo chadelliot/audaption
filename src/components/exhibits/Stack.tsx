@@ -12,15 +12,23 @@
 */
 
 import { Card, Chip, CountUp, Illustrative, Label, Reveal } from "./ui";
+import { Icon, type IconName } from "./icons";
+import { Logo, LogoTag, NameTag, type LogoName } from "./logos";
 
-const TOOLS = [
-  { k: "Ad platforms", use: 88 },
-  { k: "Tag + consent", use: 64 },
-  { k: "Web analytics", use: 72 },
-  { k: "Customer data", use: 35 },
-  { k: "Automation", use: 41 },
-  { k: "CRM", use: 76 },
-] as const;
+const TOOLS: readonly {
+  k: string;
+  use: number;
+  icon: IconName;
+  logos: LogoName[];
+  names?: string[];
+}[] = [
+  { k: "Ad platforms", use: 88, icon: "social", logos: ["googleads", "meta"] },
+  { k: "Tag + consent", use: 64, icon: "link", logos: ["googletagmanager"] },
+  { k: "Web analytics", use: 72, icon: "web", logos: ["googleanalytics"] },
+  { k: "Customer data", use: 35, icon: "data", logos: ["snowflake", "googlebigquery"] },
+  { k: "Automation", use: 41, icon: "mail", logos: ["hubspot", "mailchimp", "zapier"] },
+  { k: "CRM", use: 76, icon: "person", logos: ["hubspot"], names: ["Salesforce"] },
+];
 
 /** Share of signal each joint passes on, and what the joint actually is. */
 const JOINTS = [
@@ -68,6 +76,15 @@ export default function Stack() {
         </Reveal>
       </Card>
 
+      <div className="flex flex-wrap items-center gap-x-2 gap-y-2">
+        <Label>Platforms we work in</Label>
+        {(["hubspot", "googleanalytics", "googleads", "meta", "googletagmanager", "zapier", "mailchimp", "snowflake", "sap"] as const).map((n) => (
+          <LogoTag key={n} name={n} />
+        ))}
+        <NameTag>Salesforce</NameTag>
+        <span className="text-[0.72rem] text-mute">and the rest of yours</span>
+      </div>
+
       <div className="grid gap-3 sm:grid-cols-3">
         {[
           ["2 overlapping tools", "Two email platforms and two form tools doing one job each."],
@@ -99,7 +116,20 @@ function Tool({
     <div className="relative flex flex-col px-2 first:pl-0 last:pr-0">
       <Reveal delay={0.2 + i * 0.16}>
         <div className="border border-[var(--line-ink-strong)] bg-white px-3 py-3">
-          <p className="text-[0.92rem] font-semibold leading-tight text-graphite">{tool.k}</p>
+          <p className="flex items-center gap-1.5 text-[0.92rem] font-semibold leading-tight text-graphite">
+            <Icon name={tool.icon} size={15} className="text-jade-deep" />
+            {tool.k}
+          </p>
+          <div className="mt-2 flex min-h-[1.25rem] flex-wrap items-center gap-x-2 gap-y-1">
+            {tool.logos.map((l) => (
+              <Logo key={l} name={l} size={18} />
+            ))}
+            {tool.names?.map((n) => (
+              <span key={n} className="text-[0.66rem] font-medium text-slate">
+                {n}
+              </span>
+            ))}
+          </div>
           <div className="mt-2.5 h-1.5 bg-[rgba(38,38,38,0.1)]">
             <div
               className="h-full"
