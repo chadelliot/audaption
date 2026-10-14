@@ -24,9 +24,9 @@ import { useCallback, useEffect, useRef, useState, type CSSProperties } from "re
 import Link from "next/link";
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "framer-motion";
 import { EXHIBITS, type ExhibitId } from "@/components/exhibits";
+import MobileDeck from "@/components/deck/MobileDeck";
 import { FitBox } from "@/components/exhibits/ui";
 import {
-  CHAPTERS,
   GROUPS,
   ROADMAP,
   STEPS,
@@ -185,9 +185,7 @@ export default function Deck() {
       </div>
 
       {/* ----------------------------------------------------------- mobile */}
-      <div className="px-5 py-20 sm:px-8 lg:hidden">
-        <MobileList />
-      </div>
+      <MobileDeck />
     </section>
   );
 }
@@ -308,25 +306,6 @@ function Recommendation({ text, label = "Recommendation" }: { text: string; labe
       <p className="annot text-jade-deep!">{label}</p>
       <p className="mt-1.5 text-[0.95rem] leading-snug text-graphite">{text}</p>
     </div>
-  );
-}
-
-/**
- * The way from a chapter into the page that goes deeper on it, as a solid badge.
- * On a phone this is the whole affordance; on a laptop it is the docked tab
- * below, and this does not render.
- */
-function GoDeeper({ slug, all }: { slug?: string; all?: boolean }) {
-  const page = slug ? CAPABILITY[slug] : undefined;
-  if (!page && !all) return null;
-  return (
-    <Link
-      href={page ? `/capabilities/${page.slug}/` : "/capabilities/"}
-      className="font-mono mt-4 inline-flex items-center gap-2.5 bg-jade px-4 py-2.5 text-[0.7rem] uppercase tracking-[0.12em] text-white transition-colors hover:bg-jade-deep"
-    >
-      {page ? `Learn more · ${page.title}` : "All deep dives"}
-      <span aria-hidden>↗</span>
-    </Link>
   );
 }
 
@@ -490,85 +469,6 @@ function Stage({ id }: { id: ExhibitId }) {
       <FitBox>
         <Exhibit />
       </FitBox>
-    </div>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/* Phones: the same argument, no paging, no drawings                   */
-/* ------------------------------------------------------------------ */
-
-function MobileExhibit({ id }: { id: ExhibitId }) {
-  const Exhibit = EXHIBITS[id];
-  return <Exhibit />;
-}
-
-function MobileList() {
-  return (
-    <div className="mx-auto max-w-[40rem] space-y-14">
-      <div>
-        <p className="annot">{SUMMARY.eyebrow}</p>
-        <h2 className="font-display mt-4 text-[clamp(1.8rem,8vw,2.4rem)] text-graphite">
-          Build the <span className="text-jade">go-to-market strategy</span> sales and marketing can
-          run together.
-        </h2>
-        <p className="mt-4 leading-relaxed text-slate">{SUMMARY.lede}</p>
-        <ul className="mt-6 space-y-4">
-          {SUMMARY.layers.map((p) => (
-            <li key={p.name} className="border-t-2 border-jade pt-3">
-              <span className="font-display-mixed block text-[1.4rem] text-graphite">{p.name}</span>
-              <span className="mt-1 block text-[1rem] leading-relaxed text-slate">{p.line}</span>
-            </li>
-          ))}
-        </ul>
-        <p className="mt-5 bg-graphite px-4 py-3 text-[0.98rem] leading-snug text-chalk">
-          {SUMMARY.result}
-        </p>
-      </div>
-
-      {CHAPTERS.map((c, n) => (
-        <article key={c.id}>
-          <p className="annot">
-            {String(n + 1).padStart(2, "0")} · {GROUP_LABEL[c.group]} · {c.question}
-          </p>
-          <h3 className="font-display-mixed mt-3 text-[1.65rem] text-graphite">{c.claim}</h3>
-          <p className="mt-3 leading-relaxed text-slate">{c.body}</p>
-          <div className="mt-5">
-            <MobileExhibit id={c.exhibit} />
-          </div>
-          <div className="mt-5">
-            <Recommendation text={c.rec} />
-            <GoDeeper slug={c.deepDive} />
-          </div>
-        </article>
-      ))}
-
-      <div>
-        <p className="annot">{ROADMAP.eyebrow}</p>
-        <h3 className="font-display mt-4 text-[clamp(1.8rem,8vw,2.3rem)] text-graphite">
-          Map it, align it, build it, <span className="text-jade">run it</span>.
-        </h3>
-        <ol className="mt-6 space-y-4">
-          {ROADMAP.steps.map((s) => (
-            <li key={s.name} className="border-t-2 border-jade pt-3">
-              <span className="annot">{s.n}</span>
-              <span className="font-display-mixed mt-1 block text-[1.4rem] text-graphite">{s.name}</span>
-              <span className="mt-1 block text-[1rem] leading-relaxed text-slate">{s.line}</span>
-            </li>
-          ))}
-        </ol>
-        <div className="mt-6">
-          <Recommendation label="Where to start" text={ROADMAP.ask} />
-        </div>
-        <GoDeeper all />
-        <br />
-        <a
-          href="#start"
-          className="font-mono mt-6 inline-block bg-jade px-5 py-3 text-[0.75rem] uppercase tracking-[0.14em] text-white"
-        >
-          Talk with us ↓
-        </a>
-      </div>
     </div>
   );
 }

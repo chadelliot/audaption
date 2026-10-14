@@ -54,7 +54,10 @@ export default function Record() {
 
       <div className="grid items-stretch gap-4 lg:grid-cols-[minmax(0,15.5rem)_minmax(3rem,1fr)_minmax(0,21rem)]">
         {/* the four records */}
-        <div className="flex flex-col" style={{ gap: `${GAP}rem` }}>
+        <div
+          className="grid grid-cols-2 gap-2 lg:flex lg:flex-col lg:gap-[var(--rec-gap)]"
+          style={{ ["--rec-gap" as string]: `${GAP}rem` }}
+        >
           {SOURCES.map((s, i) => (
             <Reveal key={s.k} delay={0.15 + i * 0.12}>
               <div

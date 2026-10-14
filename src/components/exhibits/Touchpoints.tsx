@@ -388,6 +388,8 @@ export default function Touchpoints() {
   const still = usePrefersReducedMotion();
   const [on, setOn] = useState(0);
   const [touring, setTouring] = useState(true);
+  /* On a phone the two buyers do not fit side by side, so one is shown at a time. */
+  const [buyer, setBuyer] = useState(0);
 
   useEffect(() => {
     if (still || !touring) return;
@@ -476,12 +478,32 @@ export default function Touchpoints() {
                 </div>
               </div>
 
+              <div className="flex gap-2 px-5 pt-3 sm:hidden" role="tablist" aria-label="Buyer">
+                {["Enterprise buying group", "Operations manager"].map((l, k) => (
+                  <button
+                    key={l}
+                    type="button"
+                    role="tab"
+                    aria-selected={buyer === k}
+                    onClick={() => setBuyer(k)}
+                    className="font-mono flex flex-1 items-center justify-center gap-2 border px-2 py-2 text-[0.6rem] uppercase leading-tight tracking-[0.08em]"
+                    style={{
+                      borderColor: buyer === k ? (k ? "#29a587" : "#262626") : "rgba(38,38,38,0.2)",
+                      background: buyer === k ? (k ? "#29a587" : "#262626") : "transparent",
+                      color: buyer === k ? "#fff" : "#56605a",
+                    }}
+                  >
+                    {l}
+                  </button>
+                ))}
+              </div>
+
               <div className="grid gap-4 px-5 pb-3 pt-3 sm:grid-cols-2">
                 {[
                   { label: "Enterprise buying group", tone: "dark" as const, m: s.ent },
                   { label: "Operations manager", tone: "light" as const, m: s.mid },
-                ].map(({ label, tone, m }) => (
-                  <div key={label}>
+                ].map(({ label, tone, m }, k) => (
+                  <div key={label} className={`${buyer === k ? "" : "hidden"} sm:block`}>
                     <p className="mb-1.5 flex items-center gap-2">
                       <span
                         className="inline-block h-2.5 w-2.5"

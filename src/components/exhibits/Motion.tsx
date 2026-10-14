@@ -15,6 +15,7 @@
   not asked to carry the whole argument.
 */
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { usePrefersReducedMotion } from "@/lib/reducedMotion";
 import { Card, Chip, Illustrative, Label, Reveal } from "./ui";
@@ -63,6 +64,7 @@ const rS = (lead: number) => 34 + 42 * (1 - lead);
 
 export default function Motion() {
   const still = usePrefersReducedMotion();
+  const [stage, setStage] = useState(0);
 
   return (
     <div className="space-y-3">
@@ -76,144 +78,38 @@ export default function Motion() {
         <Illustrative>$120M B2B manufacturer</Illustrative>
       </div>
 
-      {/* phones: one card per stage */}
-      <div className="space-y-2.5 lg:hidden">
-        {STAGES.map((s, i) => (
-          <Card key={s.k} className="overflow-hidden">
-            <div className="border-b border-[var(--line-ink)] bg-[rgba(38,38,38,0.03)] px-4 py-2.5">
-              <p className="annot text-[0.58rem]">Stage {i + 1}</p>
-              <p className="font-display-mixed text-[1.15rem] leading-tight text-graphite">{s.k}</p>
-            </div>
-            <dl className="space-y-2.5 px-4 py-3 text-[0.9rem] leading-snug">
-              <div>
-                <dt className="annot text-[0.58rem]">Marketing does</dt>
-                <dd className="text-graphite">{s.mkt}</dd>
-              </div>
-              <div>
-                <dt className="annot text-[0.58rem]">They share</dt>
-                <dd className="font-semibold text-jade-deep">{s.measure}</dd>
-              </div>
-              <div>
-                <dt className="annot text-[0.58rem]">Sales does</dt>
-                <dd className="text-graphite">{s.sales}</dd>
-              </div>
-              <div>
-                <dt className="annot text-[0.58rem]">Owned by</dt>
-                <dd className="text-slate">{s.owner}</dd>
-              </div>
-            </dl>
-          </Card>
-        ))}
+      {/* phones: pick a stage, see its pair */}
+      <div className="lg:hidden">
+        <div className="flex gap-1.5" role="tablist" aria-label="Stage">
+          {STAGES.map((st, k) => (
+            <button
+              key={st.k}
+              type="button"
+              role="tab"
+              aria-selected={stage === k}
+              onClick={() => setStage(k)}
+              className="font-mono flex-1 px-1 py-2 text-[0.64rem] uppercase tracking-[0.08em]"
+              style={{
+                background: stage === k ? "#29a587" : "rgba(38,38,38,0.06)",
+                color: stage === k ? "#fff" : "#56605a",
+              }}
+            >
+              {st.k}
+            </button>
+          ))}
+        </div>
+        <div className="mt-3">
+          <StageCard key={stage} s={STAGES[stage]} i={stage} still={still} />
+        </div>
       </div>
 
       {/* desktop: four pairs of circles */}
       <div className="hidden grid-cols-4 gap-x-2 lg:grid">
-        {STAGES.map((s, i) => {
-          const cxM = 120 - D / 2;
-          const cxS = 120 + D / 2;
-          const rm = rM(s.lead);
-          const rs = rS(s.lead);
-          const id = `venn-${i}`;
-          return (
-            <Reveal key={s.k} delay={i * 0.22} className="min-w-0">
-              <Card className="flex h-full flex-col px-3 pb-4 pt-3">
-                <div className="flex items-baseline justify-between px-1">
-                  <p className="font-display-mixed text-[1.15rem] leading-none text-graphite">{s.k}</p>
-                  <span className="annot text-[0.58rem]">Stage {i + 1}</span>
-                </div>
-
-                <svg viewBox="0 0 240 170" className="mx-auto mt-1 block h-auto w-full" aria-hidden>
-                  <defs>
-                    <clipPath id={`${id}-m`}>
-                      <circle cx={cxM} cy={CY} r={rm} />
-                    </clipPath>
-                  </defs>
-                  <motion.circle
-                    cx={cxM}
-                    cy={CY}
-                    r={rm}
-                    fill="rgba(38,38,38,0.07)"
-                    stroke="#262626"
-                    strokeWidth={1.6}
-                    initial={still ? false : { scale: 0 }}
-                    animate={{ scale: 1 }}
-                    style={{ transformBox: "fill-box", transformOrigin: "center" }}
-                    transition={{ delay: 0.3 + i * 0.22, type: "spring", stiffness: 160, damping: 17 }}
-                  />
-                  <motion.circle
-                    cx={cxS}
-                    cy={CY}
-                    r={rs}
-                    fill="rgba(41,165,135,0.14)"
-                    stroke="#29a587"
-                    strokeWidth={1.6}
-                    initial={still ? false : { scale: 0 }}
-                    animate={{ scale: 1 }}
-                    style={{ transformBox: "fill-box", transformOrigin: "center" }}
-                    transition={{ delay: 0.45 + i * 0.22, type: "spring", stiffness: 160, damping: 17 }}
-                  />
-                  {/* where they overlap: the number both own */}
-                  <motion.circle
-                    cx={cxS}
-                    cy={CY}
-                    r={rs}
-                    fill="#29a587"
-                    fillOpacity={0.55}
-                    clipPath={`url(#${id}-m)`}
-                    initial={still ? false : { opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.9 + i * 0.22, duration: 0.5 }}
-                  />
-                  <text
-                    x={cxM - rm * 0.5}
-                    y={CY + 4}
-                    textAnchor="middle"
-                    fontSize="10"
-                    letterSpacing="1.6"
-                    className="font-mono"
-                    fill="#262626"
-                  >
-                    MKTG
-                  </text>
-                  <text
-                    x={cxS + rs * 0.5}
-                    y={CY + 4}
-                    textAnchor="middle"
-                    fontSize="10"
-                    letterSpacing="1.6"
-                    className="font-mono"
-                    fill="#1d7a63"
-                  >
-                    SALES
-                  </text>
-                </svg>
-
-                {/* the measure they share */}
-                <motion.div
-                  className="mx-auto -mt-1 w-full max-w-[13rem] bg-jade px-3 py-2 text-center"
-                  style={{ borderRadius: 999 }}
-                  initial={still ? false : { opacity: 0, y: 6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 1.1 + i * 0.22 }}
-                >
-                  <p className="text-[0.86rem] font-semibold leading-tight text-white">{s.measure}</p>
-                </motion.div>
-                <p className="mt-1 text-center text-[0.7rem] text-mute">{s.owner}</p>
-
-                <dl className="mt-3 space-y-2 border-t border-[var(--line-ink)] px-1 pt-3 text-[0.82rem] leading-snug">
-                  <div>
-                    <dt className="annot text-[0.56rem]">Marketing</dt>
-                    <dd className="text-graphite">{s.mkt}</dd>
-                  </div>
-                  <div>
-                    <dt className="annot text-[0.56rem] text-jade-deep!">Sales</dt>
-                    <dd className="text-graphite">{s.sales}</dd>
-                  </div>
-                </dl>
-              </Card>
-            </Reveal>
-          );
-        })}
+        {STAGES.map((s, i) => (
+          <Reveal key={s.k} delay={i * 0.22} className="min-w-0">
+            <StageCard s={s} i={i} still={still} />
+          </Reveal>
+        ))}
       </div>
 
       <Reveal delay={1.8}>
@@ -224,5 +120,95 @@ export default function Motion() {
         </p>
       </Reveal>
     </div>
+  );
+}
+
+/** One stage: a pair of circles, the number they share, and one line each. */
+function StageCard({ s, i, still }: { s: (typeof STAGES)[number]; i: number; still: boolean }) {
+  const cxM = 120 - D / 2;
+  const cxS = 120 + D / 2;
+  const rm = rM(s.lead);
+  const rs = rS(s.lead);
+  const id = `venn-${i}`;
+  return (
+    <Card className="flex h-full flex-col px-3 pb-4 pt-3">
+      <div className="flex items-baseline justify-between px-1">
+        <p className="font-display-mixed text-[1.15rem] leading-none text-graphite">{s.k}</p>
+        <span className="annot text-[0.58rem]">Stage {i + 1}</span>
+      </div>
+
+      <svg viewBox="0 0 240 170" className="mx-auto mt-1 block h-auto w-full max-w-[22rem]" aria-hidden>
+        <defs>
+          <clipPath id={`${id}-m`}>
+            <circle cx={cxM} cy={CY} r={rm} />
+          </clipPath>
+        </defs>
+        <motion.circle
+          cx={cxM}
+          cy={CY}
+          r={rm}
+          fill="rgba(38,38,38,0.07)"
+          stroke="#262626"
+          strokeWidth={1.6}
+          initial={still ? false : { scale: 0 }}
+          animate={{ scale: 1 }}
+          style={{ transformBox: "fill-box", transformOrigin: "center" }}
+          transition={{ delay: 0.3 + i * 0.22, type: "spring", stiffness: 160, damping: 17 }}
+        />
+        <motion.circle
+          cx={cxS}
+          cy={CY}
+          r={rs}
+          fill="rgba(41,165,135,0.14)"
+          stroke="#29a587"
+          strokeWidth={1.6}
+          initial={still ? false : { scale: 0 }}
+          animate={{ scale: 1 }}
+          style={{ transformBox: "fill-box", transformOrigin: "center" }}
+          transition={{ delay: 0.45 + i * 0.22, type: "spring", stiffness: 160, damping: 17 }}
+        />
+        {/* where they overlap: the number both own */}
+        <motion.circle
+          cx={cxS}
+          cy={CY}
+          r={rs}
+          fill="#29a587"
+          fillOpacity={0.55}
+          clipPath={`url(#${id}-m)`}
+          initial={still ? false : { opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.9 + i * 0.22, duration: 0.5 }}
+        />
+        <text x={cxM - rm * 0.5} y={CY + 4} textAnchor="middle" fontSize="10" letterSpacing="1.6" className="font-mono" fill="#262626">
+          MKTG
+        </text>
+        <text x={cxS + rs * 0.5} y={CY + 4} textAnchor="middle" fontSize="10" letterSpacing="1.6" className="font-mono" fill="#1d7a63">
+          SALES
+        </text>
+      </svg>
+
+      {/* the measure they share */}
+      <motion.div
+        className="mx-auto -mt-1 w-full max-w-[13rem] bg-jade px-3 py-2 text-center"
+        style={{ borderRadius: 999 }}
+        initial={still ? false : { opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1.1 + i * 0.22 }}
+      >
+        <p className="text-[0.86rem] font-semibold leading-tight text-white">{s.measure}</p>
+      </motion.div>
+      <p className="mt-1 text-center text-[0.7rem] text-mute">{s.owner}</p>
+
+      <dl className="mt-3 space-y-2 border-t border-[var(--line-ink)] px-1 pt-3 text-[0.82rem] leading-snug">
+        <div>
+          <dt className="annot text-[0.56rem]">Marketing</dt>
+          <dd className="text-graphite">{s.mkt}</dd>
+        </div>
+        <div>
+          <dt className="annot text-[0.56rem] text-jade-deep!">Sales</dt>
+          <dd className="text-graphite">{s.sales}</dd>
+        </div>
+      </dl>
+    </Card>
   );
 }
