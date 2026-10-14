@@ -3,165 +3,259 @@
 /*
   01 — Market: who are we selling to?
 
-  An ideal customer profile you can count. On the left, what the customers who
-  buy, stay and expand have in common, set against how common the same trait is
-  across every account — and the ratio, because a trait only matters if it is
-  more common among the winners than in the base. On the right, what that
-  profile does once it scores the whole market: three tiers, and the one fact
-  that makes the case — a sixth of the accounts carry nearly half the revenue.
+  A field of accounts. Every dot is an account, placed by how closely it fits the
+  ideal customer profile (across) and how large it could be (up). They arrive
+  grey and low, then sort themselves: most of the base is a cloud at the bottom
+  left, and a small bright cluster sits top right. That cluster is the point,
+  and the bars on the right say it in numbers — a small share of accounts, most
+  of the revenue — followed by what the cluster has in common.
 
-  Calm on purpose: one accent, no alarm colour. This is the foundation, not the
-  problem.
+  A scatter, not a table, because the claim is about shape: the base is not an
+  even spread, it is a few strong accounts and a long tail, and a picture of
+  that does what a column of percentages cannot.
 */
 
-import { Card, Chip, CountUp, GrowBar, Illustrative, Label, Reveal } from "./ui";
+import { motion } from "framer-motion";
+import { usePrefersReducedMotion } from "@/lib/reducedMotion";
+import { Card, CountUp, Illustrative, Label, Reveal } from "./ui";
 
-const TRAITS = [
-  { k: "Industrial distribution", best: 64, all: 18 },
-  { k: "250–2,000 employees", best: 71, all: 33 },
-  { k: "Multi-site operations", best: 58, all: 14 },
-  { k: "Runs ERP and e-procurement", best: 49, all: 12 },
-  { k: "New commercial leader this year", best: 31, all: 9 },
+/* A small seeded generator, so the field is the same on the server and the
+   client and on every visit. */
+function rng(seed: number) {
+  return () => {
+    seed |= 0;
+    seed = (seed + 0x6d2b79f5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+type Tier = "A" | "B" | "C";
+interface Dot {
+  x: number; // fit, 0–100
+  y: number; // size, 0–1
+  t: Tier;
+}
+
+const dots: Dot[] = (() => {
+  const r = rng(11);
+  const out: Dot[] = [];
+  const make = (n: number, t: Tier, x0: number, x1: number, yc: number, amp: number) => {
+    for (let i = 0; i < n; i++) {
+      const x = x0 + (x1 - x0) * r();
+      const y = Math.max(0.05, Math.min(0.95, yc + (r() - 0.5) * amp));
+      out.push({ x, y, t });
+    }
+  };
+  make(92, "C", 3, 49, 0.27, 0.46);
+  make(40, "B", 52, 76, 0.42, 0.55);
+  make(8, "A", 79, 97, 0.74, 0.3);
+  return out;
+})();
+
+const W = 640;
+const H = 330;
+const PAD = { l: 14, r: 14, t: 34, b: 40 };
+const px = (x: number) => PAD.l + (x / 100) * (W - PAD.l - PAD.r);
+const py = (y: number) => H - PAD.b - y * (H - PAD.t - PAD.b);
+
+const STYLE = {
+  A: { r: 7.5, fill: "#29a587", stroke: "#fff", delay: 1.7, step: 0.07 },
+  B: { r: 5.2, fill: "rgba(41,165,135,0.45)", stroke: "#fff", delay: 0.95, step: 0.012 },
+  C: { r: 3.6, fill: "rgba(38,38,38,0.26)", stroke: "none", delay: 0.2, step: 0.005 },
+} as const;
+
+const SHARE = [
+  { k: "Share of accounts", a: 6, b: 28, c: 66 },
+  { k: "Share of revenue", a: 46, b: 41, c: 13 },
 ] as const;
 
-const TIERS = [
-  { t: "A", accounts: 412, share: 6, win: 41, rev: 46, deal: "$186K", note: "Work these first" },
-  { t: "B", accounts: 1930, share: 28, win: 27, rev: 41, deal: "$74K", note: "Nurture to A" },
-  { t: "C", accounts: 4560, share: 66, win: 9, rev: 13, deal: "$21K", note: "Low touch" },
+const TRAITS = [
+  { k: "Multi-site operations", lift: 4.1 },
+  { k: "Runs ERP and e-procurement", lift: 4.1 },
+  { k: "Industrial distribution", lift: 3.6 },
+  { k: "New commercial leader this year", lift: 3.4 },
 ] as const;
 
 export default function Icp() {
+  const still = usePrefersReducedMotion();
+  let ia = 0;
+  let ib = 0;
+  let ic = 0;
+
   return (
     <div className="space-y-3">
       <div className="flex items-end justify-between gap-6">
-        <Label>Ideal customer profile · built from the customers who stay</Label>
+        <Label>7,000 accounts · placed by fit and by potential size</Label>
         <Illustrative>$120M B2B manufacturer</Illustrative>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
-        <Card className="px-5 pb-4 pt-4">
-          <div className="grid grid-cols-[minmax(0,1.25fr)_minmax(0,1.6fr)_3.2rem] items-end gap-x-4 border-b border-[var(--line-ink)] pb-2">
-            <Label>Trait</Label>
-            <div className="flex gap-4">
-              <Legend swatch="bg-jade" text="Best customers" />
-              <Legend swatch="bg-[rgba(38,38,38,0.22)]" text="All accounts" />
-            </div>
-            <Label className="text-right">Lift</Label>
-          </div>
-
-          <div className="divide-y divide-[var(--line-ink)]">
-            {TRAITS.map((t, i) => (
-              <Reveal key={t.k} delay={0.2 + i * 0.12}>
-                <div className="grid grid-cols-[minmax(0,1.25fr)_minmax(0,1.6fr)_3.2rem] items-center gap-x-4 py-3">
-                  <p className="text-[0.92rem] leading-tight text-graphite">{t.k}</p>
-                  <div className="space-y-1.5">
-                    <Bar pct={t.best} delay={0.3 + i * 0.12} className="bg-jade" label={`${t.best}%`} strong />
-                    <Bar pct={t.all} delay={0.4 + i * 0.12} className="bg-[rgba(38,38,38,0.22)]" label={`${t.all}%`} />
-                  </div>
-                  <p className="font-display text-right text-[1.2rem] leading-none text-jade-deep">
-                    {(t.best / t.all).toFixed(1)}×
-                  </p>
-                </div>
-              </Reveal>
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1.55fr)_minmax(0,1fr)]">
+        <Card className="px-3 pb-2 pt-3">
+          <svg
+            viewBox={`0 0 ${W} ${H}`}
+            className="mx-auto block h-auto max-h-[21rem] w-full"
+            role="img"
+            aria-label="Accounts plotted by fit and size: most are a low cloud, a few form a bright cluster at top right."
+          >
+            {/* tier zones */}
+            <rect x={px(0)} y={PAD.t} width={px(50) - px(0)} height={H - PAD.t - PAD.b} fill="none" />
+            <rect x={px(50)} y={PAD.t} width={px(77) - px(50)} height={H - PAD.t - PAD.b} fill="rgba(38,38,38,0.035)" />
+            <motion.rect
+              x={px(77)}
+              y={PAD.t}
+              width={px(100) - px(77)}
+              height={H - PAD.t - PAD.b}
+              fill="rgba(41,165,135,0.09)"
+              initial={still ? false : { opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1.5, duration: 0.6 }}
+            />
+            {[50, 77].map((x) => (
+              <line key={x} x1={px(x)} x2={px(x)} y1={PAD.t} y2={H - PAD.b} stroke="rgba(38,38,38,0.2)" strokeDasharray="3 4" />
             ))}
-          </div>
+            {[
+              ["TIER C", 25],
+              ["TIER B", 63.5],
+              ["TIER A", 88.5],
+            ].map(([k, x]) => (
+              <text
+                key={k as string}
+                x={px(x as number)}
+                y={PAD.t - 12}
+                textAnchor="middle"
+                fontSize="11"
+                letterSpacing="2"
+                className="font-mono"
+                fill={k === "TIER A" ? "#1d7a63" : "#8a8b84"}
+                fontWeight={k === "TIER A" ? 600 : 400}
+              >
+                {k as string}
+              </text>
+            ))}
+
+            {/* the axes */}
+            <line x1={px(0)} x2={px(100)} y1={H - PAD.b} y2={H - PAD.b} stroke="rgba(38,38,38,0.3)" />
+            <text x={px(100)} y={H - 12} textAnchor="end" fontSize="10.5" letterSpacing="1.6" className="font-mono" fill="#8a8b84">
+              FIT WITH THE IDEAL CUSTOMER PROFILE →
+            </text>
+            <text
+              x={PAD.l + 2}
+              y={H - PAD.b - 8}
+              fontSize="10.5"
+              letterSpacing="1.6"
+              className="font-mono"
+              fill="#8a8b84"
+              transform={`rotate(-90 ${PAD.l + 2} ${H - PAD.b - 8})`}
+            >
+              POTENTIAL SIZE →
+            </text>
+
+            {/* the accounts */}
+            {dots.map((d, i) => {
+              const s = STYLE[d.t];
+              const n = d.t === "A" ? ia++ : d.t === "B" ? ib++ : ic++;
+              return (
+                <motion.circle
+                  key={i}
+                  cx={px(d.x)}
+                  cy={py(d.y)}
+                  r={s.r}
+                  fill={s.fill}
+                  stroke={s.stroke}
+                  strokeWidth={d.t === "A" ? 1.5 : 1}
+                  initial={still ? false : { opacity: 0, scale: 0.2 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  style={{ transformBox: "fill-box", transformOrigin: "center" }}
+                  transition={{
+                    delay: s.delay + n * s.step,
+                    type: d.t === "A" ? "spring" : "tween",
+                    stiffness: 260,
+                    damping: 16,
+                    duration: 0.35,
+                  }}
+                />
+              );
+            })}
+
+            {/* the ring round the cluster that matters */}
+            <motion.ellipse
+              cx={px(88)}
+              cy={py(0.74)}
+              rx={62}
+              ry={52}
+              fill="none"
+              stroke="#1d7a63"
+              strokeWidth={1.8}
+              strokeDasharray="5 5"
+              initial={still ? false : { opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              style={{ transformBox: "fill-box", transformOrigin: "center" }}
+              transition={{ delay: 2.3, duration: 0.6 }}
+            />
+          </svg>
         </Card>
 
         <div className="flex flex-col gap-3">
-          {TIERS.map((t, i) => (
-            <Reveal key={t.t} delay={0.9 + i * 0.14}>
-              <Card
-                tone={i === 0 ? "good" : "plain"}
-                className="grid grid-cols-[2.4rem_minmax(0,1fr)] gap-x-3.5 px-4 py-3"
-              >
-                <span
-                  className="font-display flex h-9 w-9 items-center justify-center text-[1.2rem]"
-                  style={{
-                    background: i === 0 ? "var(--color-jade)" : "transparent",
-                    color: i === 0 ? "#fff" : "var(--color-slate)",
-                    border: i === 0 ? "none" : "1px solid var(--line-ink-strong)",
-                  }}
-                >
-                  {t.t}
-                </span>
-                <div className="min-w-0">
-                  <div className="flex flex-wrap items-baseline justify-between gap-x-3">
-                    <p className="text-[0.98rem] font-medium text-graphite">
-                      {t.accounts.toLocaleString()} accounts
-                      <span className="ml-2 text-[0.8rem] font-normal text-mute">{t.share}% of the base</span>
-                    </p>
-                    <Chip tone={i === 0 ? "solid" : "plain"}>{t.note}</Chip>
-                  </div>
-                  <div className="mt-2 grid grid-cols-2 gap-x-4 text-[0.82rem] text-slate">
-                    <span>
-                      Win rate <b className="font-semibold text-graphite">{t.win}%</b>
-                    </span>
-                    <span>
-                      Avg deal <b className="font-semibold text-graphite">{t.deal}</b>
-                    </span>
-                  </div>
-                  <div className="mt-2 flex items-center gap-2">
-                    <div className="h-1.5 flex-1 bg-[rgba(38,38,38,0.1)]">
-                      <GrowBar pct={t.rev} delay={1.1 + i * 0.14} className={i === 0 ? "bg-jade" : "bg-[rgba(38,38,38,0.4)]"} />
+          <Reveal delay={0.4}>
+            <Card className="px-5 py-4">
+              <Label>Where the revenue comes from</Label>
+              <div className="mt-3 space-y-3">
+                {SHARE.map((row, ri) => (
+                  <div key={row.k}>
+                    <p className="mb-1 text-[0.8rem] text-mute">{row.k}</p>
+                    <div className="flex h-7 overflow-hidden">
+                      {(
+                        [
+                          ["a", row.a, "#29a587", "#fff"],
+                          ["b", row.b, "rgba(41,165,135,0.45)", "#262626"],
+                          ["c", row.c, "rgba(38,38,38,0.16)", "#56605a"],
+                        ] as const
+                      ).map(([key, v, bg, fg], si) => (
+                        <motion.div
+                          key={key}
+                          className="font-display flex items-center justify-center text-[0.95rem] leading-none"
+                          style={{ background: bg, color: fg }}
+                          initial={still ? false : { width: 0 }}
+                          animate={{ width: `${v}%` }}
+                          transition={{ duration: 0.8, delay: 1.2 + ri * 0.25 + si * 0.08, ease: [0.22, 1, 0.36, 1] }}
+                        >
+                          {v >= 9 ? `${v}%` : ""}
+                        </motion.div>
+                      ))}
                     </div>
-                    <span className="annot w-24 text-right text-[0.6rem]">{t.rev}% of revenue</span>
                   </div>
-                </div>
-              </Card>
-            </Reveal>
-          ))}
+                ))}
+              </div>
+              <p className="mt-3 text-[0.9rem] leading-snug text-graphite">
+                <span className="font-display text-[1.5rem] text-jade-deep">
+                  <CountUp to={6} delay={1.4} />%
+                </span>{" "}
+                of accounts, <span className="font-display text-[1.5rem] text-jade-deep">
+                  <CountUp to={46} delay={1.5} />%
+                </span>{" "}
+                of revenue.
+              </p>
+            </Card>
+          </Reveal>
 
-          <Reveal delay={1.6}>
-            <p className="text-[0.95rem] leading-snug text-graphite">
-              <span className="font-display text-[1.6rem] text-jade-deep">
-                <CountUp to={6} delay={1.7} />%
-              </span>{" "}
-              of accounts carry{" "}
-              <span className="font-display text-[1.6rem] text-jade-deep">
-                <CountUp to={46} delay={1.7} />%
-              </span>{" "}
-              of revenue. That is where effort goes first.
-            </p>
+          <Reveal delay={2.0}>
+            <Card tone="good" className="px-5 py-4">
+              <Label tone="good">What Tier A has in common</Label>
+              <ul className="mt-2 space-y-1.5">
+                {TRAITS.map((t) => (
+                  <li key={t.k} className="flex items-baseline justify-between gap-3">
+                    <span className="text-[0.92rem] text-graphite">{t.k}</span>
+                    <span className="font-display text-[1.15rem] leading-none text-jade-deep">{t.lift.toFixed(1)}×</span>
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-2 text-[0.76rem] text-mute">times as common as in the rest of the base</p>
+            </Card>
           </Reveal>
         </div>
       </div>
     </div>
-  );
-}
-
-function Bar({
-  pct,
-  delay,
-  className,
-  label,
-  strong,
-}: {
-  pct: number;
-  delay: number;
-  className: string;
-  label: string;
-  strong?: boolean;
-}) {
-  return (
-    <div className="flex items-center gap-2">
-      <div className="h-2.5 flex-1 bg-[rgba(38,38,38,0.06)]">
-        <GrowBar pct={pct} delay={delay} className={className} />
-      </div>
-      <span
-        className="w-9 text-right text-[0.8rem] tabular-nums"
-        style={{ color: strong ? "var(--color-graphite)" : "var(--color-mute)", fontWeight: strong ? 600 : 400 }}
-      >
-        {label}
-      </span>
-    </div>
-  );
-}
-
-function Legend({ swatch, text }: { swatch: string; text: string }) {
-  return (
-    <span className="flex items-center gap-1.5 text-[0.72rem] text-slate">
-      <span className={`inline-block h-2 w-3.5 ${swatch}`} />
-      {text}
-    </span>
   );
 }

@@ -1,18 +1,21 @@
 "use client";
 
 /*
-  07 — What makes it scale.
+  Readiness (the AI Readiness deep dive): can it run today?
 
-  The claim is that AI stands on the layers beneath it, and the exhibit lets the
-  reader check it. Along the top, the four layers and which of them this
-  company has in place. Down the side, four things people ask AI to do. A dot
-  means "needs this layer". A use case is ready only if every layer it needs is
-  in place — and the pills on the right say which ones are not, by name.
+  Four pillars along the bottom are the layers AI stands on, each either in
+  place or not yet. Above them, every use case is a span laid across exactly the
+  pillars it needs, with a drop down to each. A span is solid and jade if every
+  pillar beneath it is in place; if any pillar under it is missing, it is dashed
+  and timber and says which. You can read the whole argument off the shape: the
+  use cases that need the missing pillars are the ones that cannot stand.
 
-  Pilots stall here. Not on the model: on the layer underneath it.
+  Pilots stall here. Not on the model: on the pillar underneath it.
 */
 
-import { Card, Chip, Illustrative, Label, Reveal } from "./ui";
+import { motion } from "framer-motion";
+import { usePrefersReducedMotion } from "@/lib/reducedMotion";
+import { Card, Chip, Illustrative, Label } from "./ui";
 
 const LAYERS = [
   { k: "Customer Data", ready: true },
@@ -29,7 +32,18 @@ const CASES: { name: string; ask: string; needs: number[] }[] = [
   { name: "Personalized content", ask: "Say the right thing per buyer", needs: [0, 1, 2, 3] },
 ];
 
+/* geometry */
+const W = 900;
+const PX = [112, 337, 562, 787]; // pillar centres
+const PW = 170;
+const PTOP = 318;
+const PH = 70;
+const BAR_Y = [278, 212, 146, 80]; // lead scoring lowest, personalization highest
+const ready = (needs: number[]) => needs.every((n) => LAYERS[n].ready);
+
 export default function AiReadiness() {
+  const still = usePrefersReducedMotion();
+
   return (
     <div className="space-y-4">
       <div className="flex items-end justify-between gap-6">
@@ -37,7 +51,7 @@ export default function AiReadiness() {
         <Illustrative>$120M B2B manufacturer</Illustrative>
       </div>
 
-      {/* phones: one card per use case, since a six-column matrix does not fit */}
+      {/* phones: one card per use case */}
       <div className="space-y-3 lg:hidden">
         <div className="flex flex-wrap gap-1.5">
           {LAYERS.map((l) => (
@@ -68,99 +82,121 @@ export default function AiReadiness() {
         })}
       </div>
 
-      <Card className="hidden overflow-hidden lg:block">
-        <div className="grid grid-cols-[minmax(0,1.5fr)_repeat(4,minmax(0,1fr))_minmax(0,1.5fr)] items-stretch">
-          {/* header row: the layers and whether they are in place */}
-          <div className="border-b border-[var(--line-ink)] px-4 py-3">
-            <Label>Use case</Label>
-          </div>
-          {LAYERS.map((l) => (
-            <div
-              key={l.k}
-              className="border-b border-l border-[var(--line-ink)] px-3 py-3 text-center"
-              style={{ background: l.ready ? "rgba(41,165,135,0.09)" : "rgba(180,136,90,0.1)" }}
-            >
-              <p className="font-display-mixed text-[0.98rem] leading-tight text-graphite">{l.k}</p>
-              <p
-                className="annot mt-1 text-[0.6rem]"
-                style={{ color: l.ready ? "var(--color-jade-deep)" : "var(--color-timber-ink)" }}
-              >
-                {l.ready ? "● In place" : "○ Not yet"}
-              </p>
-            </div>
-          ))}
-          <div className="border-b border-l border-[var(--line-ink)] px-4 py-3">
-            <Label>Can it run today?</Label>
-          </div>
+      {/* desktop: pillars and the spans across them */}
+      <Card className="hidden px-3 pb-2 pt-3 lg:block">
+        <svg
+          viewBox={`0 0 ${W} 410`}
+          className="mx-auto block h-auto max-h-[26rem] w-full"
+          role="img"
+          aria-label="Four pillars with spans across them: only the span resting wholly on pillars that are in place can stand."
+        >
+          {/* drops, from each span down to each pillar it needs */}
+          {CASES.map((c, ci) =>
+            c.needs.map((n) => {
+              const ok = LAYERS[n].ready;
+              const y0 = BAR_Y[ci];
+              return (
+                <motion.line
+                  key={`${c.name}-${n}`}
+                  x1={PX[n]}
+                  x2={PX[n]}
+                  y1={y0}
+                  y2={PTOP}
+                  stroke={ready(c.needs) ? "#29a587" : ok ? "rgba(41,165,135,0.55)" : "#b4885a"}
+                  strokeWidth={2}
+                  strokeDasharray={ok ? undefined : "5 5"}
+                  initial={still ? false : { pathLength: 0, opacity: 0 }}
+                  animate={{ pathLength: 1, opacity: 1 }}
+                  transition={{ duration: 0.5, delay: 1.0 + (3 - ci) * 0.35 }}
+                />
+              );
+            }),
+          )}
 
-          {CASES.map((c, r) => {
+          {/* the pillars */}
+          {LAYERS.map((l, i) => (
+            <motion.g
+              key={l.k}
+              initial={still ? false : { opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15 + i * 0.14, duration: 0.5 }}
+            >
+              <rect
+                x={PX[i] - PW / 2}
+                y={PTOP}
+                width={PW}
+                height={PH}
+                rx={4}
+                fill={l.ready ? "rgba(41,165,135,0.16)" : "rgba(180,136,90,0.07)"}
+                stroke={l.ready ? "#29a587" : "#b4885a"}
+                strokeWidth={l.ready ? 1.6 : 1.6}
+                strokeDasharray={l.ready ? undefined : "6 5"}
+              />
+              <text x={PX[i]} y={PTOP + 29} textAnchor="middle" fontSize="15.5" fontWeight={600} fill="#262626">
+                {l.k}
+              </text>
+              <text
+                x={PX[i]}
+                y={PTOP + 52}
+                textAnchor="middle"
+                fontSize="11"
+                letterSpacing="2"
+                className="font-mono"
+                fill={l.ready ? "#1d7a63" : "#8a6234"}
+              >
+                {l.ready ? "● IN PLACE" : "○ NOT YET"}
+              </text>
+            </motion.g>
+          ))}
+
+          {/* the spans */}
+          {CASES.map((c, ci) => {
+            const x0 = PX[Math.min(...c.needs)];
+            const x1 = PX[Math.max(...c.needs)];
+            const ok = ready(c.needs);
             const missing = c.needs.filter((n) => !LAYERS[n].ready);
-            const ok = missing.length === 0;
-            const last = r === CASES.length - 1;
-            const border = last ? "" : "border-b";
+            const delay = 1.0 + (3 - ci) * 0.35;
             return (
-              <Row key={c.name} delay={0.15 + r * 0.08}>
-                <div className={`${border} border-[var(--line-ink)] px-4 py-3`}>
-                  <p className="text-[1rem] font-medium leading-tight text-graphite">{c.name}</p>
-                  <p className="mt-0.5 text-[0.8rem] text-mute">{c.ask}</p>
-                </div>
-                {LAYERS.map((l, n) => {
-                  const needs = c.needs.includes(n);
-                  return (
-                    <div
-                      key={l.k}
-                      className={`${border} flex items-center justify-center border-l border-[var(--line-ink)]`}
-                    >
-                      {needs ? (
-                        <span
-                          aria-label={l.ready ? "needed, in place" : "needed, missing"}
-                          className="block h-3.5 w-3.5 rounded-full"
-                          style={{
-                            background: l.ready ? "var(--color-jade)" : "transparent",
-                            border: l.ready
-                              ? "none"
-                              : "2px solid var(--color-timber)",
-                          }}
-                        />
-                      ) : (
-                        <span aria-hidden className="block h-px w-3 bg-[var(--line-ink-strong)]" />
-                      )}
-                    </div>
-                  );
-                })}
-                <div
-                  className={`${border} flex flex-wrap content-center items-center gap-1.5 border-l border-[var(--line-ink)] px-4 py-3`}
+              <g key={c.name}>
+                <motion.line
+                  x1={x0}
+                  x2={x1}
+                  y1={BAR_Y[ci]}
+                  y2={BAR_Y[ci]}
+                  stroke={ok ? "#29a587" : "#b4885a"}
+                  strokeWidth={9}
+                  strokeLinecap="round"
+                  strokeDasharray={ok ? undefined : "1 13"}
+                  initial={still ? false : { pathLength: 0 }}
+                  animate={{ pathLength: 1 }}
+                  transition={{ duration: 0.7, delay }}
+                />
+                <motion.g
+                  initial={still ? false : { opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: delay + 0.35 }}
                 >
-                  {ok ? (
-                    <Chip tone="solid">Ready</Chip>
-                  ) : (
-                    <>
-                      <Chip tone="leak">Blocked</Chip>
-                      <span className="text-[0.8rem] leading-tight text-timber-ink">
-                        needs {missing.map((m) => LAYERS[m].k.replace("Go-to-Market ", "GTM ")).join(" + ")}
-                      </span>
-                    </>
-                  )}
-                </div>
-              </Row>
+                  <text x={x0 - 6} y={BAR_Y[ci] - 16} fontSize="15" fontWeight={600} fill="#262626">
+                    {c.name}
+                    <tspan dx="12" fontSize="12.5" fontWeight={500} fill={ok ? "#1d7a63" : "#8a6234"}>
+                      {ok
+                        ? "Ready: every layer under it is in place"
+                        : `Blocked: needs ${missing
+                            .map((m) => LAYERS[m].k.replace("Go-to-Market ", "GTM "))
+                            .join(" + ")}`}
+                    </tspan>
+                  </text>
+                </motion.g>
+              </g>
             );
           })}
-        </div>
+        </svg>
       </Card>
 
       <p className="annot text-[0.66rem]">
-        One of four runs today. The other three are not waiting on a better model; they
-        are waiting on a layer.
+        One of four runs today. The other three are not waiting on a better model; they are waiting
+        on a layer.
       </p>
     </div>
-  );
-}
-
-/** A row of grid cells that fades in together without breaking the grid. */
-function Row({ children, delay }: { children: React.ReactNode; delay: number }) {
-  return (
-    <Reveal delay={delay} className="contents">
-      {children}
-    </Reveal>
   );
 }

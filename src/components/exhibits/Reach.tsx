@@ -1,19 +1,21 @@
 "use client";
 
 /*
-  02 — What it says, and to whom.
+  Reach (the Content & Creative deep dive): what does it say, and to whom?
 
-  A message-by-audience grid. Each cell is the share of that audience who booked
-  a meeting after seeing that message. The shading is the data; the outlines
-  are the decision. Read across a row and one message wins and loses by a wide
-  margin depending on who is reading it — which is the whole argument for
-  testing audience against message and not channel against channel.
+  A bubble chart of message against audience. Each circle is the share of that
+  audience who booked a meeting after seeing that message, and its size is the
+  number — so the answer is visible before it is read. The winners are filled and
+  ringed; everything else is a quiet grey; a retired combination is only an
+  empty, dashed outline.
 
-  The three winning combinations are outlined and listed beside the grid; the
-  cells below the retire line are left visibly spent, because a library that
-  only records winners teaches nothing.
+  An earlier version shaded every cell by intensity and read as a heat map, which
+  is a chart for analysts. Size is easier to read than shade, and leaving most of
+  the grid grey means the eye goes to the few combinations that matter.
 */
 
+import { motion } from "framer-motion";
+import { usePrefersReducedMotion } from "@/lib/reducedMotion";
 import { Card, CountUp, Illustrative, Label, Reveal } from "./ui";
 
 const AUDIENCES = ["Procurement", "Operations", "Finance", "Executive"] as const;
@@ -27,9 +29,10 @@ const MESSAGES = [
 
 const BAR = 4.5; // clears the bar
 const RETIRE = 1.5; // below this the combination is retired
+const MAX = 5.4;
 
-const wins = MESSAGES.flatMap((m, r) =>
-  m.v.map((v, c) => ({ r, c, v, msg: m.k, aud: AUDIENCES[c] })),
+const wins = MESSAGES.flatMap((m) =>
+  m.v.map((v, c) => ({ v, msg: m.k, aud: AUDIENCES[c] })),
 )
   .filter((x) => x.v >= BAR)
   .sort((a, b) => b.v - a.v);
@@ -38,13 +41,12 @@ const best = MESSAGES[2]; // “Faster delivery” has the widest spread
 const hi = Math.max(...best.v);
 const lo = Math.min(...best.v);
 
-/* One tint, two levels. The winners are the only cells that carry colour;
-   everything else is a quiet grey, and a retired cell is just a lighter number.
-   The earlier version shaded every cell by intensity and read as a heat map,
-   which is a chart for analysts, not for the people who choose the message. */
-const shade = (v: number) => (v >= BAR ? "rgba(41,165,135,0.22)" : "rgba(38,38,38,0.045)");
+/** Diameter in px: area, not width, tracks the value. */
+const dia = (v: number) => 18 + Math.sqrt(v / MAX) * 52;
 
 export default function Reach() {
+  const still = usePrefersReducedMotion();
+
   return (
     <div className="space-y-3">
       <div className="flex items-end justify-between gap-6">
@@ -54,7 +56,7 @@ export default function Reach() {
 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
         <Card className="px-4 pb-4 pt-3">
-          <div className="grid grid-cols-[minmax(0,1.5fr)_repeat(4,minmax(0,1fr))] gap-1.5">
+          <div className="grid grid-cols-[minmax(0,1.5fr)_repeat(4,minmax(0,1fr))] items-center gap-y-1">
             <div />
             {AUDIENCES.map((a) => (
               <Label key={a} className="pb-1 text-center tracking-[0.04em]!">
@@ -63,20 +65,23 @@ export default function Reach() {
             ))}
 
             {MESSAGES.map((m, r) => (
-              <Row key={m.k} m={m} r={r} />
+              <Row key={m.k} m={m} r={r} still={still} />
             ))}
           </div>
 
-          <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1 border-t border-[var(--line-ink)] pt-2.5">
-            <Key swatch={<span className="inline-block h-3 w-5 bg-[rgba(41,165,135,0.3)] ring-2 ring-jade-deep" />}>
+          <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1 border-t border-[var(--line-ink)] pt-2.5 text-[0.78rem] text-slate">
+            <span className="flex items-center gap-2">
+              <span className="inline-block h-3.5 w-3.5 rounded-full bg-jade ring-2 ring-jade-deep/40" />
               Clears the bar ({BAR}+)
-            </Key>
-            <Key swatch={<span className="inline-block h-3 w-5 bg-[rgba(38,38,38,0.07)]" />}>
+            </span>
+            <span className="flex items-center gap-2">
+              <span className="inline-block h-3.5 w-3.5 rounded-full bg-[rgba(38,38,38,0.14)]" />
               Keep testing
-            </Key>
-            <Key swatch={<span className="inline-block h-3 w-5 border border-dashed border-[var(--line-ink-strong)]" />}>
+            </span>
+            <span className="flex items-center gap-2">
+              <span className="inline-block h-3.5 w-3.5 rounded-full border border-dashed border-[var(--line-ink-strong)]" />
               Retired (under {RETIRE})
-            </Key>
+            </span>
           </div>
         </Card>
 
@@ -105,12 +110,11 @@ export default function Reach() {
             <Card className="px-5 py-4">
               <Label>Same message, different reader</Label>
               <p className="mt-1.5 text-[0.95rem] leading-snug text-graphite">
-                “{best.k}” books{" "}
-                <span className="font-semibold text-jade-deep">{hi.toFixed(1)}</span> per 100 with
-                Operations and{" "}
-                <span className="font-semibold text-timber-ink">{lo.toFixed(1)}</span> with Finance:
-                a <span className="font-semibold">{(hi / lo).toFixed(1)}×</span> spread from the
-                audience alone.
+                “{best.k}” books <span className="font-semibold text-jade-deep">{hi.toFixed(1)}</span>{" "}
+                per 100 with Operations and{" "}
+                <span className="font-semibold text-slate">{lo.toFixed(1)}</span> with Finance: a{" "}
+                <span className="font-semibold">{(hi / lo).toFixed(1)}×</span> spread from the audience
+                alone.
               </p>
             </Card>
           </Reveal>
@@ -120,45 +124,36 @@ export default function Reach() {
   );
 }
 
-function Row({ m, r }: { m: (typeof MESSAGES)[number]; r: number }) {
+function Row({ m, r, still }: { m: (typeof MESSAGES)[number]; r: number; still: boolean }) {
   return (
     <>
-      <p className="flex items-center pr-2 text-[0.92rem] font-medium leading-tight text-graphite">
-        {m.k}
-      </p>
+      <p className="flex items-center pr-2 text-[0.92rem] font-medium leading-tight text-graphite">{m.k}</p>
       {m.v.map((v, c) => {
         const win = v >= BAR;
+        const retired = v < RETIRE;
+        const d = dia(v);
         return (
-          <Reveal key={c} delay={0.25 + (r * 4 + c) * 0.045}>
-            <div
-              className="flex h-[3.4rem] items-center justify-center"
+          <div key={c} className="flex h-[4.2rem] items-center justify-center">
+            <motion.span
+              className="font-display flex items-center justify-center rounded-full leading-none"
               style={{
-                background: shade(v),
-                boxShadow: win ? "inset 0 0 0 2px var(--color-jade-deep)" : undefined,
+                width: d,
+                height: d,
+                fontSize: win ? "1.15rem" : "0.9rem",
+                background: win ? "#29a587" : retired ? "transparent" : "rgba(38,38,38,0.12)",
+                color: win ? "#fff" : retired ? "#8a8b84" : "#262626",
+                border: retired ? "1px dashed rgba(38,38,38,0.3)" : "none",
+                boxShadow: win ? "0 0 0 4px rgba(29,122,99,0.2)" : undefined,
               }}
+              initial={still ? false : { scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.25 + (r * 4 + c) * 0.06, type: "spring", stiffness: 240, damping: 16 }}
             >
-              <span
-                className="font-display text-[1.45rem] leading-none"
-                style={{
-                  color: win ? "var(--color-graphite)" : "var(--color-slate)",
-                  opacity: v < RETIRE ? 0.45 : 1,
-                }}
-              >
-                {v.toFixed(1)}
-              </span>
-            </div>
-          </Reveal>
+              {v.toFixed(1)}
+            </motion.span>
+          </div>
         );
       })}
     </>
-  );
-}
-
-function Key({ swatch, children }: { swatch: React.ReactNode; children: React.ReactNode }) {
-  return (
-    <span className="flex items-center gap-2 text-[0.78rem] text-slate">
-      {swatch}
-      {children}
-    </span>
   );
 }

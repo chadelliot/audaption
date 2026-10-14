@@ -72,7 +72,7 @@ export default function Allocate() {
 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
         <Card className="px-3 pb-2 pt-3">
-          <svg viewBox={`0 0 ${W} ${H}`} className="block h-auto w-full" role="img"
+          <svg viewBox={`0 0 ${W} ${H}`} className="mx-auto block h-auto max-h-[22rem] w-full" role="img"
             aria-label="Response curves: paid search is flat at its current spend, paid social is steep.">
             {/* grid + axes */}
             {[0, 300, 600, 900].map((y) => (
@@ -180,57 +180,74 @@ export default function Allocate() {
         </Card>
 
         <div className="flex flex-col gap-3">
-          <Card className="overflow-hidden">
-            <div className="grid grid-cols-[minmax(0,1.3fr)_repeat(3,minmax(0,0.8fr))_auto] items-center gap-x-2 border-b border-[var(--line-ink)] px-3.5 py-2">
-              <Label>Channel</Label>
-              <Label className="text-right">Spend</Label>
-              <Label className="text-right">Avg</Label>
-              <Label className="text-right">Next $1</Label>
-              <Label className="w-12 text-center">Call</Label>
+          <Card className="px-5 pb-4 pt-4">
+            <div className="flex items-baseline justify-between">
+              <Label>Average return vs the next dollar</Label>
+              <p className="annot text-[0.6rem]">
+                <span className="mr-3">○ avg</span>
+                <span>● next $1</span>
+              </p>
             </div>
-            {CHANNELS.map((c, i) => {
-              const avg = rev(c.A, c.B, c.spend) / c.spend;
-              const m = slope(c.A, c.B, c.spend);
-              return (
-                <Reveal key={c.k} delay={0.5 + i * 0.1}>
-                  <div
-                    className="grid grid-cols-[minmax(0,1.3fr)_repeat(3,minmax(0,0.8fr))_auto] items-center gap-x-2 px-3.5 py-2.5"
-                    style={{
-                      borderTop: i ? "1px solid var(--line-ink)" : undefined,
-                      background:
-                        c.call === "fund"
-                          ? "rgba(41,165,135,0.07)"
-                          : c.call === "cap"
-                            ? "rgba(180,136,90,0.09)"
-                            : undefined,
-                    }}
-                  >
-                    <span className="flex items-center gap-2 text-[0.9rem] font-medium text-graphite">
-                      <span className="inline-block h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: c.color }} />
-                      {c.k}
-                    </span>
-                    <span className="text-right text-[0.88rem] text-slate">${c.spend}K</span>
-                    <span className="text-right text-[0.88rem] text-slate">{avg.toFixed(1)}×</span>
-                    <span
-                      className="font-display text-right text-[1.25rem] leading-none"
-                      style={{
-                        color:
-                          c.call === "fund"
-                            ? "var(--color-jade-deep)"
-                            : c.call === "cap"
-                              ? "var(--color-timber-ink)"
-                              : "var(--color-graphite)",
-                      }}
-                    >
-                      ${m.toFixed(1)}
-                    </span>
-                    <span className="w-12 text-center">
-                      <Chip tone={CALL[c.call].tone}>{CALL[c.call].label}</Chip>
-                    </span>
-                  </div>
-                </Reveal>
-              );
-            })}
+
+            <div className="mt-3 space-y-3.5">
+              {CHANNELS.map((c, i) => {
+                const avg = rev(c.A, c.B, c.spend) / c.spend;
+                const m = slope(c.A, c.B, c.spend);
+                const lo = Math.min(avg, m);
+                const hi = Math.max(avg, m);
+                const tone =
+                  c.call === "fund"
+                    ? "var(--color-jade-deep)"
+                    : c.call === "cap"
+                      ? "var(--color-timber-ink)"
+                      : "var(--color-slate)";
+                return (
+                  <Reveal key={c.k} delay={0.5 + i * 0.12}>
+                    <div>
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="flex items-center gap-2 text-[0.9rem] font-medium text-graphite">
+                          <span className="inline-block h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: c.color }} />
+                          {c.k}
+                          <span className="text-[0.74rem] font-normal text-mute">${c.spend}K</span>
+                        </span>
+                        <Chip tone={CALL[c.call].tone}>{CALL[c.call].label}</Chip>
+                      </div>
+                      <div className="relative mt-1.5 h-6">
+                        <div className="absolute inset-x-0 top-1/2 h-px bg-[rgba(38,38,38,0.12)]" />
+                        {/* the gap between what it averaged and what the next dollar earns */}
+                        <motion.div
+                          className="absolute top-1/2 h-[5px] -translate-y-1/2"
+                          style={{
+                            left: `${(lo / 9) * 100}%`,
+                            width: `${((hi - lo) / 9) * 100}%`,
+                            background: c.color,
+                            opacity: 0.4,
+                            transformOrigin: "left",
+                          }}
+                          initial={still ? false : { scaleX: 0 }}
+                          animate={{ scaleX: 1 }}
+                          transition={{ duration: 0.7, delay: 0.8 + i * 0.12 }}
+                        />
+                        <span
+                          className="absolute top-1/2 block h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 bg-white"
+                          style={{ left: `${(avg / 9) * 100}%`, borderColor: c.color }}
+                        />
+                        <span
+                          className="absolute top-1/2 block h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white"
+                          style={{ left: `${(m / 9) * 100}%`, background: c.color }}
+                        />
+                      </div>
+                      <p className="mt-0.5 flex justify-between text-[0.76rem] text-mute">
+                        <span>averages {avg.toFixed(1)}×</span>
+                        <span className="font-semibold" style={{ color: tone }}>
+                          next dollar returns ${m.toFixed(1)}
+                        </span>
+                      </p>
+                    </div>
+                  </Reveal>
+                );
+              })}
+            </div>
           </Card>
 
           <Reveal delay={1.9}>

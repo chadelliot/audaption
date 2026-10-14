@@ -89,26 +89,45 @@ export default function Deck() {
 
   /* Next, Back, the rail and the arrow keys all do the same thing: scroll to
      the middle of a chapter's band, so the page and the chapter never disagree. */
-  const go = useCallback((n: number) => {
-    const el = ref.current;
-    if (!el) return;
-    const target = Math.min(LAST, Math.max(0, n));
-    const r = el.getBoundingClientRect();
-    const range = el.offsetHeight - window.innerHeight;
-    const y = r.top + window.scrollY + ((target + 0.5) / STEPS.length) * range;
-
-    travelling.current = true;
-    setI(target);
-    const done = () => {
-      travelling.current = false;
-    };
-    if (lenisRef.current) {
-      lenisRef.current.scrollTo(y, { duration: 0.9, onComplete: done });
-    } else {
-      window.scrollTo({ top: y, behavior: "smooth" });
-      window.setTimeout(done, 900);
-    }
+  const releaseTimer = useRef<number | undefined>(undefined);
+  const release = useCallback(() => {
+    travelling.current = false;
+    window.clearTimeout(releaseTimer.current);
   }, []);
+
+  const go = useCallback(
+    (n: number) => {
+      const el = ref.current;
+      if (!el) return;
+      const target = Math.min(LAST, Math.max(0, n));
+      const r = el.getBoundingClientRect();
+      const range = el.offsetHeight - window.innerHeight;
+      const y = r.top + window.scrollY + ((target + 0.5) / STEPS.length) * range;
+
+      travelling.current = true;
+      setI(target);
+      /* The lock must never outlive the trip. The scroll library's completion
+         callback is not guaranteed — an interrupted or zero-length scroll never
+         fires it — so a timer always lets go as well, and so does the reader's
+         own input. A lock that stuck would freeze the chapter while the page
+         kept scrolling. */
+      window.clearTimeout(releaseTimer.current);
+      releaseTimer.current = window.setTimeout(release, 1400);
+      if (lenisRef.current) {
+        lenisRef.current.scrollTo(y, { duration: 0.9, onComplete: release });
+      } else {
+        window.scrollTo({ top: y, behavior: "smooth" });
+      }
+    },
+    [release],
+  );
+
+  /* The reader taking the wheel back ends any trip in progress. */
+  useEffect(() => {
+    const events = ["wheel", "touchstart"] as const;
+    events.forEach((e) => window.addEventListener(e, release, { passive: true }));
+    return () => events.forEach((e) => window.removeEventListener(e, release));
+  }, [release]);
 
   /* Arrow keys page the deck, but only while it is what the reader is looking
      at, and never while they are typing in the form further down. */
@@ -371,14 +390,24 @@ function RoadmapView() {
         Map it, align it, build it, <span className="text-jade">run it</span>.
       </h2>
 
-      <ol className="mt-9 grid max-w-[68rem] grid-cols-4 gap-6 xl:gap-9">
-        {ROADMAP.steps.map((s) => (
-          <li key={s.name} className="border-t-2 border-jade pt-4">
-            <span className="annot">{s.n}</span>
-            <span className="font-display-mixed mt-1 block text-[1.6rem] leading-tight text-graphite">
-              {s.name}
-            </span>
-            <span className="mt-2 block text-[0.95rem] leading-relaxed text-slate">{s.line}</span>
+      <ol className="mt-9 grid max-w-[68rem] grid-cols-4">
+        {ROADMAP.steps.map((s, i) => (
+          <li key={s.name} className="pr-5">
+            {/* each step points to the next */}
+            <div
+              className="flex items-center gap-2.5 py-3 pl-5 pr-8"
+              style={{
+                background: ["rgba(41,165,135,0.16)", "rgba(41,165,135,0.34)", "rgba(41,165,135,0.6)", "#1d7a63"][i],
+                color: i > 1 ? "#fff" : "#262626",
+                clipPath: "polygon(0 0, calc(100% - 18px) 0, 100% 50%, calc(100% - 18px) 100%, 0 100%, 14px 50%)",
+                marginLeft: i ? "-0.5rem" : 0,
+                paddingLeft: i ? "2rem" : "1.25rem",
+              }}
+            >
+              <span className="font-mono text-[0.72rem] opacity-70">{s.n}</span>
+              <span className="font-display-mixed text-[1.4rem] leading-none">{s.name}</span>
+            </div>
+            <p className="mt-3 pl-1 text-[0.95rem] leading-relaxed text-slate">{s.line}</p>
           </li>
         ))}
       </ol>
